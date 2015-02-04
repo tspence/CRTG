@@ -32,25 +32,10 @@ namespace CRTG.Charts
             _max_value = decimal.MinValue;
 
             // If there's an artificial limitation on the time window, use that instead
-            switch (viewtime) {
-                case ViewTimeframe.FifteenMinutes:
-                    _min_date = _max_date.AddMinutes(-15);
-                    break;
-                case ViewTimeframe.Hour:
-                    _min_date = _max_date.AddHours(-1);
-                    break;
-                case ViewTimeframe.Day:
-                    _min_date = _max_date.AddDays(-1);
-                    break;
-                case ViewTimeframe.Week:
-                    _min_date = _max_date.AddDays(-7);
-                    break;
-                case ViewTimeframe.Month:
-                    _min_date = _max_date.AddMonths(-1);
-                    break;
-                case ViewTimeframe.AllTime:
-                    _min_date = (from r in _raw_data select r.Time).Min();
-                    break;
+            if (viewtime == ViewTimeframe.AllTime) {
+                _min_date = (from r in _raw_data select r.Time).Min();
+            } else {
+                _min_date = _max_date.AddMinutes(-(int)viewtime);
             }
             
             // Filter data by time

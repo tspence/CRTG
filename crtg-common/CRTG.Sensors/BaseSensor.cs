@@ -22,7 +22,8 @@ namespace CRTG
 {
     [Serializable, XmlInclude(typeof(SqlSensor)), XmlInclude(typeof(WmiCpuSensor)), XmlInclude(typeof(BasicWmiSensor)), XmlInclude(typeof(HttpSensor)),
     XmlInclude(typeof(SqlReportSensor)), XmlInclude(typeof(WmiDiskSensor)), XmlInclude(typeof(WmiMemorySensor)),
-    XmlInclude(typeof(WmiDiskActivity)), XmlInclude(typeof(FileSensor)), XmlInclude(typeof(FolderSensor)), XmlInclude(typeof(HttpXmlSensor))]
+    XmlInclude(typeof(WmiDiskActivity)), XmlInclude(typeof(FileSensor)), XmlInclude(typeof(FolderSensor)), XmlInclude(typeof(HttpXmlSensor)), 
+    XmlInclude(typeof(BaseNotificationSystem))]
     public class BaseSensor
     {
         /// <summary>
@@ -235,14 +236,18 @@ namespace CRTG
                         s = "Sensor returned to normal";
                         break;
                 }
-                SensorProject.Current.Notifications.Notify(this, ns, timestamp, value, s);
+                if (SensorProject.Current.Notifications != null) {
+                    SensorProject.Current.Notifications.Notify(this, ns, timestamp, value, s);
+                }
                 _current_state = ns;
             }
 
             // Check for notification on value changes
             if (this.NotifyOnChange) {
                 if ((_prior_value != null) && (_prior_value != value)) {
-                    SensorProject.Current.Notifications.Notify(this, NotificationState.ValueChanged, timestamp, value, String.Format("Changed from {0} to {1}", _prior_value.Value, value));
+                    if (SensorProject.Current.Notifications != null) {
+                        SensorProject.Current.Notifications.Notify(this, NotificationState.ValueChanged, timestamp, value, String.Format("Changed from {0} to {1}", _prior_value.Value, value));
+                    }
                 }
                 _prior_value = value;
             }

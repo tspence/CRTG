@@ -24,7 +24,6 @@ namespace CRTG.UI
 {
     public partial class frmCRTG : Form
     {
-        public SensorProject _project = new SensorProject();
         public string _filename = Path.Combine(Application.StartupPath, "sensors.crtg");
         protected FormMapper _properties_map = null;
 
@@ -66,7 +65,7 @@ namespace CRTG.UI
         #region Populating information from the CRTG project
         public void UpdateTreeIcons()
         {
-            foreach (DeviceContext dc in _project.Devices) {
+            foreach (DeviceContext dc in SensorProject.Current.Devices) {
                 foreach (BaseSensor bs in dc.Sensors) {
                     TreeNode[] nodes = tvProject.Nodes.Find("Sensor:" + bs.Identity, true);
                     if (nodes != null && nodes.Length == 1) {
@@ -91,7 +90,7 @@ namespace CRTG.UI
             project.Text = "Sensor Project";
             project.ImageIndex = 3;
             project.SelectedImageIndex = 3;
-            foreach (DeviceContext dc in _project.Devices) {
+            foreach (DeviceContext dc in SensorProject.Current.Devices) {
                 project.Nodes.Add(MakeNode(dc));
             }
             tvProject.Nodes.Add(project);
@@ -156,8 +155,9 @@ namespace CRTG.UI
         {
             InitializeComponent();
             if (File.Exists(_filename)) {
-                _project = SensorProject.Deserialize(_filename);
+                SensorProject.Current = SensorProject.Deserialize(_filename);
             }
+            SensorProject.Current.Notifications = new NotificationHelper();
         }
 
         private void frmCRTG_Load(object sender, EventArgs e)
@@ -185,7 +185,7 @@ namespace CRTG.UI
             tvProject.ImageList = ilIcons;
 
             // Show data
-            _project.Start();
+            SensorProject.Current.Start();
             Rebind();
             ddlChartTime.SelectedIndex = 0;
 
@@ -200,6 +200,12 @@ namespace CRTG.UI
                     tsmi.Click += new EventHandler(this.sensorToolStripMenuItem_Click);
                     newDeviceToolStripMenuItem.DropDownItems.Add(tsmi);
                 }
+            }
+
+            // Load time ranges
+            this.ddlChartTime.Items.Clear();
+            foreach (var tr in Enum.GetValues(typeof(ViewTimeframe))) {
+                this.ddlChartTime.Items.Add(tr);
             }
         }
 
@@ -286,8 +292,8 @@ namespace CRTG.UI
                 new_properties_binding = SelectedSensor;
             } else if (SelectedDevice != null) {
                 new_properties_binding = SelectedDevice;
-            } else if (_project != null) {
-                new_properties_binding = _project;
+            } else if (SensorProject.Current != null) {
+                new_properties_binding = SensorProject.Current;
             } else {
                 tabProperties.Controls.Clear();
             }
@@ -340,21 +346,13 @@ namespace CRTG.UI
                 grdSensorData.Refresh();
 
                 // Figure out what time range we're using
-                ViewTimeframe vt = ViewTimeframe.FifteenMinutes;
-                if (String.Equals(ddlChartTime.SelectedItem, "1 Hour")) {
-                    vt = ViewTimeframe.Hour;
-                } else if (String.Equals(ddlChartTime.SelectedItem, "24 Hours")) {
+                ViewTimeframe? vt = ddlChartTime.SelectedItem as ViewTimeframe?;
+                if (vt == null) {
                     vt = ViewTimeframe.Day;
-                } else if (String.Equals(ddlChartTime.SelectedItem, "7 Days")) {
-                    vt = ViewTimeframe.Week;
-                } else if (String.Equals(ddlChartTime.SelectedItem, "30 Days")) {
-                    vt = ViewTimeframe.Month;
-                } else if (String.Equals(ddlChartTime.SelectedItem, "All Time")) {
-                    vt = ViewTimeframe.AllTime;
                 }
 
                 // Now update the chart
-                pbChart.Image = ChartHelper.GetChartImageAsBitmap(SelectedSensor, vt, pbChart.Width, pbChart.Height);
+                pbChart.Image = ChartHelper.GetChartImageAsBitmap(SelectedSensor, vt.Value, pbChart.Width, pbChart.Height);
             }
         }
         #endregion
@@ -430,7 +428,7 @@ namespace CRTG.UI
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SqlSensor ss = new SqlSensor();
-            _project.AddSensor(SelectedDevice, ss);
+            SensorProject.Current.AddSensor(SelectedDevice, ss);
             SelectedSensor = ss;
             Rebind();
             SaveSensors();
@@ -443,12 +441,12 @@ namespace CRTG.UI
             if (File.Exists(_filename)) {
                 File.Delete(_filename);
             }
-            _project.Serialize(_filename);
+            SensorProject.Current.Serialize(_filename);
         }
 
         private void frmCRTG_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _project.Stop();
+            SensorProject.Current.Stop();
             SaveSensors();
         }
         #endregion
@@ -527,15 +525,15 @@ namespace CRTG.UI
         private void uTCToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SensorProject.Current.TimeZonePreference = DateTimePreference.UTC;
-            uTCToolStripMenuItem.Checked = true;
-            localTimeToolStripMenuItem.Checked = false;
+            //uTCToolStripMenuItem.Checked = true;
+            //localTimeToolStripMenuItem.Checked = false;
         }
 
         private void localTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SensorProject.Current.TimeZonePreference = DateTimePreference.LocalTime;
-            uTCToolStripMenuItem.Checked = false;
-            localTimeToolStripMenuItem.Checked = true;
+            //uTCToolStripMenuItem.Checked = false;
+            //localTimeToolStripMenuItem.Checked = true;
         }
         #endregion
 
@@ -543,7 +541,7 @@ namespace CRTG.UI
         private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedSensor != null) {
-                _project.AddSensor(SelectedSensor.Device, SelectedSensor.Duplicate());
+                SensorProject.Current.AddSensor(SelectedSensor.Device, SelectedSensor.Duplicate());
                 SaveSensors();
                 Rebind(true, true);
             }
@@ -553,7 +551,7 @@ namespace CRTG.UI
         {
             if (SelectedDevice == null) return;
             if (MessageBox.Show(String.Format("Do you really wish to delete '{0}'?", SelectedDevice.DeviceName), "Confirm Delete", MessageBoxButtons.YesNoCancel) == System.Windows.Forms.DialogResult.Yes) {
-                _project.Devices.Remove(SelectedDevice);
+                SensorProject.Current.Devices.Remove(SelectedDevice);
                 Rebind(true, true);
                 SaveSensors();
             }
@@ -563,7 +561,7 @@ namespace CRTG.UI
         {
             DeviceContext dc = new DeviceContext();
             dc.DeviceName = "New Device";
-            _project.AddDevice(dc);
+            SensorProject.Current.AddDevice(dc);
             Rebind(true, true);
             SaveSensors();
         }
@@ -580,7 +578,7 @@ namespace CRTG.UI
                     BaseSensor bs = (BaseSensor)a.CreateInstance(t.FullName, true);
                     bs.Name = "New " + bs.GetType().Name;
                     bs.Frequency = Interval.FifteenMinutes;
-                    _project.AddSensor(SelectedDevice, bs);
+                    SensorProject.Current.AddSensor(SelectedDevice, bs);
                     Rebind(true, true);
                     SaveSensors();
                     return;

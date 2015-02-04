@@ -56,7 +56,7 @@ namespace CRTG
         /// <summary>
         /// Dependency injection for notifications
         /// </summary>
-        [AutoUI(Skip = true)]
+        [AutoUI(Skip = true), XmlIgnore]
         public BaseNotificationSystem Notifications = null;
 
         /// <summary>
@@ -242,9 +242,16 @@ namespace CRTG
             deserializer.UnknownElement += new XmlElementEventHandler(deserializer_UnknownElement);
             deserializer.UnknownAttribute += new XmlAttributeEventHandler(deserializer_UnknownAttribute);
             deserializer.UnreferencedObject += new UnreferencedObjectEventHandler(deserializer_UnreferencedObject);
-            using (TextReader textReader = new StreamReader(filename, Encoding.UTF8)) {
-                sp = (SensorProject)deserializer.Deserialize(textReader);
-                textReader.Close();
+            try {
+                using (TextReader textReader = new StreamReader(filename, Encoding.UTF8)) {
+                    sp = (SensorProject)deserializer.Deserialize(textReader);
+                    textReader.Close();
+                }
+
+            // Failed to load
+            } catch (Exception ex) {
+                SensorProject.Log.Error("Error loading sensor XML file: " + ex.ToString());
+                sp = new SensorProject();
             }
 
             // Now make all the sensors read their data
@@ -297,10 +304,14 @@ namespace CRTG
         /// <returns></returns>
         public void Serialize(string filename)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(SensorProject));
-            using (TextWriter textWriter = new StreamWriter(filename, false, Encoding.UTF8, 4096)) {
-                serializer.Serialize(textWriter, this);
-                textWriter.Close();
+            try {
+                XmlSerializer serializer = new XmlSerializer(typeof(SensorProject));
+                using (TextWriter textWriter = new StreamWriter(filename, false, Encoding.UTF8, 4096)) {
+                    serializer.Serialize(textWriter, this);
+                    textWriter.Close();
+                }
+            } catch (Exception ex) {
+                SensorProject.Log.Error("Error saving sensor project: " + ex.ToString());
             }
         }
         #endregion

@@ -75,7 +75,9 @@ namespace CRTG.Sensors.SensorLibrary
                 if (should_run) {
                     string fn = System.IO.Path.GetTempFileName().Replace(".tmp", ".csv");
                     dt.SaveAsCSV(fn, true);
-                    SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, new string[] { fn });
+                    if (SensorProject.Current.Notifications != null) {
+                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, new string[] { fn });
+                    }
                     File.Delete(fn);
                 }
 

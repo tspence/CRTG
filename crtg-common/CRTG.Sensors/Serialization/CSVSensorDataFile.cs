@@ -13,7 +13,7 @@ namespace CRTG.Serialization
     {
         public CSVSensorDataFile(string filename)
             : base(filename)
-        { 
+        {
         }
 
         public override void Load()
@@ -54,6 +54,9 @@ namespace CRTG.Serialization
             } else {
                 _data = new List<SensorData>();
             }
+
+            // Mark for lazy loading
+            _is_loaded = true;
         }
 
         public override void Save()

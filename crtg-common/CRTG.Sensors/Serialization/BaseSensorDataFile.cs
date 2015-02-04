@@ -11,12 +11,14 @@ namespace CRTG.Serialization
     {
         protected string _filename;
         protected List<SensorData> _data;
-        protected bool _dirty;
+        protected bool _dirty, _is_loaded;
+
 
         public BaseSensorDataFile(string filename)
         {
             _filename = filename;
             _data = new List<SensorData>();
+            _is_loaded = false;
         }
 
         public virtual void Load()
@@ -42,6 +44,10 @@ namespace CRTG.Serialization
         {
             get 
             {
+                // Lazy loading
+                if (!_is_loaded) Load();
+
+                // Here's your data
                 return _data.ToArray();
             }
             set
