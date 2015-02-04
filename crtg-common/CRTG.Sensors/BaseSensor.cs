@@ -177,7 +177,7 @@ namespace CRTG
                 success = true;
 
             } catch (Exception ex) {
-                LastException = ex.Message;
+                LastException = ex.ToString();
                 InError = true;
                 if (PauseOnError) {
                     Enabled = false;

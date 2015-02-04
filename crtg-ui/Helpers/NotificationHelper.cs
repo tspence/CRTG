@@ -1,8 +1,14 @@
-﻿using CRTG.Charts;
+﻿using CSVFile;
+using CRTG.Charts;
 using CRTG.Sensors;
+using CRTG.Sensors.Data;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -12,7 +18,84 @@ namespace CRTG.UI.Helpers
 {
     public class NotificationHelper : BaseNotificationSystem
     {
-        #region Notifications
+        #region Implementation Details
+        /// <summary>
+        /// Public notification API
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="notify_type"></param>
+        /// <param name="data"></param>
+        /// <param name="sensor"></param>
+        /// <param name="message"></param>
+        public override void Notify(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
+        {
+            // Parse this out to the correct notification method
+            switch (sensor.Method) {
+                case NotificationMethod.Email:
+                    NotifyEmail(sensor, notify_type, timestamp, data, message);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Deliver a preprogrammed report
+        /// </summary>
+        /// <param name="recipients"></param>
+        /// <param name="subject"></param>
+        /// <param name="message"></param>
+        /// <param name="report_data"></param>
+        /// <param name="attachment_filename"></param>
+        public override void SendReport(string[] recipients, string subject, string message, DataTable report_data, string attachment_filename)
+        {
+            // Do everything carefully
+            MailMessage msg = null;
+            try {
+
+                // Put together the mail message
+                msg = new MailMessage();
+                if (String.IsNullOrEmpty(SensorProject.Current.MessageFrom)) {
+                    msg.From = new MailAddress("crtg-noreply@localhost.com");
+                } else {
+                    msg.From = new MailAddress(SensorProject.Current.MessageFrom);
+                }
+                msg.Subject = subject;
+                msg.Body = message;
+                if (msg.Body.IndexOf("<html>", StringComparison.CurrentCultureIgnoreCase) >= 0) {
+                    msg.IsBodyHtml = true;
+                }
+
+                // List of recipients (to)
+                foreach (string s in recipients) {
+                    if (!String.IsNullOrEmpty(s)) {
+                        msg.To.Add(s);
+                    }
+                }
+
+                // Insert all the attachments
+                Attachment a = ConstructAttachmentFromData_CSV(report_data, attachment_filename);
+                msg.Attachments.Add(a);
+
+                // Create the SMTP client and deliver the message
+                SmtpClient SmtpClient = new SmtpClient(SensorProject.Current.SmtpHost);
+
+                // Provides credentials for password-based authentication schemes such as basic, digest, NTLM, and Kerberos authentication.
+                if (SensorProject.Current.SmtpUsername != null) {
+                    SmtpClient.UseDefaultCredentials = false;
+                    SmtpClient.Credentials = new System.Net.NetworkCredential(SensorProject.Current.SmtpUsername, SensorProject.Current.SmtpPassword);
+                }
+
+                // Let's send it
+                SmtpClient.Send(msg);
+
+            } catch (Exception ex) {
+                SensorProject.Log.ErrorFormat("Unable to send email:\r\n{0}", ex.ToString());
+            } finally {
+                if (msg != null) msg.Dispose();
+            }
+        }
+        #endregion
+
+        #region Helper Functions
         /// <summary>
         /// Fix up a message that contains embedded tokens (in the form "@TOKEN@") with the correct values
         /// </summary>
@@ -30,24 +113,6 @@ namespace CRTG.UI.Helpers
                 .Replace("@CONDITION@", notify_type.ToString())
                 .Replace("@VALUE@", data.ToString())
                 .Replace("@TIMESTAMP@", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
-        }
-
-        /// <summary>
-        /// Public notification API
-        /// </summary>
-        /// <param name="method"></param>
-        /// <param name="notify_type"></param>
-        /// <param name="data"></param>
-        /// <param name="sensor"></param>
-        /// <param name="message"></param>
-        public void Notify(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
-        {
-            // Parse this out to the correct notification method
-            switch (sensor.Method) {
-                case NotificationMethod.Email:
-                    NotifyEmail(sensor, notify_type, timestamp, data, message);
-                    break;
-            }
         }
 
         /// <summary>
@@ -147,7 +212,7 @@ namespace CRTG.UI.Helpers
         /// <param name="ReportSubject"></param>
         /// <param name="ReportMessage"></param>
         /// <param name="p"></param>
-        public void SendEmail(string[] recipients, string subject, string message, string[] attachments)
+        public void SendEmail(string[] recipients, string subject, string message, string[] attachment_filenames)
         {
             // Do everything carefully
             MailMessage msg = null;
@@ -174,7 +239,7 @@ namespace CRTG.UI.Helpers
                 }
 
                 // Insert all the attachments
-                foreach (string fn in attachments) {
+                foreach (string fn in attachment_filenames) {
                     if (File.Exists(fn)) {
                         string mime_type = GetMimeType(fn);
                         Attachment a = new Attachment(fn, mime_type);
@@ -199,6 +264,122 @@ namespace CRTG.UI.Helpers
             } finally {
                 if (msg != null) msg.Dispose();
             }
+        }
+
+        private Attachment ConstructAttachmentFromData_CSV(DataTable report_data, string attachment_filename)
+        {
+            string fn = Path.GetTempFileName();
+            report_data.SaveAsCSV(fn, true);
+            Attachment a = new Attachment(fn, new System.Net.Mime.ContentType("application/vnd.ms-excel"));
+            a.Name = attachment_filename;
+            return a;
+        }
+
+        /// <summary>
+        /// Shortcut to construct an attachment object using Excel open document file formats
+        /// </summary>
+        /// <param name="report_data"></param>
+        /// <param name="attachment_filename"></param>
+        /// <returns></returns>
+        private Attachment ConstructAttachmentFromData_Excel(DataTable report_data, string attachment_filename)
+        {
+            string fn = Path.GetTempFileName() + ".xlsx";
+            using (SpreadsheetDocument workbook = SpreadsheetDocument.Create(fn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook, true)) {
+                // Construct the workbook parts
+                var workbookPart = workbook.AddWorkbookPart();
+                workbook.WorkbookPart.Workbook = new DocumentFormat.OpenXml.Spreadsheet.Workbook();
+                var sheets = new DocumentFormat.OpenXml.Spreadsheet.Sheets();
+                workbook.WorkbookPart.Workbook.Sheets = sheets;
+
+                // Set up this sheet
+                var sheetPart = workbook.WorkbookPart.AddNewPart<WorksheetPart>();
+                var sheetData = new DocumentFormat.OpenXml.Spreadsheet.SheetData();
+                sheetPart.Worksheet = new DocumentFormat.OpenXml.Spreadsheet.Worksheet(sheetData);
+                string relationshipId = workbook.WorkbookPart.GetIdOfPart(sheetPart);
+                uint sheetId = 1;
+                if (sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().Count() > 0) {
+                    sheetId = sheets.Elements<DocumentFormat.OpenXml.Spreadsheet.Sheet>().Select(s => s.SheetId.Value).Max() + 1;
+                }
+
+                // Make this sheet a table
+                string name = report_data.TableName;
+                if (String.IsNullOrWhiteSpace(name)) {
+                    name = Path.GetFileNameWithoutExtension(attachment_filename);
+                }
+                DocumentFormat.OpenXml.Spreadsheet.Sheet sheet = new DocumentFormat.OpenXml.Spreadsheet.Sheet() { Id = relationshipId, SheetId = sheetId, Name = name };
+                sheets.Append(sheet);
+
+                // Set up header row
+                DocumentFormat.OpenXml.Spreadsheet.Row headerRow = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                List<String> columns = new List<string>();
+                foreach (System.Data.DataColumn column in report_data.Columns) {
+                    columns.Add(column.ColumnName);
+
+                    DocumentFormat.OpenXml.Spreadsheet.Cell cell = new DocumentFormat.OpenXml.Spreadsheet.Cell();
+                    cell.DataType = DocumentFormat.OpenXml.Spreadsheet.CellValues.String;
+                    cell.CellValue = new DocumentFormat.OpenXml.Spreadsheet.CellValue(column.ColumnName);
+                    headerRow.AppendChild(cell);
+                }
+                sheetData.AppendChild(headerRow);
+
+                // Set up data rows
+                foreach (System.Data.DataRow dsrow in report_data.Rows) {
+                    DocumentFormat.OpenXml.Spreadsheet.Row newRow = new DocumentFormat.OpenXml.Spreadsheet.Row();
+                    foreach (String col in columns) {
+                        DocumentFormat.OpenXml.Spreadsheet.Cell cell = new DocumentFormat.OpenXml.Spreadsheet.Cell();
+                        cell.DataType = DocumentFormat.OpenXml.Spreadsheet.CellValues.String;
+                        cell.CellValue = new DocumentFormat.OpenXml.Spreadsheet.CellValue(dsrow[col].ToString());
+                        newRow.AppendChild(cell);
+                    }
+                    sheetData.AppendChild(newRow);
+                }
+
+                // Add a "Table Part" for convenient viewing
+                if (report_data.Columns.Count < 26) {
+
+                    // Need object first
+                    //TableDefinitionPart tdp = sheetPart.AddNewPart<TableDefinitionPart>();
+
+                    // Set ranges
+                    char toprightcolumn = Convert.ToChar(Convert.ToByte('A') + report_data.Columns.Count - 1);
+                    string tablereference = "A1:" + toprightcolumn + report_data.Rows.Count.ToString();
+
+                    // Construct a table definition
+                    //Table table1 = new Table() { Id = (UInt32Value)1U, Name = "Table1", DisplayName = "Table1", Reference = tablereference, TotalsRowShown = false };
+
+                    // Add autofilter
+                    AutoFilter autoFilter1 = new AutoFilter() { Reference = tablereference };
+                    sheetPart.Worksheet.Append(autoFilter1);
+
+                    // Construct all columns
+                    //TableColumns col_list = new TableColumns() { Count = new UInt32Value((uint)report_data.Columns.Count) };
+                    //uint colnum = 1;
+                    //foreach (System.Data.DataColumn column in report_data.Columns) {
+                    //    TableColumn tc = new TableColumn() { Id = new UInt32Value(colnum++), Name = column.ColumnName };
+                    //    col_list.Append(tc);
+                    //}
+                    //table1.Append(col_list);
+
+                    // Set styles
+                    //TableStyleInfo tableStyleInfo1 = new TableStyleInfo() { Name = "TableStyleMedium2", ShowFirstColumn = false, ShowLastColumn = false, ShowRowStripes = true, ShowColumnStripes = false };
+                    //table1.Append(tableStyleInfo1);
+
+                    // Construct the associated table part
+                    //TableParts tps1 = new TableParts() { Count = (UInt32Value)2U };
+                    //TablePart tp = new TablePart();
+                    //tp.Id = sheetPart.GetIdOfPart(tdp);
+                    //tps1.Append(tp);
+                    //sheetPart.Worksheet.Append(tps1);
+                }
+
+                // Close the workbook and save it
+                workbook.Close();
+            }
+
+            // Here's your attachment
+            Attachment a = new Attachment(fn, new System.Net.Mime.ContentType("application/vnd.ms-excel"));
+            a.Name = attachment_filename;
+            return a;
         }
         #endregion
     }

@@ -275,7 +275,7 @@ namespace CRTG.UI
                     txtLastCollect.Text = "Never";
                 }
                 txtNextCollect.Text = SelectedSensor.NextCollectTime.ToString();
-                txtCurrentError.Text = SelectedSensor.ErrorMessage;
+                txtCurrentError.Text = SelectedSensor.LastException;
                 btnCheckNow.Enabled = SelectedSensor.Enabled && !SelectedSensor.InError && !SelectedSensor.InFlight;
                 btnClearException.Enabled = SelectedSensor.InError;
             }
@@ -419,10 +419,7 @@ namespace CRTG.UI
 
         private void resetErrorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedSensor != null) {
-                SelectedSensor.InError = false;
-                SelectedSensor.LastException = null;
-            }
+            InnerClearException(SelectedSensor);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -598,9 +595,15 @@ namespace CRTG.UI
 
         private void btnClearException_Click(object sender, EventArgs e)
         {
-            if (SelectedSensor != null) {
-                SelectedSensor.InError = false;
-                SelectedSensor.ErrorMessage = "";
+            InnerClearException(SelectedSensor);
+        }
+
+        private void InnerClearException(BaseSensor bs) 
+        {
+            if (bs != null) {
+                bs.InError = false;
+                bs.ErrorMessage = "";
+                bs.LastException = "";
                 Rebind();
             }
         }

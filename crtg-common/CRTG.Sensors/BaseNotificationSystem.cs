@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CRTG.Sensors.Data;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace CRTG.Sensors
             throw new NotImplementedException();
         }
 
-        public virtual void SendReport(string[] recipients, string subject, string message, string[] attachments)
+        public virtual void SendReport(string[] recipients, string subject, string message, DataTable report_data, string attachment_filename)
         {
             throw new NotImplementedException();
         }

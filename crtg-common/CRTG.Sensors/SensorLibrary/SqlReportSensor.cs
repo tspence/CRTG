@@ -73,12 +73,15 @@ namespace CRTG.Sensors.SensorLibrary
 
                 // Do we run it?
                 if (should_run) {
-                    string fn = System.IO.Path.GetTempFileName().Replace(".tmp", ".csv");
-                    dt.SaveAsCSV(fn, true);
                     if (SensorProject.Current.Notifications != null) {
-                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, new string[] { fn });
+
+                        // Produce safe filename
+                        char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+                        var validFilename = new string(this.Name.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
+
+                        // Send report
+                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, validFilename + ".xlsx");
                     }
-                    File.Delete(fn);
                 }
 
                 // That's our value
