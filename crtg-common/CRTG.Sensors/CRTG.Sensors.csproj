@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CRTG.Sensors</RootNamespace>
+    <AssemblyName>CRTG.Sensors</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CSVFile">
+      <HintPath>..\..\crtg-libraries\CSVFile\CSVFile.dll</HintPath>
+    </Reference>
+    <Reference Include="DiffieHellman">
+      <HintPath>..\..\crtg-libraries\SharpSSH\DiffieHellman.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\crtg-libraries\Log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Org.Mentalis.Security">
+      <HintPath>..\..\crtg-libraries\SharpSSH\Org.Mentalis.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Instrumentation" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Tamir.SharpSSH">
+      <HintPath>..\..\crtg-libraries\SharpSSH\Tamir.SharpSSH.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AutoUI.cs" />
+    <Compile Include="BaseNotificationSystem.cs" />
+    <Compile Include="BaseSensor.cs" />
+    <Compile Include="Data\SensorData.cs" />
+    <Compile Include="Devices\DeviceContext.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="SensorLibrary\BasicWmiSensor.cs" />
+    <Compile Include="SensorLibrary\FileSensor.cs" />
+    <Compile Include="SensorLibrary\FolderSensor.cs" />
+    <Compile Include="SensorLibrary\HttpSensor.cs" />
+    <Compile Include="SensorLibrary\HttpXmlSensor.cs" />
+    <Compile Include="SensorProject.cs" />
+    <Compile Include="Serialization\BaseSensorDataFile.cs" />
+    <Compile Include="Serialization\BinarySensorDataFile.cs" />
+    <Compile Include="Serialization\CSVSensorDataFile.cs" />
+    <Compile Include="Serialization\SensorDataFactory.cs" />
+    <Compile Include="SensorLibrary\SqlReportSensor.cs" />
+    <Compile Include="SensorLibrary\SqlSensor.cs" />
+    <Compile Include="SensorLibrary\WmiCpuSensor.cs" />
+    <Compile Include="SensorLibrary\WmiDiskActivity.cs" />
+    <Compile Include="SensorLibrary\WmiDiskSensor.cs" />
+    <Compile Include="SensorLibrary\WmiMemorySensor.cs" />
+    <Compile Include="Toolkit\UNCAccessWithCredentials.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
