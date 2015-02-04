@@ -120,6 +120,12 @@ namespace CRTG
         LocalTime = 1,
     }
 
+    public enum ReportFileFormat
+    {
+        CSV = 0,
+        OpenXML = 1,
+    }
+
     public enum DiskMeasurement
     {
         MegabytesFree = 0,

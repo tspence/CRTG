@@ -80,8 +80,14 @@ namespace CRTG
         /// <summary>
         /// Does the user want local time or GMT?
         /// </summary>
-        [AutoUI(Group = "DateTime")]
+        [AutoUI(Group = "Preferences")]
         public DateTimePreference TimeZonePreference;
+
+        /// <summary>
+        /// Does the user want flat CSV files, or full OpenXML?
+        /// </summary>
+        [AutoUI(Group = "Preferences")]
+        public ReportFileFormat ReportFileFormatPreference;
 
         /// <summary>
         /// The "from" name to use for the email message

@@ -72,7 +72,12 @@ namespace CRTG.UI.Helpers
                 }
 
                 // Insert all the attachments
-                Attachment a = ConstructAttachmentFromData_CSV(report_data, attachment_filename);
+                Attachment a = null;
+                if (SensorProject.Current.ReportFileFormatPreference == ReportFileFormat.OpenXML) {
+                    a = ConstructAttachmentFromData_OpenXML(report_data, attachment_filename);
+                } else {
+                    a = ConstructAttachmentFromData_CSV(report_data, attachment_filename);
+                }
                 msg.Attachments.Add(a);
 
                 // Create the SMTP client and deliver the message
@@ -281,7 +286,7 @@ namespace CRTG.UI.Helpers
         /// <param name="report_data"></param>
         /// <param name="attachment_filename"></param>
         /// <returns></returns>
-        private Attachment ConstructAttachmentFromData_Excel(DataTable report_data, string attachment_filename)
+        private Attachment ConstructAttachmentFromData_OpenXML(DataTable report_data, string attachment_filename)
         {
             string fn = Path.GetTempFileName() + ".xlsx";
             using (SpreadsheetDocument workbook = SpreadsheetDocument.Create(fn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook, true)) {
@@ -337,39 +342,39 @@ namespace CRTG.UI.Helpers
                 // Add a "Table Part" for convenient viewing
                 if (report_data.Columns.Count < 26) {
 
-                    // Need object first
-                    //TableDefinitionPart tdp = sheetPart.AddNewPart<TableDefinitionPart>();
-
-                    // Set ranges
+                    // Determine ranges
                     char toprightcolumn = Convert.ToChar(Convert.ToByte('A') + report_data.Columns.Count - 1);
                     string tablereference = "A1:" + toprightcolumn + report_data.Rows.Count.ToString();
 
+                    // Construct table definition part
+                    TableDefinitionPart tdp = sheetPart.AddNewPart<TableDefinitionPart>();
+
+                    // Construct table parts
+                    TableParts tps1 = new TableParts() { Count = (UInt32Value)1U };
+                    TablePart tp = new TablePart() { Id = sheetPart.GetIdOfPart(tdp) };
+
                     // Construct a table definition
-                    //Table table1 = new Table() { Id = (UInt32Value)1U, Name = "Table1", DisplayName = "Table1", Reference = tablereference, TotalsRowShown = false };
+                    Table table = new Table() { Id = (UInt32Value)1U, Name = "Table1", DisplayName = "Table1", Reference = tablereference, TotalsRowShown = false };
 
                     // Add autofilter
-                    AutoFilter autoFilter1 = new AutoFilter() { Reference = tablereference };
-                    sheetPart.Worksheet.Append(autoFilter1);
+                    AutoFilter filter = new AutoFilter() { Reference = tablereference };
 
                     // Construct all columns
-                    //TableColumns col_list = new TableColumns() { Count = new UInt32Value((uint)report_data.Columns.Count) };
-                    //uint colnum = 1;
-                    //foreach (System.Data.DataColumn column in report_data.Columns) {
-                    //    TableColumn tc = new TableColumn() { Id = new UInt32Value(colnum++), Name = column.ColumnName };
-                    //    col_list.Append(tc);
-                    //}
-                    //table1.Append(col_list);
+                    TableColumns col_list = new TableColumns() { Count = new UInt32Value((uint)report_data.Columns.Count) };
+                    uint colnum = 1;
+                    foreach (System.Data.DataColumn column in report_data.Columns) {
+                        TableColumn tc = new TableColumn() { Id = new UInt32Value(colnum++), Name = column.ColumnName };
+                        col_list.Append(tc);
+                    }
 
                     // Set styles
-                    //TableStyleInfo tableStyleInfo1 = new TableStyleInfo() { Name = "TableStyleMedium2", ShowFirstColumn = false, ShowLastColumn = false, ShowRowStripes = true, ShowColumnStripes = false };
-                    //table1.Append(tableStyleInfo1);
+                    TableStyleInfo style = new TableStyleInfo() { Name = "TableStyleMedium2", ShowFirstColumn = false, ShowLastColumn = false, ShowRowStripes = true, ShowColumnStripes = false };
 
-                    // Construct the associated table part
-                    //TableParts tps1 = new TableParts() { Count = (UInt32Value)2U };
-                    //TablePart tp = new TablePart();
-                    //tp.Id = sheetPart.GetIdOfPart(tdp);
-                    //tps1.Append(tp);
-                    //sheetPart.Worksheet.Append(tps1);
+                    // Add to table on sheet
+                    table.Append(filter);
+                    table.Append(col_list);
+                    table.Append(style);
+                    tdp.Table = table;
                 }
 
                 // Close the workbook and save it
