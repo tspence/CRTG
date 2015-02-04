@@ -71,12 +71,17 @@ namespace CRTG.UI.Helpers
                     }
                 }
 
+                // Produce safe filename
+                char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+                var validFilename = new string(attachment_filename.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
+                validFilename = validFilename.Replace(' ', '_');
+
                 // Insert all the attachments
                 Attachment a = null;
                 if (SensorProject.Current.ReportFileFormatPreference == ReportFileFormat.OpenXML) {
-                    a = ConstructAttachmentFromData_OpenXML(report_data, attachment_filename);
+                    a = ConstructAttachmentFromData_OpenXML(report_data, attachment_filename + ".xlsx");
                 } else {
-                    a = ConstructAttachmentFromData_CSV(report_data, attachment_filename);
+                    a = ConstructAttachmentFromData_CSV(report_data, attachment_filename + ".csv");
                 }
                 msg.Attachments.Add(a);
 
@@ -273,9 +278,9 @@ namespace CRTG.UI.Helpers
 
         private Attachment ConstructAttachmentFromData_CSV(DataTable report_data, string attachment_filename)
         {
-            string fn = Path.GetTempFileName();
-            report_data.SaveAsCSV(fn, true);
-            Attachment a = new Attachment(fn, new System.Net.Mime.ContentType("application/vnd.ms-excel"));
+            string csvstring = report_data.WriteToString(true);
+            var bytes = Encoding.UTF8.GetBytes(csvstring);
+            Attachment a = new Attachment(new MemoryStream(bytes), new System.Net.Mime.ContentType("application/csv"));
             a.Name = attachment_filename;
             return a;
         }
@@ -344,7 +349,7 @@ namespace CRTG.UI.Helpers
 
                     // Determine ranges
                     char toprightcolumn = Convert.ToChar(Convert.ToByte('A') + report_data.Columns.Count - 1);
-                    string tablereference = "A1:" + toprightcolumn + report_data.Rows.Count.ToString();
+                    string tablereference = "A1:" + toprightcolumn + (report_data.Rows.Count + 1).ToString();
 
                     // Construct table definition part
                     TableDefinitionPart tdp = sheetPart.AddNewPart<TableDefinitionPart>();
@@ -352,6 +357,7 @@ namespace CRTG.UI.Helpers
                     // Construct table parts
                     TableParts tps1 = new TableParts() { Count = (UInt32Value)1U };
                     TablePart tp = new TablePart() { Id = sheetPart.GetIdOfPart(tdp) };
+                    tps1.Append(tp);
 
                     // Construct a table definition
                     Table table = new Table() { Id = (UInt32Value)1U, Name = "Table1", DisplayName = "Table1", Reference = tablereference, TotalsRowShown = false };
@@ -368,13 +374,16 @@ namespace CRTG.UI.Helpers
                     }
 
                     // Set styles
-                    TableStyleInfo style = new TableStyleInfo() { Name = "TableStyleMedium2", ShowFirstColumn = false, ShowLastColumn = false, ShowRowStripes = true, ShowColumnStripes = false };
+                    TableStyleInfo style = new TableStyleInfo() { Name = "TableStyleMedium3", ShowFirstColumn = false, ShowLastColumn = false, ShowRowStripes = true, ShowColumnStripes = false };
 
                     // Add to table on sheet
                     table.Append(filter);
                     table.Append(col_list);
                     table.Append(style);
                     tdp.Table = table;
+
+                    // Add "tps1" to the sheet
+                    sheetPart.Worksheet.Append(tps1);
                 }
 
                 // Close the workbook and save it
@@ -382,7 +391,9 @@ namespace CRTG.UI.Helpers
             }
 
             // Here's your attachment
-            Attachment a = new Attachment(fn, new System.Net.Mime.ContentType("application/vnd.ms-excel"));
+            byte[] bytes = File.ReadAllBytes(fn);
+            File.Delete(fn);
+            Attachment a = new Attachment(new MemoryStream(bytes), new System.Net.Mime.ContentType("application/vnd.ms-excel"));
             a.Name = attachment_filename;
             return a;
         }

@@ -75,12 +75,8 @@ namespace CRTG.Sensors.SensorLibrary
                 if (should_run) {
                     if (SensorProject.Current.Notifications != null) {
 
-                        // Produce safe filename
-                        char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-                        var validFilename = new string(this.Name.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
-
                         // Send report
-                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, validFilename + ".xlsx");
+                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, this.Name);
                     }
                 }
 
