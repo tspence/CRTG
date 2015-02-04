@@ -263,7 +263,7 @@ namespace CRTG.UI
                 }
 
                 // Only show last collection if there was any
-                if (SelectedSensor.SensorDataFile.Count > 0) {
+                if (SelectedSensor.SensorDataFile != null && SelectedSensor.SensorDataFile.Count > 0) {
                     txtLastCollect.Text = SelectedSensor.LastCollectTime.ToString();
                 } else {
                     txtLastCollect.Text = "Never";
@@ -518,6 +518,25 @@ namespace CRTG.UI
             frmAbout dlg = new frmAbout();
             dlg.ShowDialog();
         }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void uTCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SensorProject.Current.TimeZonePreference = DateTimePreference.UTC;
+            uTCToolStripMenuItem.Checked = true;
+            localTimeToolStripMenuItem.Checked = false;
+        }
+
+        private void localTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SensorProject.Current.TimeZonePreference = DateTimePreference.LocalTime;
+            uTCToolStripMenuItem.Checked = false;
+            localTimeToolStripMenuItem.Checked = true;
+        }
         #endregion
 
         #region Context menus
@@ -593,5 +612,12 @@ namespace CRTG.UI
             Rebind(false, false);
         }
         #endregion
+
+        private void frmCRTG_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Closing CRTG will halt data collection.\r\n\r\nDo you wish to close CRTG?", "Confirm Close", MessageBoxButtons.YesNoCancel) != System.Windows.Forms.DialogResult.Yes) {
+                e.Cancel = true;
+            }
+        }
     }
 }

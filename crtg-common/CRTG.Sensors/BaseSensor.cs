@@ -146,6 +146,9 @@ namespace CRTG
         public SensorData AddValue(decimal d, DateTime timestamp, int ms)
         {
             SensorData sd = new SensorData() { Time = timestamp, Value = d, CollectionTimeMs = ms };
+            if (SensorDataFile == null) {
+                DataRead();
+            }
             SensorDataFile.Append(sd);
             LatestData = d;
             return sd;

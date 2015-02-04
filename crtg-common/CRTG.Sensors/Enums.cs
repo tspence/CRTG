@@ -114,6 +114,12 @@ namespace CRTG
         POST = 2,
     }
 
+    public enum DateTimePreference
+    {
+        UTC = 0,
+        LocalTime = 1,
+    }
+
     public enum DiskMeasurement
     {
         MegabytesFree = 0,

@@ -63,6 +63,11 @@ namespace CRTG.Charts
                 if (_min_value > 0) _min_value = 0;
                 if (_max_value < 0) _max_value = 0;
 
+                // Increase the maximum slightly so we can see the peak
+                if (_max_value > 0m) {
+                    _max_value = _max_value * 1.03m;
+                }
+
                 // Keep track of ranges
                 _range_in_seconds = (double)(_max_date - _min_date).TotalSeconds;
                 _range_in_value = (double)(_max_value - _min_value);
@@ -154,8 +159,14 @@ namespace CRTG.Charts
                 int xpos = GetTimePosition(dtpos);
                 g.DrawLine(graphline, xpos, _chart_rect.Top, xpos, _chart_rect.Bottom);
 
-                // Label the line
-                string time = dtpos.ToString("HH:mm:ss");
+                // Label the line, based on whether the user wants to see local time or UTC
+                string time;
+                //if (SensorProject.Current.TimeZonePreference == DateTimePreference.LocalTime) {
+                //    dtpos = dtpos.ToLocalTime();
+                //    time = dtpos.ToString("HH:mm:ss") + " Local Time";
+                //} else {
+                    time = dtpos.ToString("HH:mm:ss") + " UTC";
+                //}
                 string date = dtpos.ToString("yyyy-MM-dd");
                 var r = g.MeasureString(time, graph_label);
                 g.DrawString(time, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);

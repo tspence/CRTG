@@ -62,6 +62,8 @@
             this.txtLastCollect = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ilIcons = new System.Windows.Forms.ImageList(this.components);
             this.mnuDevices = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -127,57 +129,57 @@
             this.deleteToolStripMenuItem1,
             this.duplicateToolStripMenuItem});
             this.mnuSensor.Name = "mnuSensor";
-            this.mnuSensor.Size = new System.Drawing.Size(153, 170);
+            this.mnuSensor.Size = new System.Drawing.Size(150, 148);
             // 
             // checkNowToolStripMenuItem
             // 
             this.checkNowToolStripMenuItem.Name = "checkNowToolStripMenuItem";
-            this.checkNowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.checkNowToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.checkNowToolStripMenuItem.Text = "&Check Now";
             this.checkNowToolStripMenuItem.Click += new System.EventHandler(this.checkNowToolStripMenuItem_Click);
             // 
             // enableToolStripMenuItem
             // 
             this.enableToolStripMenuItem.Name = "enableToolStripMenuItem";
-            this.enableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.enableToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.enableToolStripMenuItem.Text = "&Pause";
             this.enableToolStripMenuItem.Click += new System.EventHandler(this.enableToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(146, 6);
             // 
             // resetErrorToolStripMenuItem
             // 
             this.resetErrorToolStripMenuItem.Name = "resetErrorToolStripMenuItem";
-            this.resetErrorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetErrorToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.resetErrorToolStripMenuItem.Text = "&Reset Error";
             this.resetErrorToolStripMenuItem.Click += new System.EventHandler(this.resetErrorToolStripMenuItem_Click);
             // 
             // emptyHistoryToolStripMenuItem
             // 
             this.emptyHistoryToolStripMenuItem.Name = "emptyHistoryToolStripMenuItem";
-            this.emptyHistoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.emptyHistoryToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.emptyHistoryToolStripMenuItem.Text = "Empty &History";
             this.emptyHistoryToolStripMenuItem.Click += new System.EventHandler(this.emptyHistoryToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(146, 6);
             // 
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(149, 22);
             this.deleteToolStripMenuItem1.Text = "&Delete...";
             this.deleteToolStripMenuItem1.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
             // 
             // duplicateToolStripMenuItem
             // 
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.duplicateToolStripMenuItem.Text = "Du&plicate...";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -439,12 +441,28 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(846, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -516,6 +534,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmCRTG";
             this.Text = "CRTG";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmCRTG_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmCRTG_FormClosed);
             this.Load += new System.EventHandler(this.frmCRTG_Load);
             this.statusStrip1.ResumeLayout(false);
@@ -593,6 +612,8 @@
         private System.Windows.Forms.Label lblCollectStatus;
         private System.Windows.Forms.ToolStripMenuItem duplicateToolStripMenuItem;
         private System.Windows.Forms.PictureBox pbChart;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

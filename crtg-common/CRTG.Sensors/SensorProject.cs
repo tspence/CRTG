@@ -78,6 +78,12 @@ namespace CRTG
         public string SmtpPassword;
 
         /// <summary>
+        /// Does the user want local time or GMT?
+        /// </summary>
+        [AutoUI(Group = "DateTime")]
+        public DateTimePreference TimeZonePreference;
+
+        /// <summary>
         /// The "from" name to use for the email message
         /// </summary>
         [AutoUI(Group = "SMTP")]
