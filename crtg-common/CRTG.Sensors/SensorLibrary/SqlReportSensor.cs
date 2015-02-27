@@ -43,15 +43,6 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Report", Help="A comma-separated list of the days of the month when this report should be sent.")]
         public string DaysOfMonth;
 
-        [AutoUI(Group = "KlipFolio", Help = "(optional) If this report is to be uploaded to KlipFolio, this is the URL where it is published.")]
-        public string KlipFolioUrl;
-
-        [AutoUI(Group = "KlipFolio", Help = "(optional) The username to use when uploading this report to KlipFolio.")]
-        public string KlipFolioUsername;
-
-        [AutoUI(Group = "KlipFolio", Help = "(optional) The password to use when uploading this report to KlipFolio.")]
-        public string KlipFolioPassword;
-
         public override decimal Collect()
         {
             // Connect to the database and retrieve this value
@@ -90,41 +81,12 @@ namespace CRTG.Sensors.SensorLibrary
                     }
                 }
 
-                // Is this object intended to upload to KlipFolio?
-                if (!String.IsNullOrEmpty(KlipFolioUrl)) {
-                    try {
-                        WebRequest wr = WebRequest.Create(KlipFolioUrl);
-                        wr.Method = "POST";
-
-                        // Add credentials
-                        wr.Credentials = new NetworkCredential(KlipFolioUsername, KlipFolioPassword);
-
-                        // Add the payload
-                        using (var s = wr.GetRequestStream()) {
-                            using (var sw = new StreamWriter(s)) {
-
-                                // Header
-                                sw.Write("file=");
-
-                                // Convert the data table to csv and append it
-                                string csv = dt.WriteToString(true);
-                                sw.Write(csv);
-                            }
-                        }
-
-                        // Transmit
-                        var resp = wr.GetResponse();
-                        using (var s2 = resp.GetResponseStream()) {
-                            using (var sr = new StreamReader(s2)) {
-                                string message = sr.ReadToEnd();
-                                System.Diagnostics.Debug.WriteLine(message);
-                            }
-                        }
-
-                    // Catch any problems
-                    } catch (Exception ex) {
-                        System.Diagnostics.Debug.WriteLine(ex.ToString());
-                    }
+                // Upload this report (if desired)
+                if (UploadUrl != null) {
+                    string csv = dt.WriteToString(false);
+                    byte[] raw = Encoding.UTF8.GetBytes(csv);
+                    ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
+                    LastUploadTime = DateTime.UtcNow;
                 }
 
                 // That's our value
@@ -134,5 +96,10 @@ namespace CRTG.Sensors.SensorLibrary
             // Datatable failed to load - we got nothing.  Just report zero.
             return 0;
         }
+
+        protected override void UploadCollection()
+        {
+            // Nothing to do here - we do not upload measurement stats on an SQL report sensor
+        } 
     }
 }

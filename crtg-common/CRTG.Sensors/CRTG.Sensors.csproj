@@ -70,6 +70,7 @@
     <Compile Include="Data\SensorData.cs" />
     <Compile Include="Devices\DeviceContext.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="ReportUploader.cs" />
     <Compile Include="SensorLibrary\BasicWmiSensor.cs" />
     <Compile Include="SensorLibrary\FileSensor.cs" />
     <Compile Include="SensorLibrary\FolderSensor.cs" />

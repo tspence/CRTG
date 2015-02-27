@@ -138,6 +138,26 @@ namespace CRTG
         [AutoUI(Group = "Notifications", Label = "Recipients", Help = "A comma-separated list of email addresses.")]
         public string Recipients;
 
+        [AutoUI(Group = "ReportUpload", Help = "(optional) If this report is to be uploaded to a web resource, this is the URL where it is published.")]
+        public string UploadUrl;
+
+        [AutoUI(Group = "ReportUpload", Help = "(optional) The username to use when uploading this report to a web resource.")]
+        public string UploadUsername;
+
+        [AutoUI(Group = "ReportUpload", Help = "(optional) The password to use when uploading this report to a web resource.")]
+        public string UploadPassword;
+
+        [AutoUI(Group = "ReportUpload", Help = "(optional) How frequently to upload this report.")]
+        public Interval UploadFrequency;
+
+        [AutoUI(Group = "ReportUpload", Help = "(optional) How much data to upload for this report.")]
+        public ViewTimeframe UploadAmount;
+
+        /// <summary>
+        /// Keeps track of when we last uploaded this object
+        /// </summary>
+        [XmlIgnore, AutoUI(Skip = true)]
+        public DateTime LastUploadTime;
 
         #region Helper functions for data collection
         /// <summary>
@@ -199,6 +219,29 @@ namespace CRTG
             // Now, all elements that can safely be moved after the inflight flag is turned off
             if (success) {
                 TestAllNotifications(collect_start_time, value);
+                UploadCollection();
+            }
+        }
+
+        protected virtual void UploadCollection()
+        {
+            if (UploadUrl != null) {
+                TimeSpan ts = DateTime.UtcNow - LastUploadTime;
+                if (ts.TotalSeconds > (int)UploadFrequency) {
+
+                    // Filter to just the amount we care about
+                    List<SensorData> list = null;
+                    if (UploadAmount == ViewTimeframe.AllTime) {
+                        list = this.SensorDataFile.Data.ToList();
+                    } else {
+                        var limit = DateTime.UtcNow.AddMinutes(- (int)UploadAmount);
+                        list = (from sd in this.SensorDataFile.Data where sd.Time > limit select sd).ToList();
+                    }
+                    string csv = list.WriteToString(false);
+                    byte[] raw = Encoding.UTF8.GetBytes(csv);
+                    ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
+                    LastUploadTime = DateTime.UtcNow;
+                }
             }
         }
 

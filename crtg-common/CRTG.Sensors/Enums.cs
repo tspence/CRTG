@@ -15,6 +15,7 @@ namespace CRTG
     /// </summary>
     public enum Interval 
     { 
+        Never = 0,
         ThirtySeconds = 30, 
         Minute = 60, 
         FiveMinutes = 5 * 60, 
