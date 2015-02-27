@@ -62,6 +62,7 @@
       <HintPath>..\crtg-libraries\SharpSSH\DiffieHellman.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
@@ -85,7 +86,9 @@
     <Reference Include="Tamir.SharpSSH">
       <HintPath>..\crtg-libraries\SharpSSH\Tamir.SharpSSH.dll</HintPath>
     </Reference>
-    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsBase">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">

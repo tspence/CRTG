@@ -7,6 +7,7 @@ using System.Data;
 using System.Xml.Serialization;
 using CSVFile;
 using System.IO;
+using System.Net;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -41,6 +42,15 @@ namespace CRTG.Sensors.SensorLibrary
 
         [AutoUI(Group = "Report", Help="A comma-separated list of the days of the month when this report should be sent.")]
         public string DaysOfMonth;
+
+        [AutoUI(Group = "KlipFolio", Help = "(optional) If this report is to be uploaded to KlipFolio, this is the URL where it is published.")]
+        public string KlipFolioUrl;
+
+        [AutoUI(Group = "KlipFolio", Help = "(optional) The username to use when uploading this report to KlipFolio.")]
+        public string KlipFolioUsername;
+
+        [AutoUI(Group = "KlipFolio", Help = "(optional) The password to use when uploading this report to KlipFolio.")]
+        public string KlipFolioPassword;
 
         public override decimal Collect()
         {
@@ -77,6 +87,43 @@ namespace CRTG.Sensors.SensorLibrary
 
                         // Send report
                         SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, this.Name);
+                    }
+                }
+
+                // Is this object intended to upload to KlipFolio?
+                if (!String.IsNullOrEmpty(KlipFolioUrl)) {
+                    try {
+                        WebRequest wr = WebRequest.Create(KlipFolioUrl);
+                        wr.Method = "POST";
+
+                        // Add credentials
+                        wr.Credentials = new NetworkCredential(KlipFolioUsername, KlipFolioPassword);
+
+                        // Add the payload
+                        using (var s = wr.GetRequestStream()) {
+                            using (var sw = new StreamWriter(s)) {
+
+                                // Header
+                                sw.Write("file=");
+
+                                // Convert the data table to csv and append it
+                                string csv = dt.WriteToString(true);
+                                sw.Write(csv);
+                            }
+                        }
+
+                        // Transmit
+                        var resp = wr.GetResponse();
+                        using (var s2 = resp.GetResponseStream()) {
+                            using (var sr = new StreamReader(s2)) {
+                                string message = sr.ReadToEnd();
+                                System.Diagnostics.Debug.WriteLine(message);
+                            }
+                        }
+
+                    // Catch any problems
+                    } catch (Exception ex) {
+                        System.Diagnostics.Debug.WriteLine(ex.ToString());
                     }
                 }
 
