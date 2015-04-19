@@ -1,6 +1,13 @@
-﻿///
+﻿/*
+ * 2012 - 2015 Ted Spence, http://tedspence.com
+ * License: http://www.apache.org/licenses/LICENSE-2.0 
+ * Home page: https://github.com/tspence/CRTG
+ * 
+ * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
+///
 /// Used under CPOL From http://www.codeproject.com/articles/43091/connect-to-a-unc-path-with-credentials
 /// 
+ */
 using System;
 using System.Collections.Generic;
 using System.Linq;

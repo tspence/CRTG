@@ -1,4 +1,11 @@
-﻿using CSVFile;
+﻿/*
+ * 2012 - 2015 Ted Spence, http://tedspence.com
+ * License: http://www.apache.org/licenses/LICENSE-2.0 
+ * Home page: https://github.com/tspence/CRTG
+ * 
+ * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
+ */
+using CSVFile;
 using CRTG.Charts;
 using CRTG.Sensors;
 using CRTG.Sensors.Data;

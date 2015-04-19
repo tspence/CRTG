@@ -1,7 +1,9 @@
 ﻿/*
- * 2006 - 2012 Ted Spence, http://tedspence.com
+ * 2012 - 2015 Ted Spence, http://tedspence.com
  * License: http://www.apache.org/licenses/LICENSE-2.0 
- * Home page: https://code.google.com/p/csharp-striker/
+ * Home page: https://github.com/tspence/CRTG
+ * 
+ * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
 using System.Collections.Generic;

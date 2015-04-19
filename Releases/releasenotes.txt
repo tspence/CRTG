@@ -1,0 +1,21 @@
+Copyright (C) 2012-2015 Ted Spence
+
+This program monitors various sensors and generates alerts and reports based on conditions you specify.
+
+Released under Apache 2.0 license.
+
+/*
+ * 2012 - 2015 Ted Spence, http://tedspence.com
+ * License: http://www.apache.org/licenses/LICENSE-2.0 
+ * Home page: https://github.com/tspence/CRTG
+ * 
+ * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
+ *
+ * Some UNC code used under CPOL From http://www.codeproject.com/articles/43091/connect-to-a-unc-path-with-credentials
+ *
+ */
+
+ Version 1.2 - Minor updates to program
+ Version 1.1 - Improvements to UI and usability
+ Version 1.0 - First release of the program; originally known as "Striker"
+ 
