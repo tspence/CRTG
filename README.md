@@ -7,4 +7,4 @@ The program produces automatic alerts and reports regularly, and is fully open s
 
 Download latest executable:
 * <a href="https://github.com/tspence/CRTG/raw/master/Releases/crtg-1.2.zip">CRTG 1.2 (Windows, ZIP)</a>
-* <a href="https://raw.githubusercontent.com/tspence/CRTG/master/Release/releasenotes.txt">Release Notes</a>
+* <a href="https://github.com/tspence/CRTG/raw/master/Releases/releasenotes.txt">Release Notes</a>
