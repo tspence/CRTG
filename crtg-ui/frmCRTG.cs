@@ -340,8 +340,10 @@ namespace CRTG.UI
                 if (SelectedSensor.SensorDataFile != null) {
                     list = (from SensorData sd in SelectedSensor.SensorDataFile.Data orderby sd.Time descending select sd).Take(1000);
                 }
-                foreach (SensorData sd in list) {
-                    _current_grid_contents.Rows.Add(new object[] { sd.Time.ToString("yyyy-MM-dd HH:mm:ss"), sd.Value, sd.Exception, sd.CollectionTimeMs });
+                if (list != null) {
+                    foreach (SensorData sd in list) {
+                        _current_grid_contents.Rows.Add(new object[] { sd.Time.ToString("yyyy-MM-dd HH:mm:ss"), sd.Value, sd.Exception, sd.CollectionTimeMs });
+                    }
                 }
                 _current_grid_contents.DefaultView.Sort = "Time desc";
                 grdSensorData.DataSource = _current_grid_contents;

@@ -46,14 +46,14 @@ namespace CRTG.Sensors
                 using (var s2 = resp.GetResponseStream()) {
                     using (var sr = new StreamReader(s2)) {
                         string message = sr.ReadToEnd();
-                        System.Diagnostics.Debug.WriteLine(message);
+                        SensorProject.Log.Debug(message);
                         return true;
                     }
                 }
 
                 // Catch any problems
             } catch (Exception ex) {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                SensorProject.Log.Debug(ex.ToString());
                 return false;
             }
         }

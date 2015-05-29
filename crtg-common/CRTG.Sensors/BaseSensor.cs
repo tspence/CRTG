@@ -228,21 +228,27 @@ namespace CRTG
         protected virtual void UploadCollection()
         {
             if (UploadUrl != null) {
-                TimeSpan ts = DateTime.UtcNow - LastUploadTime;
-                if (ts.TotalSeconds > (int)UploadFrequency) {
+                try {
+                    TimeSpan ts = DateTime.UtcNow - LastUploadTime;
+                    if ((ts.TotalSeconds > (int)UploadFrequency) && (this.SensorDataFile != null)) {
 
-                    // Filter to just the amount we care about
-                    List<SensorData> list = null;
-                    if (UploadAmount == ViewTimeframe.AllTime) {
-                        list = this.SensorDataFile.Data.ToList();
-                    } else {
-                        var limit = DateTime.UtcNow.AddMinutes(- (int)UploadAmount);
-                        list = (from sd in this.SensorDataFile.Data where sd.Time > limit select sd).ToList();
+                        // Filter to just the amount we care about
+                        List<SensorData> list = null;
+                        if (UploadAmount == ViewTimeframe.AllTime) {
+                            list = this.SensorDataFile.Data.ToList();
+                        } else {
+                            var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
+                            list = (from sd in this.SensorDataFile.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
+                        }
+                        string csv = list.WriteToString(false);
+                        byte[] raw = Encoding.UTF8.GetBytes(csv);
+                        ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
+                        LastUploadTime = DateTime.UtcNow;
                     }
-                    string csv = list.WriteToString(false);
-                    byte[] raw = Encoding.UTF8.GetBytes(csv);
-                    ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
-                    LastUploadTime = DateTime.UtcNow;
+
+                // Catch problems in uploading
+                } catch (Exception ex) {
+                    SensorProject.Log.Debug("Error uploading collection to server: " + ex.ToString());
                 }
             }
         }
