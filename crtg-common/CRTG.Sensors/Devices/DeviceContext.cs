@@ -43,12 +43,16 @@ namespace CRTG.Sensors.Devices
         [AutoUI(Label="Username", Group = "Windows Credentials")]
         public string WinUsername;
 
-        [AutoUI(Label="Password", Group = "Windows Credentials")]
+        [AutoUI(Label="Password", Group = "Windows Credentials", PasswordField=true)]
         public string WinPassword;
 
         [AutoUI(Group = "Notification", MultiLine=10, Help = "This information can be provided in emails to help provide context.")]
         public string DeviceInformation;
 
+        [AutoUI(Label = "ODBC Connection String", Group = "Database")]
+        public string ConnectionString;
+
+        
 
         #region Helper Functions
         /// <summary>
@@ -59,18 +63,22 @@ namespace CRTG.Sensors.Devices
         {
             ManagementScope scope = null;
 
-            // If we have an account
-            if (!String.IsNullOrEmpty(WinUsername)) {
+            // Determine correct address, or assume local computer if none
+            string scope_path = "\\root\\CIMV2";
+            if (!String.IsNullOrEmpty(Address)) {
+
+                // For remote connections, we have to use credentials
+                scope_path = "\\\\" + Address + scope_path;
                 ConnectionOptions connection = new ConnectionOptions();
                 connection.Username = WinUsername;
                 connection.Password = WinPassword;
                 connection.Authority = "ntlmdomain:" + WinDomain;
-                scope = new ManagementScope("\\\\" + Address + "\\root\\CIMV2", connection);
+                scope = new ManagementScope(scope_path, connection);
                 scope.Connect();
 
             // Assume we can connect to the computer without an account
             } else {
-                scope = new ManagementScope("\\\\" + Address + "\\root\\CIMV2");
+                scope = new ManagementScope(scope_path);
             }
 
             // Okay, connect and run the query

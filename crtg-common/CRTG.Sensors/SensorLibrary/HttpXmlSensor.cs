@@ -44,6 +44,7 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Test")]
         public decimal ValueIfFailure;
 
+        #region Implementation
         /// <summary>
         /// Check the HTTP 
         /// </summary>
@@ -111,9 +112,10 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Exceptions fail
             } catch (Exception x) {
-                SensorProject.Log.Debug(x.ToString());
+                SensorProject.LogException("HttpXmlSensor", x);
                 return ValueIfFailure;
             }
         }
+        #endregion
     }
 }

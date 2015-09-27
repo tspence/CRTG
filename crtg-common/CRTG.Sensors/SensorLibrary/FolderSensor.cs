@@ -21,6 +21,7 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "File", BrowseFolder=true)]
         public string Path;
 
+        #region Implementation
         public override decimal Collect()
         {
             //FileInfo fi = null;
@@ -59,5 +60,7 @@ namespace CRTG.Sensors.SensorLibrary
             // Failed
             return 0;
         }
+        #endregion
+
     }
 }

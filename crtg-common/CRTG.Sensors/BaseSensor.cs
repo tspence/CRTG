@@ -203,9 +203,9 @@ namespace CRTG
                 InError = true;
                 if (PauseOnError) {
                     Enabled = false;
-                    SensorProject.Log.ErrorFormat("Sensor paused due to error collecting {0}: {1}", Identity, ex.ToString());
+                    SensorProject.LogException("Sensor error & pause: (#" + this.Identity + ") " + this.Name, ex);
                 } else {
-                    SensorProject.Log.ErrorFormat("Error collecting {0}: {1}", Identity, ex.ToString());
+                    SensorProject.LogException("Sensor error: (#" + this.Identity + ") " + this.Name, ex);
                 }
             }
 
@@ -227,7 +227,7 @@ namespace CRTG
 
         protected virtual void UploadCollection()
         {
-            if (UploadUrl != null) {
+            if (!String.IsNullOrEmpty(UploadUrl)) {
                 try {
                     TimeSpan ts = DateTime.UtcNow - LastUploadTime;
                     if ((ts.TotalSeconds > (int)UploadFrequency) && (this.SensorDataFile != null)) {
@@ -248,7 +248,7 @@ namespace CRTG
 
                 // Catch problems in uploading
                 } catch (Exception ex) {
-                    SensorProject.Log.Debug("Error uploading collection to server: " + ex.ToString());
+                    SensorProject.LogException("Error uploading collection", ex);
                 }
             }
         }
@@ -407,8 +407,17 @@ namespace CRTG
         {
             string xml = ToXml(this);
             var s = FromXml(xml);
+
+            // Set some sensible defaults
             s.Enabled = false;
+            s.ErrorMessage = "";
+            s.LastCollectTime = DateTime.MinValue;
+            s.LastUploadTime = DateTime.MinValue;
+            s.LatestData = 0.0m;
+            s.NextCollectTime = DateTime.MinValue;
             s.Name = s.Name + " (Copy)";
+
+            // Here's your dupe
             return s;
         }
         #endregion

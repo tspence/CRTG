@@ -41,19 +41,18 @@ namespace CRTG.Sensors
                     s.Write(contents, 0, contents.Length);
                 }
 
-                // Transmit
+                // Transmit and get a response
                 var resp = wr.GetResponse();
                 using (var s2 = resp.GetResponseStream()) {
                     using (var sr = new StreamReader(s2)) {
                         string message = sr.ReadToEnd();
-                        SensorProject.Log.Debug(message);
                         return true;
                     }
                 }
 
-                // Catch any problems
+            // Catch any problems
             } catch (Exception ex) {
-                SensorProject.Log.Debug(ex.ToString());
+                SensorProject.LogException("Uploading report", ex);
                 return false;
             }
         }

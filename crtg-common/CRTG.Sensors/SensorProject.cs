@@ -33,7 +33,7 @@ namespace CRTG
         /// The log to use for outputting debug information
         /// </summary>
         [AutoUI(Skip = true)]
-        public static ILog Log
+        private static ILog Log
         {
             get
             {
@@ -76,7 +76,7 @@ namespace CRTG
         /// <summary>
         /// username to provide to the SMTP server
         /// </summary>
-        [AutoUI(Group = "SMTP")]
+        [AutoUI(Group = "SMTP", PasswordField = true)]
         public string SmtpPassword;
 
         /// <summary>
@@ -108,6 +108,12 @@ namespace CRTG
         /// </summary>
         [AutoUI(Group = "Email Notifications", MultiLine=20)]
         public string MessageBodyTemplate;
+
+        [AutoUI(Label = "Klipfolio Username", Group = "Klipfolio")]
+        public string KlipfolioUsername;
+
+        [AutoUI(Label = "Klipfolio Password", Group = "Klipfolio", PasswordField = true)]
+        public string KlipfolioPassword;
 
 
 
@@ -258,7 +264,7 @@ namespace CRTG
 
             // Failed to load
             } catch (Exception ex) {
-                SensorProject.Log.Error("Error loading sensor XML file: " + ex.ToString());
+                SensorProject.LogException("Error loading sensor XML file", ex);
                 sp = new SensorProject();
             }
 
@@ -319,15 +325,24 @@ namespace CRTG
                     textWriter.Close();
                 }
             } catch (Exception ex) {
-                SensorProject.Log.Error("Error saving sensor project: " + ex.ToString());
+                SensorProject.LogException("Error saving sensor project", ex);
             }
         }
         #endregion
 
 
-        public static void LogException(Exception ex)
+        #region Logging
+        public static void LogException(string Location, Exception ex)
         {
-            Log.Debug("Exception " + ex.ToString());
+            string message = String.Format("CRTG caught an internal exception in [{0}]: {1}", Location, ex.ToString());
+            Log.Error(message);
+            System.Diagnostics.Debug.WriteLine(message);
         }
+
+        public static void LogMessage(string message)
+        {
+            Log.Debug(message);
+        }
+        #endregion
     }
 }

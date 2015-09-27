@@ -20,11 +20,11 @@ namespace CRTG.UI
         [STAThread]
         static void Main()
         {
-            SensorProject.Log.DebugFormat("Starting CRTG...");
+            SensorProject.LogMessage("Starting CRTG...");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmCRTG());
-            SensorProject.Log.DebugFormat("Closed CRTG.");
+            SensorProject.LogMessage("Closed CRTG.");
         }
     }
 }

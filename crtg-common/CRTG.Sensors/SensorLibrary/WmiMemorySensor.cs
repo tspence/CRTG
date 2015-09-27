@@ -18,6 +18,8 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Memory")]
         public MemoryMeasurement Measurement;
 
+        #region Implementation
+
         public override decimal Collect()
         {
             var coll = Device.WmiQuery("SELECT * FROM Win32_PerfFormattedData_PerfOS_Memory");
@@ -39,5 +41,6 @@ namespace CRTG.Sensors.SensorLibrary
             // Failed!
             throw new Exception("No OS found!");
         }
+        #endregion
     }
 }

@@ -21,12 +21,6 @@ namespace CRTG.Sensors.SensorLibrary
     public class SqlReportSensor : BaseSensor
     {
         /// <summary>
-        /// The connection string to be used for this connection
-        /// </summary>
-        [AutoUI(Group = "SQL")]
-        public string ConnectionString;
-
-        /// <summary>
         /// The SQL command to be executed to track this data
         /// </summary>
         [AutoUI(Group = "SQL", MultiLine = 10)]
@@ -50,11 +44,12 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Report", Help="A comma-separated list of the days of the month when this report should be sent.")]
         public string DaysOfMonth;
 
+        #region Implementation
         public override decimal Collect()
         {
             // Connect to the database and retrieve this value
             DataTable dt = null;
-            using (SqlConnection conn = new SqlConnection(ConnectionString)) {
+            using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
                     cmd.CommandTimeout = TimeoutSeconds;
@@ -107,6 +102,7 @@ namespace CRTG.Sensors.SensorLibrary
         protected override void UploadCollection()
         {
             // Nothing to do here - we do not upload measurement stats on an SQL report sensor
-        } 
+        }
+        #endregion
     }
 }

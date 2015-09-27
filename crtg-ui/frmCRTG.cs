@@ -158,6 +158,8 @@ namespace CRTG.UI
             InitializeComponent();
             if (File.Exists(_filename)) {
                 SensorProject.Current = SensorProject.Deserialize(_filename);
+            } else {
+                SensorProject.Current = new SensorProject();
             }
             SensorProject.Current.Notifications = new NotificationHelper();
         }
@@ -186,14 +188,14 @@ namespace CRTG.UI
             ilIcons.Images.Add(Resource1.email);
             tvProject.ImageList = ilIcons;
 
-            // Show data
-            SensorProject.Current.Start();
-            Rebind();
-            ddlChartTime.SelectedIndex = 0;
-
             // Set up the properties mapper
             _properties_map = new FormMapper(tabProperties);
             _properties_map.DataSaved += new EventHandler(_map_DataSaved);
+
+            // Show data
+            SensorProject.Current.Start();
+            Rebind(true, true);
+            ddlChartTime.SelectedIndex = 0;
 
             // Add menu items for all the available sensor types
             foreach (Type t in typeof(BaseSensor).Assembly.GetTypes()) {
@@ -216,6 +218,13 @@ namespace CRTG.UI
             Rebind(true, true);
             SaveSensors();
         }
+
+        private void frmCRTG_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Closing CRTG will halt data collection.\r\n\r\nDo you wish to close CRTG?", "Confirm Close", MessageBoxButtons.YesNoCancel) != System.Windows.Forms.DialogResult.Yes) {
+                e.Cancel = true;
+            }
+        }
         #endregion
 
         #region Bind data to the form
@@ -224,29 +233,58 @@ namespace CRTG.UI
 
         private void Rebind(bool force = false, bool update_tree = true)
         {
-            // Redo the project tree
-            if (update_tree) {
-                LoadProjectTree();
-            } else {
-                UpdateTreeIcons();
-            }
+            System.Diagnostics.Debug.WriteLine("Rebind ({0} force, {1} forcetree)", force, update_tree);
+            try {
 
-            // Check to see if the properties tab needs updating
-            if (tabSensor.SelectedTab == tabMeasurements) {
-                if (SelectedSensor != null) {
-                    RebindMeasurements(force);
+                // Redo the project tree
+                if (update_tree) {
+                    LoadProjectTree();
                 } else {
-                    _current_grid_contents = new DataTable();
-                    grdSensorData.DataSource = _current_grid_contents;
-                    grdSensorData.Refresh();
-                    //cGraph.SuspendLayout();
-                    //cGraph.Series[0].Points.Clear();
-                    //cGraph.ResumeLayout();
+                    UpdateTreeIcons();
                 }
-            } else if (tabSensor.SelectedTab == tabProperties) {
-                RebindProperties(force);
-            } else if (tabSensor.SelectedTab == tabErrors) {
-                RebindErrors(force);
+
+                // Sensors have this behavior
+                if (SelectedSensor != null) {
+                    ShowTabs(true, true);
+
+                    // Check to see if the properties tab needs updating
+                    if (tabSensor.SelectedTab == tabMeasurements) {
+                        RebindMeasurements(force);
+                    } else if (tabSensor.SelectedTab == tabProperties) {
+                        RebindProperties(force);
+                    } else if (tabSensor.SelectedTab == tabErrors) {
+                        RebindErrors(force);
+                    }
+
+                // If you've selected a device, we have this behavior
+                } else {
+                    ShowTabs(false, false);
+                    RebindProperties(force);
+                }
+
+            // Catch and log an exception
+            } catch (Exception ex) {
+                SensorProject.LogException("Rebind", ex);
+            }
+        }
+
+        private void ShowTabs(bool show_measurements, bool show_errors)
+        {
+            ShowTab(tabMeasurements, show_measurements);
+            ShowTab(tabErrors, show_errors);
+            if (tabSensor.SelectedTab == null) {
+                tabSensor.SelectedTab = tabSensor.TabPages[0];
+            }
+        }
+
+        private void ShowTab(TabPage tab, bool show)
+        {
+            bool is_shown = tabSensor.TabPages.Contains(tab);
+            if (show && !is_shown) {
+                tabSensor.TabPages.Add(tab);
+            }
+            if (!show && is_shown) {
+                tabSensor.TabPages.Remove(tab);
             }
         }
 
@@ -311,8 +349,30 @@ namespace CRTG.UI
             }
         }
 
+        private static DateTime _last_rebind = DateTime.MinValue;
+        private static BaseSensor _last_rebind_sensor = null;
+
+        private void RebindSensor()
+        {
+            // If we do not have a sensor selected, exit early
+            if (SelectedSensor == null) return;
+
+            // If the sensor hasn't been updated since last refresh, exit early
+            if (_last_rebind_sensor == SelectedSensor && SelectedSensor.LastCollectTime < _last_rebind) return;
+            _last_rebind_sensor = SelectedSensor;
+            _last_rebind = DateTime.UtcNow;
+
+            // Pass this off to the selected tab
+            if (tabSensor.SelectedTab == tabMeasurements) {
+                RebindMeasurements(false);
+            } else if (tabSensor.SelectedTab == tabErrors) {
+                RebindErrors(false);
+            }
+        }
+
         private void RebindMeasurements(bool force)
         {
+            // Gather data information
             int data_size = 0;
             if (SelectedSensor != null && SelectedSensor.SensorDataFile != null) {
                 data_size = SelectedSensor.SensorDataFile.Count;
@@ -367,7 +427,7 @@ namespace CRTG.UI
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (!_in_edit) {
-                Rebind(false, false);
+                RebindSensor();
             } else {
                 UpdateTreeIcons();
             }
@@ -391,8 +451,8 @@ namespace CRTG.UI
             if (SelectedSensor != null) {
                 if (MessageBox.Show("Do you wish to remove this sensor?", "Confirm Remove Sensor", MessageBoxButtons.YesNoCancel) == System.Windows.Forms.DialogResult.Yes) {
                     SelectedSensor.Device.Sensors.Remove(SelectedSensor);
-                    Rebind();
                     SaveSensors();
+                    Rebind(true, true);
                 }
             }
         }
@@ -410,7 +470,7 @@ namespace CRTG.UI
         {
             if (SelectedSensor != null) {
                 SelectedSensor.Enabled = !SelectedSensor.Enabled;
-                Rebind(false, true);
+                LoadProjectTree();
             }
         }
 
@@ -431,8 +491,8 @@ namespace CRTG.UI
             SqlSensor ss = new SqlSensor();
             SensorProject.Current.AddSensor(SelectedDevice, ss);
             SelectedSensor = ss;
-            Rebind();
             SaveSensors();
+            Rebind(true, true);
         }
         #endregion
 
@@ -507,7 +567,7 @@ namespace CRTG.UI
 
         private void ddlChartTime_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Rebind(true, false);
+            RebindSensor();
         }
         #endregion
 
@@ -542,7 +602,8 @@ namespace CRTG.UI
         private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedSensor != null) {
-                SensorProject.Current.AddSensor(SelectedSensor.Device, SelectedSensor.Duplicate());
+                var dupe = SelectedSensor.Duplicate();
+                SensorProject.Current.AddSensor(SelectedSensor.Device, dupe);
                 SaveSensors();
                 Rebind(true, true);
             }
@@ -553,8 +614,8 @@ namespace CRTG.UI
             if (SelectedDevice == null) return;
             if (MessageBox.Show(String.Format("Do you really wish to delete '{0}'?", SelectedDevice.DeviceName), "Confirm Delete", MessageBoxButtons.YesNoCancel) == System.Windows.Forms.DialogResult.Yes) {
                 SensorProject.Current.Devices.Remove(SelectedDevice);
-                Rebind(true, true);
                 SaveSensors();
+                Rebind(true, true);
             }
         }
 
@@ -563,8 +624,8 @@ namespace CRTG.UI
             DeviceContext dc = new DeviceContext();
             dc.DeviceName = "New Device";
             SensorProject.Current.AddDevice(dc);
-            Rebind(true, true);
             SaveSensors();
+            Rebind(true, true);
         }
 
         private void sensorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -580,8 +641,8 @@ namespace CRTG.UI
                     bs.Name = "New " + bs.GetType().Name;
                     bs.Frequency = Interval.FifteenMinutes;
                     SensorProject.Current.AddSensor(SelectedDevice, bs);
-                    Rebind(true, true);
                     SaveSensors();
+                    Rebind(true, true);
                     return;
                 }
             }
@@ -593,7 +654,7 @@ namespace CRTG.UI
         {
             if (SelectedSensor != null) {
                 SelectedSensor.NextCollectTime = DateTime.UtcNow;
-                Rebind();
+                Rebind(true, true);
             }
         }
 
@@ -608,21 +669,19 @@ namespace CRTG.UI
                 bs.InError = false;
                 bs.ErrorMessage = "";
                 bs.LastException = "";
-                Rebind();
+                RebindErrors(true);
             }
         }
 
         private void tabSensor_TabIndexChanged(object sender, EventArgs e)
         {
-            Rebind(false, false);
+            Rebind(true, false);
+        }
+
+        private void tabSensor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Rebind(true, false);
         }
         #endregion
-
-        private void frmCRTG_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (MessageBox.Show("Closing CRTG will halt data collection.\r\n\r\nDo you wish to close CRTG?", "Confirm Close", MessageBoxButtons.YesNoCancel) != System.Windows.Forms.DialogResult.Yes) {
-                e.Cancel = true;
-            }
-        }
     }
 }

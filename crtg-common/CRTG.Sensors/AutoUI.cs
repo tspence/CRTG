@@ -54,5 +54,15 @@ namespace CRTG.Sensors
         /// Set this value to true if you wish this item to be skipped from the UI
         /// </summary>
         public bool Skip = false;
+
+        /// <summary>
+        /// If true, hides the keystrokes in this field and turns it into a password edit box
+        /// </summary>
+        public bool PasswordField = false;
+
+        /// <summary>
+        /// If you want syntax highlighting for the editor, specify a language here
+        /// </summary>
+        public string EditorLanguage = null;
     }
 }

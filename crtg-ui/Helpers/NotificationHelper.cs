@@ -105,7 +105,7 @@ namespace CRTG.UI.Helpers
                 SmtpClient.Send(msg);
 
             } catch (Exception ex) {
-                SensorProject.Log.ErrorFormat("Unable to send email:\r\n{0}", ex.ToString());
+                SensorProject.LogException("NotificationHelper.SendReport", ex);
             } finally {
                 if (msg != null) msg.Dispose();
             }
@@ -188,9 +188,9 @@ namespace CRTG.UI.Helpers
                     FixupMessage(body, sensor, notify_type, timestamp, data, message),
                     new string[] { chart_attachment_file });
 
-                // We really should log weird exceptions somewhere
+            // We really should log weird exceptions somewhere
             } catch (Exception ex) {
-                SensorProject.Log.ErrorFormat("Unable to send email from sensor {0} condition {1}\r\n{2}", sensor.Name, notify_type.ToString(), ex.ToString());
+                SensorProject.LogException("NotificationHelper.NotifyEmail", ex);
             }
 
             // Now clean up all the attachment files we created
@@ -277,7 +277,7 @@ namespace CRTG.UI.Helpers
                 SmtpClient.Send(msg);
 
             } catch (Exception ex) {
-                SensorProject.Log.ErrorFormat("Unable to send email:\r\n{0}", ex.ToString());
+                SensorProject.LogException("NotificationHelper.SendEmail", ex);
             } finally {
                 if (msg != null) msg.Dispose();
             }

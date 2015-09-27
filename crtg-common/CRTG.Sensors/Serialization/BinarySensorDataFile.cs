@@ -35,7 +35,7 @@ namespace CRTG.Serialization
                             _data.Add(ReadRecord(b));
                         }
                     } catch (Exception ex) {
-                        SensorProject.LogException(ex);
+                        SensorProject.LogException("BinarySensorDataFile.Load", ex);
                     }
                     b.Close();
                 }

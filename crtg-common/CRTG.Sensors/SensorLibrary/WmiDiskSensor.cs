@@ -21,6 +21,8 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Drive")]
         public DiskMeasurement Measurement;
 
+        #region Implementation
+
         public override decimal Collect()
         {
             var coll = Device.WmiQuery(String.Format("SELECT * FROM Win32_LogicalDisk WHERE Name = '{0}:'", DriveLetter));
@@ -59,5 +61,6 @@ namespace CRTG.Sensors.SensorLibrary
             // Failed!
             throw new Exception("No disk query found!");
         }
+        #endregion
     }
 }

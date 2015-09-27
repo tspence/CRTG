@@ -15,6 +15,7 @@ namespace CRTG.Sensors.SensorLibrary
 {
     public class WmiCpuSensor : BaseSensor
     {
+        #region Implementation
         public override decimal Collect()
         {
             var coll = Device.WmiQuery("SELECT * FROM Win32_PerfFormattedData_Counters_ProcessorInformation");
@@ -36,5 +37,6 @@ namespace CRTG.Sensors.SensorLibrary
             // Failed!
             throw new Exception("No processors found!");
         }
+        #endregion
     }
 }

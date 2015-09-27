@@ -221,6 +221,7 @@
             this.tabSensor.SelectedIndex = 0;
             this.tabSensor.Size = new System.Drawing.Size(560, 517);
             this.tabSensor.TabIndex = 0;
+            this.tabSensor.SelectedIndexChanged += new System.EventHandler(this.tabSensor_SelectedIndexChanged);
             this.tabSensor.TabIndexChanged += new System.EventHandler(this.tabSensor_TabIndexChanged);
             // 
             // tabMeasurements
@@ -410,6 +411,7 @@
             // 
             this.txtNextCollect.Location = new System.Drawing.Point(83, 52);
             this.txtNextCollect.Name = "txtNextCollect";
+            this.txtNextCollect.ReadOnly = true;
             this.txtNextCollect.Size = new System.Drawing.Size(197, 20);
             this.txtNextCollect.TabIndex = 3;
             // 
@@ -426,6 +428,7 @@
             // 
             this.txtLastCollect.Location = new System.Drawing.Point(83, 26);
             this.txtLastCollect.Name = "txtLastCollect";
+            this.txtLastCollect.ReadOnly = true;
             this.txtLastCollect.Size = new System.Drawing.Size(197, 20);
             this.txtLastCollect.TabIndex = 1;
             // 
