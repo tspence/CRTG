@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "SQL", Tooltip = "Run a simple query and measure the results.")]
     public class SqlSensor : BaseSensor
     {
         /// <summary>

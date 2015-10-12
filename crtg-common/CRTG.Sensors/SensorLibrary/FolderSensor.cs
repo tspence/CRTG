@@ -13,6 +13,7 @@ using System.IO;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "File System", Tooltip = "Find a specific folder and report on facts about that folder.")]
     public class FolderSensor : BaseSensor
     {
         [AutoUI(Group = "File")]

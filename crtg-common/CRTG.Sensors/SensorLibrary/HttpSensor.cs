@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "Web", Tooltip = "Request a specific page via HTTP and measure information about that request.")]
     public class HttpSensor : BaseSensor
     {
         [AutoUI(Group = "HTTP")]

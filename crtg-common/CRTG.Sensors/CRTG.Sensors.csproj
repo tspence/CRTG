@@ -77,6 +77,7 @@
     <Compile Include="SensorLibrary\HttpSensor.cs" />
     <Compile Include="SensorLibrary\HttpXmlSensor.cs" />
     <Compile Include="SensorProject.cs" />
+    <Compile Include="SensorUI.cs" />
     <Compile Include="Serialization\BaseSensorDataFile.cs" />
     <Compile Include="Serialization\BinarySensorDataFile.cs" />
     <Compile Include="Serialization\CSVSensorDataFile.cs" />

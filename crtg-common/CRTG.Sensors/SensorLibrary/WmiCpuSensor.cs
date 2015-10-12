@@ -13,6 +13,7 @@ using System.Management;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "WMI", Tooltip = "Measure CPU activity via WMI.")]
     public class WmiCpuSensor : BaseSensor
     {
         #region Implementation

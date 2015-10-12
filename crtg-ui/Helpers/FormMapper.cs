@@ -107,10 +107,21 @@ namespace CRTG.UI.Helpers
             // Clean up any prior work and keep track of who we are editing
             _obj = o;
             _type = t;
+            if (_container.Controls.Count > 0) {
+                _container.Controls[0].Focus();
+            }
             _container.SuspendLayout();
             _container.Controls.Clear();
             _next_top = 10;
             _groups = new Dictionary<string, GroupBox>();
+
+            // Add a blank control to the top left hand corner for scrolling purposes
+            Control c = new Control();
+            c.Top = 0;
+            c.Left = 0;
+            c.Height = 1;
+            c.Width = 1;
+            c.Parent = _container;
 
             // Iterate through fields
             PropertyInfo[] pilist = t.GetProperties();

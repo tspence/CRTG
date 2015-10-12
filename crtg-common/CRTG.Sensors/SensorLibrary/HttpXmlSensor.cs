@@ -15,6 +15,7 @@ using System.Xml;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "Web", Tooltip = "Request a specific page via HTTP and find an object within that page via XML XPath.")]
     public class HttpXmlSensor : BaseSensor
     {
         [AutoUI(Group = "HTTP")]

@@ -13,6 +13,7 @@ using System.Management;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "WMI", Tooltip = "Measure disk activity via WMI.")]
     public class WmiDiskActivity : BaseSensor
     {
         #region Implementation

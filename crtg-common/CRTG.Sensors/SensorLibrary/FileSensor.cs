@@ -14,6 +14,7 @@ using CRTG.Sensors.Helpers;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "File System", Tooltip = "Find a specific file and report on facts about that file.")]
     public class FileSensor : BaseSensor
     {
         [AutoUI(Group = "File")]

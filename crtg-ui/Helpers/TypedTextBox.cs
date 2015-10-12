@@ -18,6 +18,7 @@ namespace CRTG.UI.Helpers
         {
             _valuetype = t;
             this.TextChanged += new EventHandler(TypedTextBox_TextChanged);
+            this.KeyDown += new KeyEventHandler(TypedTextBox_KeyDown);
         }
 
         void TypedTextBox_TextChanged(object sender, EventArgs e)
@@ -42,6 +43,22 @@ namespace CRTG.UI.Helpers
                 }
             } else {
                 this.BackColor = Color.FromArgb(251, 206, 177);
+            }
+        }
+
+
+        /// <summary>
+        /// Ensure that Ctrl+A works to select everything
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void TypedTextBox_KeyDown(object sender, KeyEventArgs k)
+        {
+            if (k.Control && k.KeyCode == Keys.A) {
+                var tb = sender as TextBox;
+                if (tb != null) {
+                    tb.SelectAll();
+                }
             }
         }
     }

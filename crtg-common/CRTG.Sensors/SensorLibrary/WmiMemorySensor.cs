@@ -13,6 +13,7 @@ using System.Management;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "WMI", Tooltip = "Measure memory statistics via WMI.")]
     public class WmiMemorySensor : BaseSensor
     {
         [AutoUI(Group = "Memory")]

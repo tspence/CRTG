@@ -18,6 +18,7 @@ using System.Net;
 
 namespace CRTG.Sensors.SensorLibrary
 {
+    [SensorUI(Category = "SQL", Tooltip = "Run a complex query and email that report to a list of recipients.")]
     public class SqlReportSensor : BaseSensor
     {
         /// <summary>
