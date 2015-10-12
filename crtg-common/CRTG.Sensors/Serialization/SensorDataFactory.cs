@@ -23,7 +23,8 @@ namespace CRTG.Serialization
         /// <returns></returns>
         public static BaseSensorDataFile GetFile(int Identity)
         {
-            string csv_fn = String.Format("sensor.{0}.csv", Identity);
+            if (!Directory.Exists("sensors")) Directory.CreateDirectory("Sensors");
+            string csv_fn = String.Format("sensors\\sensor.{0}.csv", Identity);
             return new CSVSensorDataFile(csv_fn);
         }
         #endregion

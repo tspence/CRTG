@@ -286,6 +286,9 @@ namespace CRTG
                 }
             }
 
+            // Ensure that the log folder exists
+            if (!Directory.Exists("logs")) Directory.CreateDirectory("Logs");
+
             // Save this as the current project
             Current = sp;
             return sp;
