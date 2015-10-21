@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Net;
 
 namespace CRTG.Notification
 {
@@ -129,9 +130,82 @@ namespace CRTG.Notification
                 if (msg != null) msg.Dispose();
             }
         }
+
+        /// <summary>
+        /// Convenience shortcut for uploading a report if you have a list of sensor data or some other thing
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="url"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public override bool UploadReport<T>(List<T> list, bool include_header_row, string url, string username, string password)
+        {
+            if (list == null) return false;
+            string csv = list.WriteToString(include_header_row);
+            byte[] raw = Encoding.UTF8.GetBytes(csv);
+            return InternalUploadReport(raw, url, username, password);
+        }
+
+        /// <summary>
+        /// Convenience shortcut for uploading a report if you have a datatable
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="url"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public override bool UploadReport(DataTable dt, bool include_header_row, string url, string username, string password)
+        {
+            if (dt == null) return false;
+            string csv = dt.WriteToString(include_header_row);
+            byte[] raw = Encoding.UTF8.GetBytes(csv);
+            return InternalUploadReport(raw, url, username, password);
+        }
         #endregion
 
         #region Helper Functions
+
+        /// <summary>
+        /// Upload this report to a URL data source on the Internet
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="url"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        private bool InternalUploadReport(byte[] contents, string url, string username, string password)
+        {
+            if (String.IsNullOrWhiteSpace(url)) return false;
+
+            // Is this object intended to upload to a web resource?
+            try {
+                WebRequest wr = WebRequest.Create(url);
+                wr.Method = "POST";
+
+                // Add credentials
+                wr.Credentials = new NetworkCredential(username, password);
+
+                // Add the payload
+                using (var s = wr.GetRequestStream()) {
+                    s.Write(contents, 0, contents.Length);
+                }
+
+                // Transmit and get a response
+                var resp = wr.GetResponse();
+                using (var s2 = resp.GetResponseStream()) {
+                    using (var sr = new StreamReader(s2)) {
+                        string message = sr.ReadToEnd();
+                        return true;
+                    }
+                }
+
+                // Catch any problems
+            } catch (Exception ex) {
+                SensorProject.LogException("Uploading report", ex);
+                return false;
+            }
+        }
+
         /// <summary>
         /// Fix up a message that contains embedded tokens (in the form "@TOKEN@") with the correct values
         /// </summary>
@@ -161,6 +235,7 @@ namespace CRTG.Notification
         protected void NotifyEmail(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
         {
             string chart_attachment_file = null;
+            CrtgChart chart = null;
 
             // Do everything carefully
             try {
@@ -197,7 +272,9 @@ namespace CRTG.Notification
 
                 // Does this message require a chart attachment?
                 if (body.Contains("@CHART@")) {
-                    chart_attachment_file = ChartHelper.GetChartImage(sensor, ViewTimeframe.Day, 500, 300);
+                    chart = ChartHelper.GetDisplayPackage(sensor, ViewTimeframe.Day, 500, 300);
+                    chart_attachment_file = Path.ChangeExtension(Path.GetTempFileName(), "png");
+                    chart.SaveToFile(chart_attachment_file);
                     body = body.Replace("@CHART@", String.Format("<img src=\"cid:{0}\"/>", Path.GetFileName(chart_attachment_file)));
                 }
 
@@ -207,14 +284,17 @@ namespace CRTG.Notification
                     FixupMessage(body, sensor, notify_type, timestamp, data, message),
                     new string[] { chart_attachment_file });
 
-            // We really should log weird exceptions somewhere
+                // We really should log weird exceptions somewhere
             } catch (Exception ex) {
                 SensorProject.LogException("NotificationHelper.NotifyEmail", ex);
             }
 
-            // Now clean up all the attachment files we created
+            // Now clean up all the attachment files we created & the chart we put into memory
             if (chart_attachment_file != null) {
                 File.Delete(chart_attachment_file);
+            }
+            if (chart != null) {
+                chart.Dispose();
             }
         }
 

@@ -88,10 +88,7 @@ namespace CRTG.Sensors.SensorLibrary
                 }
 
                 // Upload this report (if desired)
-                if (UploadUrl != null) {
-                    string csv = dt.WriteToString(false);
-                    byte[] raw = Encoding.UTF8.GetBytes(csv);
-                    ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
+                if (SensorProject.Current.Notifications.UploadReport(dt, false, UploadUrl, UploadUsername, UploadPassword)) {
                     LastUploadTime = DateTime.UtcNow;
                 }
 

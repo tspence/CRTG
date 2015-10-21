@@ -59,6 +59,7 @@
     <Compile Include="AttachmentHelpers\HtmlAttachmentHelper.cs" />
     <Compile Include="NotificationHelper.cs" />
     <Compile Include="AttachmentHelpers\OpenDocumentAttachmentHelper.cs" />
+    <Compile Include="ReportUploader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\crtg-common\CRTG.Charts\CRTG.Charts.csproj">

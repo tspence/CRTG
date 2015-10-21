@@ -240,10 +240,9 @@ namespace CRTG
                             var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
                             list = (from sd in this.SensorDataFile.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
                         }
-                        string csv = list.WriteToString(false);
-                        byte[] raw = Encoding.UTF8.GetBytes(csv);
-                        ReportUploader.UploadReport(raw, UploadUrl, UploadUsername, UploadPassword);
-                        LastUploadTime = DateTime.UtcNow;
+                        if (SensorProject.Current.Notifications.UploadReport(list, false, UploadUrl, UploadUsername, UploadPassword)) {
+                            LastUploadTime = DateTime.UtcNow;
+                        }
                     }
 
                 // Catch problems in uploading

@@ -371,8 +371,12 @@ namespace CRTG.UI
             }
         }
 
+        private CrtgChart _current_measurements = null;
+
         private void RebindMeasurements(bool force)
         {
+            if (SelectedSensor == null) return;
+
             // Gather data information
             int data_size = 0;
             if (SelectedSensor != null && SelectedSensor.SensorDataFile != null) {
@@ -389,35 +393,24 @@ namespace CRTG.UI
                     _last_update_time = SelectedSensor.LastCollectTime;
                 }
 
-                // Show the grid in inverse order
-                _current_grid_contents = new DataTable();
-                _current_grid_contents.Columns.Add("Time");
-                _current_grid_contents.Columns.Add("Value");
-                _current_grid_contents.Columns.Add("Exception");
-                _current_grid_contents.Columns.Add("Sensor Time (ms)");
-
-                // Only bind the first 1,000 measurements, ordering from most recent to oldeest
-                IEnumerable<SensorData> list = new List<SensorData>();
-                if (SelectedSensor.SensorDataFile != null) {
-                    list = (from SensorData sd in SelectedSensor.SensorDataFile.Data orderby sd.Time descending select sd).Take(1000);
-                }
-                if (list != null) {
-                    foreach (SensorData sd in list) {
-                        _current_grid_contents.Rows.Add(new object[] { sd.Time.ToString("yyyy-MM-dd HH:mm:ss"), sd.Value, sd.Exception, sd.CollectionTimeMs });
-                    }
-                }
-                _current_grid_contents.DefaultView.Sort = "Time desc";
-                grdSensorData.DataSource = _current_grid_contents;
-                grdSensorData.Refresh();
-
-                // Figure out what time range we're using
-                ViewTimeframe? vt = ddlChartTime.SelectedItem as ViewTimeframe?;
-                if (vt == null) {
-                    vt = ViewTimeframe.Day;
+                // Dispose of previous measurements
+                if (_current_measurements != null) {
+                    _current_measurements.Dispose();
+                    _current_measurements = null;
                 }
 
-                // Now update the chart
-                pbChart.Image = ChartHelper.GetChartImageAsBitmap(SelectedSensor, vt.Value, pbChart.Width, pbChart.Height);
+                // Retrieve current information for display
+                ViewTimeframe vt =  ViewTimeframe.Day;
+                if (ddlChartTime.SelectedItem != null) {
+                    vt = (ViewTimeframe)ddlChartTime.SelectedItem;
+                }
+                _current_measurements = ChartHelper.GetDisplayPackage(SelectedSensor, vt, pbChart.Width, pbChart.Height);
+
+                // Show measurements
+                pbChart.Image = _current_measurements.ChartImage;
+                grdSensorData.SuspendLayout();
+                grdSensorData.DataSource = _current_measurements.RawData;
+                grdSensorData.ResumeLayout();
             }
         }
         #endregion
@@ -682,6 +675,13 @@ namespace CRTG.UI
         private void tabSensor_SelectedIndexChanged(object sender, EventArgs e)
         {
             Rebind(true, false);
+        }
+        #endregion
+
+        #region Show tooltip when hovering over the chart so you can observe values for a particular time range
+        private void pbChart_MouseMove(object sender, MouseEventArgs e)
+        {
+
         }
         #endregion
     }

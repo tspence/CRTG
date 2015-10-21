@@ -267,6 +267,7 @@
             this.pbChart.TabIndex = 3;
             this.pbChart.TabStop = false;
             this.pbChart.SizeChanged += new System.EventHandler(this.pbChart_SizeChanged);
+            this.pbChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbChart_MouseMove);
             // 
             // label1
             // 

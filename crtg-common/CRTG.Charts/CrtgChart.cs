@@ -15,20 +15,22 @@ using CRTG.Sensors.Data;
 
 namespace CRTG.Charts
 {
-    public class CrtgChart
+    public class CrtgChart : IDisposable
     {
-        private SensorData[] _raw_data;
+        private List<SensorData> _raw_data;
         private int _width, _height;
         private DateTime _min_date, _max_date;
         private decimal _min_value, _max_value;
         private double _range_in_seconds, _range_in_value;
         private Rectangle _chart_rect;
+        private Image _chart_image;
+        private Bitmap _chart_bitmap;
 
         public CrtgChart(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
         {
-            _raw_data = new SensorData[] { };
+            _raw_data = new List<SensorData>();
             if (sensor != null && sensor.SensorDataFile != null) {
-                _raw_data = sensor.SensorDataFile.Data;
+                _raw_data = sensor.SensorDataFile.Data.ToList();
             }
             _width = width;
             _height = height;
@@ -46,8 +48,8 @@ namespace CRTG.Charts
             }
             
             // Filter data by time
-            _raw_data = (from r in _raw_data where r.Time > _min_date && r.Time < _max_date orderby r.Time ascending select r).ToArray();
-            if (_raw_data.Length > 0) {
+            _raw_data = (from r in _raw_data where r.Time > _min_date && r.Time < _max_date orderby r.Time ascending select r).ToList();
+            if (_raw_data.Any()) {
 
                 // Range checks and clamping
                 _min_value = (from r in _raw_data select r.Value).Min();
@@ -66,6 +68,7 @@ namespace CRTG.Charts
             }
         }
 
+        #region Rendering Chart
         private Point PlotPoint(SensorData sensorData)
         {
             return new Point(GetTimePosition(sensorData.Time), GetValuePosition((double)sensorData.Value));
@@ -84,16 +87,16 @@ namespace CRTG.Charts
             return (int)(_chart_rect.X + (xpos * _chart_rect.Width));
         }
 
-        public string DrawToTempFile()
-        {
-            Image i = DrawToImage();
-            string tempfn = Path.ChangeExtension(Path.GetTempFileName(), "png");
-            i.Save(tempfn, System.Drawing.Imaging.ImageFormat.Png);
-            i.Dispose();
-            return tempfn;
-        }
+        //public string DrawToTempFile()
+        //{
+        //    Image i = DrawToImage();
+        //    string tempfn = Path.ChangeExtension(Path.GetTempFileName(), "png");
+        //    i.Save(tempfn, System.Drawing.Imaging.ImageFormat.Png);
+        //    i.Dispose();
+        //    return tempfn;
+        //}
 
-        public Image DrawToImage()
+        private void DrawToImage()
         {
             // New version of drawing code does it all ourselves
             Bitmap bmp = new Bitmap(_width, _height);
@@ -112,7 +115,7 @@ namespace CRTG.Charts
 
             // Save this to a temporary filename
             g.Dispose();
-            return bmp;
+            _chart_image = bmp;
         }
 
         private void DrawGraphLines(Graphics g)
@@ -152,13 +155,7 @@ namespace CRTG.Charts
                 g.DrawLine(graphline, xpos, _chart_rect.Top, xpos, _chart_rect.Bottom);
 
                 // Label the line, based on whether the user wants to see local time or UTC
-                string time;
-                //if (SensorProject.Current.TimeZonePreference == DateTimePreference.LocalTime) {
-                //    dtpos = dtpos.ToLocalTime();
-                //    time = dtpos.ToString("HH:mm:ss") + " Local Time";
-                //} else {
-                    time = dtpos.ToString("HH:mm:ss") + " UTC";
-                //}
+                string time = dtpos.ToString("HH:mm:ss") + " UTC";
                 string date = dtpos.ToString("yyyy-MM-dd");
                 var r = g.MeasureString(time, graph_label);
                 g.DrawString(time, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);
@@ -179,6 +176,24 @@ namespace CRTG.Charts
             return new DateTime(ticks * span.Ticks);
         }
 
+        /// <summary>
+        /// This list describes base scales in terms of seconds
+        /// </summary>
+        private static int[] TIME_OF_DAY_SCALE_VALUES = new int[] { 
+            10, 30, 60, // seconds
+            60 * 2, 60 * 5, 60 * 10, 60 * 15, 60 * 20, 60 * 30, // 2 minutes - 30 minutes
+            3600, 3600 * 2, 3600 * 4, 3600 * 12, // 1 hour - 12 hours
+        };
+
+        /// <summary>
+        /// This list describes base scales in terms of days
+        /// </summary>
+        private static int[] DAY_OF_YEAR_SCALE_VALUES = new int[] { 
+            86400, 86400 * 4, // 1 day  - 4 days
+            604800 * 2, // 2 weeks
+            2592000, 2592000 * 6, // 1 month - 6 months
+        };
+
         private int ChooseTimeScale(out string date_time_format)
         {
             date_time_format = null;
@@ -189,45 +204,22 @@ namespace CRTG.Charts
 
             // What magnitude makes sense?  First, let's try a few seconds-based times.
             date_time_format = "HH:mm:ss";
-            if (base_scale <= 1) {
-                return 1;
-            } else if (base_scale <= 10) {
-                return 10;
-            } else if (base_scale <= 30) {
-                return 30;
-            } else if (base_scale <= 60) {
-                return 60;
-            } else if (base_scale <= 120) { // 2 minutes
-                return 120;
-            } else if (base_scale <= 300) { // 5 minutes
-                return 300;
-            } else if (base_scale <= 600) { // 10 minutes
-                return 600;
-            } else if (base_scale <= 900) { // 15 minutes
-                return 900;
-            } else if (base_scale <= 1200) { // 20 minutes
-                return 1200;
-            } else if (base_scale <= 1800) { // 30 minutes
-                return 1800;
-            } else if (base_scale <= 3600) { // 1 hour
-                return 3600;
-            } else if (base_scale <= 7200) { // 2 hour
-                return 7200;
-            } else if (base_scale <= 14400) { // 4 hour
-                return 14400;
+            foreach (var scale in TIME_OF_DAY_SCALE_VALUES) {
+                if (base_scale <= scale) {
+                    return scale;
+                }
             }
 
             // From here on out, formatting is best done in days
             date_time_format = "yyyy-MM-dd";
-            if (base_scale <= 43200) { // 12 hour
-                return 43200;
-            } else if (base_scale <= 86400) { // 1 day
-                return 86400;
-            } else if (base_scale <= 172800) { // 2 days
-                return 172800;
-            } else { // 1 week
-                return 604800;
-            } 
+            foreach (var scale in DAY_OF_YEAR_SCALE_VALUES) {
+                if (base_scale <= scale) {
+                    return scale;
+                }
+            }
+
+            // Return maximum 1 year scale (365.25 days in seconds)
+            return 31557600;
         }
 
         private int ChooseScale()
@@ -273,16 +265,64 @@ namespace CRTG.Charts
         /// <param name="g"></param>
         private void DrawSensorData(Graphics g)
         {
-            if (_raw_data.Length > 0) {
+            if (_raw_data.Count > 0) {
                 Pen blue = new Pen(Color.Blue, 2.5f);
                 blue.LineJoin = System.Drawing.Drawing2D.LineJoin.Bevel;
                 Point last_point = PlotPoint(_raw_data[0]);
-                for (int i = 1; i < _raw_data.Length; i++) {
+                for (int i = 1; i < _raw_data.Count; i++) {
                     Point p = PlotPoint(_raw_data[i]);
                     g.DrawLine(blue, last_point, p);
                     last_point = p;
                 }
             }
         }
+        #endregion
+
+        #region Member Properties
+        /// <summary>
+        /// Keep track of the image
+        /// </summary>
+        public Image ChartImage
+        {
+            get
+            {
+                // Do we need to produce the chart image?
+                if (_chart_image == null) {
+                    DrawToImage();
+                }
+                return _chart_image;
+            }
+        }
+
+        /// <summary>
+        /// Save the chart to a file
+        /// </summary>
+        /// <param name="png_filename"></param>
+        public void SaveToFile(string png_filename)
+        {
+            ChartImage.Save(png_filename, System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        /// <summary>
+        /// Data used to build the chart
+        /// </summary>
+        public List<SensorData> RawData
+        {
+            get
+            {
+                return _raw_data;
+            }
+        }
+        #endregion
+
+        #region Cleanup
+        /// <summary>
+        /// Ensure safe cleanup
+        /// </summary>
+        public void Dispose()
+        {
+            if (_chart_image != null) _chart_image.Dispose();
+        }
+        #endregion
     }
 }

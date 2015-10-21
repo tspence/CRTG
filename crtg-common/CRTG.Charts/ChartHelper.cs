@@ -17,17 +17,58 @@ namespace CRTG.Charts
 {
     public static class ChartHelper
     {
-        public static string GetChartImage(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
+        /// <summary>
+        /// Retrieve a full display package for this selected sensor and timeframe and chart size
+        /// </summary>
+        /// <param name="SelectedSensor"></param>
+        /// <param name="vt"></param>
+        /// <param name="chart_width"></param>
+        /// <param name="chart_height"></param>
+        /// <returns></returns>
+        public static CrtgChart GetDisplayPackage(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
         {
-            CrtgChart c = new CrtgChart(sensor, viewtime, width, height);
-            return c.DrawToTempFile();
-        }
+            return new CrtgChart(sensor, viewtime, width, height);
 
-        public static Image GetChartImageAsBitmap(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
-        {
-            CrtgChart c = new CrtgChart(sensor, viewtime, width, height);
-            return c.DrawToImage();
+            // Prepare the data
+
+            // Show the grid in inverse order
+            //_current_grid_contents = new DataTable();
+            //_current_grid_contents.Columns.Add("Time");
+            //_current_grid_contents.Columns.Add("Value");
+            //_current_grid_contents.Columns.Add("Exception");
+            //_current_grid_contents.Columns.Add("Sensor Time (ms)");
+
+            //// Only bind the first 1,000 measurements, ordering from most recent to oldeest
+            //IEnumerable<SensorData> list = new List<SensorData>();
+            //if (SelectedSensor.SensorDataFile != null) {
+            //    list = (from SensorData sd in SelectedSensor.SensorDataFile.Data orderby sd.Time descending select sd).Take(1000);
+            //}
+            //if (list != null) {
+            //    foreach (SensorData sd in list) {
+            //        _current_grid_contents.Rows.Add(new object[] { sd.Time.ToString("yyyy-MM-dd HH:mm:ss"), sd.Value, sd.Exception, sd.CollectionTimeMs });
+            //    }
+            //}
+            //_current_grid_contents.DefaultView.Sort = "Time desc";
+            //grdSensorData.DataSource = _current_grid_contents;
+            //grdSensorData.Refresh();
+
+            //// Figure out what time range we're using
+
+            //// Now update the chart
+            //pbChart.Image = ChartHelper.GetChartImageAsBitmap(SelectedSensor, vt.Value, pbChart.Width, pbChart.Height);
         }
+        
+        //public static string GetChartImage(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
+        //{
+        //    CrtgChart c = new CrtgChart(sensor, viewtime, width, height);
+        //    return c.DrawToTempFile();
+        //}
+
+        //public static Image GetChartImageAsBitmap(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
+        //{
+        //    CrtgChart c = new CrtgChart(sensor, viewtime, width, height);
+        //    return c.DrawToImage();
+        //}
 
         //public static void SetupChart(BaseSensor sensor, Chart chart, ViewTimeframe viewtime)
         //{
