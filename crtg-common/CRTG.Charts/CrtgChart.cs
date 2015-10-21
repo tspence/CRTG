@@ -155,12 +155,14 @@ namespace CRTG.Charts
                 g.DrawLine(graphline, xpos, _chart_rect.Top, xpos, _chart_rect.Bottom);
 
                 // Label the line, based on whether the user wants to see local time or UTC
-                string time = dtpos.ToString("HH:mm:ss") + " UTC";
+                string time_utc = dtpos.ToString("HH:mm:ss") + " UTC";
+                string time_local = dtpos.ToLocalTime().ToString("HH:mm:ss") + " Local";
                 string date = dtpos.ToString("yyyy-MM-dd");
-                var r = g.MeasureString(time, graph_label);
-                g.DrawString(time, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);
+                var r = g.MeasureString(time_utc, graph_label);
+                g.DrawString(time_utc, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);
+                g.DrawString(time_local, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height);
                 if (current_date != date) {
-                    g.DrawString(date, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height);
+                    g.DrawString(date, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height - r.Height);
                     current_date = date;
                 }
 
@@ -312,6 +314,32 @@ namespace CRTG.Charts
             {
                 return _raw_data;
             }
+        }
+
+        /// <summary>
+        /// Determine the most useful information to show
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public string TooltipFromPoint(float horizontal_distance)
+        {
+            if (_raw_data != null && _raw_data.Count > 0) {
+
+                // Figure out what time point this distance represents
+                double num_seconds_from_chart_left_side = (_range_in_seconds * horizontal_distance);
+                DateTime best_available_time = _min_date.AddSeconds((int)num_seconds_from_chart_left_side);
+
+                // Find the best available data point
+                SensorData sd = null;
+                foreach (var r in _raw_data) {
+                    if (r.Time > best_available_time) break;
+                    sd = r;
+                }
+                if (sd != null) {
+                    return String.Format("{0} UTC\r\n{1} Local\r\nMeasurement: {2}", sd.Time, sd.Time.ToLocalTime(), sd.Value);
+                }
+            }
+            return "";
         }
         #endregion
 

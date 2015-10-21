@@ -679,9 +679,28 @@ namespace CRTG.UI
         #endregion
 
         #region Show tooltip when hovering over the chart so you can observe values for a particular time range
+        private string _current_tooltip = null;
         private void pbChart_MouseMove(object sender, MouseEventArgs e)
         {
+            if (_current_measurements != null) {
 
+                // Step 1 - find where we are as a fraction of the image's horizontal dimension
+                float distance = e.X / (float)pbChart.Width;
+
+                // Step 2 - Figure out what timepoint that represents, and show it as the tooltip
+                var tip_string = _current_measurements.TooltipFromPoint(distance);
+                SetChartTooltip(tip_string);
+            } else {
+                SetChartTooltip("");
+            }
+        }
+
+        private void SetChartTooltip(string tip_string)
+        {
+            if (!String.Equals(_current_tooltip, tip_string)) {
+                _current_tooltip = tip_string;
+                Tooltip1.SetToolTip(pbChart, tip_string);
+            }
         }
         #endregion
     }
