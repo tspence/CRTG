@@ -127,6 +127,8 @@ namespace CRTG
     {
         CSV = 0,
         OpenXML = 1,
+        InlineHtml = 2,
+        ExcelWithTables = 3,
     }
 
     public enum DiskMeasurement

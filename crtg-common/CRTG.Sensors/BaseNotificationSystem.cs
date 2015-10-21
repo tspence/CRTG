@@ -22,7 +22,7 @@ namespace CRTG.Sensors
             throw new NotImplementedException();
         }
 
-        public virtual void SendReport(string[] recipients, string subject, string message, DataTable report_data, string attachment_filename)
+        public virtual void SendReport(string[] recipients, string subject, string message, DataTable report_data, ReportFileFormat format, string attachment_filename)
         {
             throw new NotImplementedException();
         }

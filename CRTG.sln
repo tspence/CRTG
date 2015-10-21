@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Charts", "crtg-common\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Sensors", "crtg-common\CRTG.Sensors\CRTG.Sensors.csproj", "{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Notification", "CRTG.Notification\CRTG.Notification.csproj", "{FAC62BAB-B187-4FE5-A638-392AA1089DE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,16 @@ Global
 		{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}.Release|x86.ActiveCfg = Release|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,5 +75,6 @@ Global
 		{C99321F9-C839-4CCD-B03D-E8985F493F29} = {888A21CD-EF74-4104-90A8-0D97B13298F9}
 		{46D705FF-C4E0-4814-8C45-5977129752D5} = {6C9751D0-16AA-454E-8899-B2C3617FAF17}
 		{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2} = {6C9751D0-16AA-454E-8899-B2C3617FAF17}
+		{FAC62BAB-B187-4FE5-A638-392AA1089DE8} = {6C9751D0-16AA-454E-8899-B2C3617FAF17}
 	EndGlobalSection
 EndGlobal

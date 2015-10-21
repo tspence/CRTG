@@ -55,6 +55,10 @@
     <StartupObject>CRTG.UI.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.76.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CSVFile">
       <HintPath>..\crtg-libraries\CSVFile\CSVFile.dll</HintPath>
     </Reference>
@@ -106,7 +110,6 @@
     </Compile>
     <Compile Include="Helpers\AutoAttributeHelper.cs" />
     <Compile Include="Helpers\FormMapper.cs" />
-    <Compile Include="Helpers\NotificationHelper.cs" />
     <Compile Include="Helpers\TypedTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -239,6 +242,16 @@
       <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>
       <Name>CRTG.Sensors</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CRTG.Notification\CRTG.Notification.csproj">
+      <Project>{fac62bab-b187-4fe5-a638-392aa1089de8}</Project>
+      <Name>CRTG.Notification</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pulse-8x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CRTG.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

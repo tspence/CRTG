@@ -45,6 +45,9 @@ namespace CRTG.Sensors.SensorLibrary
         [AutoUI(Group = "Report", Help="A comma-separated list of the days of the month when this report should be sent.")]
         public string DaysOfMonth;
 
+        [AutoUI(Group = "Report", Help = "In what format should this report be sent?")]
+        public ReportFileFormat ReportFormat;
+
         #region Implementation
         public override decimal Collect()
         {
@@ -80,7 +83,7 @@ namespace CRTG.Sensors.SensorLibrary
                     if (SensorProject.Current.Notifications != null) {
 
                         // Send report
-                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, this.Name);
+                        SensorProject.Current.Notifications.SendReport(ReportRecipients.Split(','), ReportSubject, ReportMessage, dt, ReportFormat, this.Name);
                     }
                 }
 

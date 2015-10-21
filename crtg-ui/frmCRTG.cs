@@ -21,6 +21,7 @@ using CRTG.Sensors.Devices;
 using CRTG.Sensors.SensorLibrary;
 using CRTG.Sensors.Data;
 using CRTG.Charts;
+using CRTG.Notification;
 
 namespace CRTG.UI
 {
