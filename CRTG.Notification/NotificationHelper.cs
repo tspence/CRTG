@@ -82,7 +82,7 @@ namespace CRTG.Notification
 
                 // Insert all the attachments
                 Attachment a = null;
-                string insert = null;
+                string html_insert = null;
                 switch (format) {
                     case ReportFileFormat.CSV:
                         a = CsvAttachmentHelper.BuildAttachment(report_data, attachment_filename + ".csv");
@@ -92,7 +92,7 @@ namespace CRTG.Notification
                         break;
                     case ReportFileFormat.InlineHtml:
                         a = null;
-                        insert = HtmlAttachmentHelper.BuildAttachment(report_data);
+                        html_insert = HtmlAttachmentHelper.BuildAttachment(report_data);
                         break;
                     case ReportFileFormat.OpenXML:
                         a = OpenDocumentAttachmentHelper.BuildAttachment(report_data, attachment_filename + ".xlsx");
@@ -103,7 +103,7 @@ namespace CRTG.Notification
                 }
 
                 // Set the body of the message
-                msg.Body = "<html><head></head><body>" + message + "<br/><br/>" + insert + "</body></html>;
+                msg.Body = "<html><head></head><body>" + message + "<br/><br/>" + html_insert + "</body></html>";
                 msg.IsBodyHtml = true;
 
                 // Create the SMTP client and deliver the message
