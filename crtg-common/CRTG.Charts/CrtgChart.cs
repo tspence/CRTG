@@ -159,8 +159,8 @@ namespace CRTG.Charts
                 string time_local = dtpos.ToLocalTime().ToString("HH:mm:ss") + " Local";
                 string date = dtpos.ToString("yyyy-MM-dd");
                 var r = g.MeasureString(time_utc, graph_label);
-                g.DrawString(time_utc, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);
-                g.DrawString(time_local, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height);
+                g.DrawString(time_local, graph_label, tb, xpos, _chart_rect.Bottom - r.Height);
+                g.DrawString(time_utc, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height);
                 if (current_date != date) {
                     g.DrawString(date, graph_label, tb, xpos, _chart_rect.Bottom - r.Height - r.Height - r.Height);
                     current_date = date;

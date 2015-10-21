@@ -57,7 +57,9 @@ namespace CRTG.Notification
         private static void AddWorksheetTable(XLWorkbook wb, DataTable dt, string worksheet_name)
         {
             // Set up this sheet
-            var ws = wb.Worksheets.Add(worksheet_name ?? "Sheet1");
+            string proposed_name = worksheet_name ?? "Sheet1";
+            if (proposed_name.Length > 30) proposed_name = proposed_name.Substring(0, 25);
+            var ws = wb.Worksheets.Add(proposed_name);
 
             // Set up header row with column names
             for (int col = 0; col < dt.Columns.Count; col++) {
