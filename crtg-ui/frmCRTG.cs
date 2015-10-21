@@ -568,7 +568,7 @@ namespace CRTG.UI
 
         private void ddlChartTime_SelectedIndexChanged(object sender, EventArgs e)
         {
-            RebindSensor();
+            RebindMeasurements(true);
         }
         #endregion
 

@@ -54,6 +54,11 @@ namespace CRTG.Notification
         /// <param name="attachment_filename"></param>
         public override void SendReport(string[] recipients, string subject, string message, DataTable report_data, ReportFileFormat format, string attachment_filename)
         {
+            // Do we have a real list of recipients?  Are all the recipients empty?
+            if (recipients == null) return;
+            var any_real_recipients = (from r in recipients where !String.IsNullOrWhiteSpace(r) select r).Any();
+            if (!any_real_recipients) return;
+
             // Do everything carefully
             MailMessage msg = null;
             try {
@@ -245,6 +250,11 @@ namespace CRTG.Notification
         /// <param name="p"></param>
         public void SendEmail(string[] recipients, string subject, string message, string[] attachment_filenames)
         {
+            // Do we have a real list of recipients?  Are all the recipients empty?
+            if (recipients == null) return;
+            var any_real_recipients = (from r in recipients where !String.IsNullOrWhiteSpace(r) select r).Any();
+            if (!any_real_recipients) return;
+
             // Do everything carefully
             MailMessage msg = null;
             try {
