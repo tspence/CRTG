@@ -17,8 +17,8 @@ namespace CRTG.Notification
         /// </summary>
         public static Attachment BuildAttachment(DataTable dt, string attachment_filename, string worksheet_name)
         {    
-            // Construct a memory stream for this excel file
-            var ms = new MemoryStream();
+            // Construct an excel file into a temp file on disk
+            string tempfn = Path.GetTempFileName() + ".xlsx";
             try {
 
                 // Okay, let's put it into an XLSX file
@@ -28,12 +28,11 @@ namespace CRTG.Notification
                     AddWorksheetTable(wb, dt, worksheet_name);
 
                     // Save to disk
-                    wb.SaveAs(ms);
-                    ms.Position = 0;
+                    wb.SaveAs(tempfn);
                 }
 
                 // Here's your attachment
-                Attachment a = new Attachment(ms, new System.Net.Mime.ContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                Attachment a = new Attachment(tempfn, new System.Net.Mime.ContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
                 a.Name = attachment_filename;
                 return a;
 
