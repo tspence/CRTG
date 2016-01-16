@@ -88,8 +88,12 @@ namespace CRTG.Sensors.SensorLibrary
                 }
 
                 // Upload this report (if desired)
-                if (SensorProject.Current.Notifications.UploadReport(dt, false, UploadUrl, UploadUsername, UploadPassword)) {
-                    LastUploadTime = DateTime.UtcNow;
+                if (!String.IsNullOrEmpty(KlipfolioId)) {
+                    string UploadUrl = String.Format("https://app.klipfolio.com/api/1/datasources/{0}/data", KlipfolioId);
+                    if (SensorProject.Current.Notifications.UploadReport(dt, false, UploadUrl, HttpVerb.PUT,
+                        SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
+                        LastUploadTime = DateTime.UtcNow;
+                    }
                 }
 
                 // That's our value
@@ -100,7 +104,7 @@ namespace CRTG.Sensors.SensorLibrary
             return 0;
         }
 
-        protected override void UploadCollection()
+        protected override void KlipfolioUpload()
         {
             // Nothing to do here - we do not upload measurement stats on an SQL report sensor
         }

@@ -12,6 +12,15 @@ using System.Text;
 
 namespace CRTG
 {
+    public enum HttpVerb
+    {
+        GET = 0,
+        HEAD = 1,
+        POST = 2,
+        PUT = 3,
+        DELETE = 4,
+    }
+
     /// <summary>
     /// Converts to an integer number of seconds
     /// </summary>

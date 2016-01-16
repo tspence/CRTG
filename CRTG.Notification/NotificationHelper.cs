@@ -139,12 +139,12 @@ namespace CRTG.Notification
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public override bool UploadReport<T>(List<T> list, bool include_header_row, string url, string username, string password)
+        public override bool UploadReport<T>(List<T> list, bool include_header_row, string url, HttpVerb verb, string username, string password)
         {
             if (list == null) return false;
             string csv = list.WriteToString(include_header_row);
             byte[] raw = Encoding.UTF8.GetBytes(csv);
-            return InternalUploadReport(raw, url, username, password);
+            return InternalUploadReport(raw, url, verb, username, password);
         }
 
         /// <summary>
@@ -155,12 +155,12 @@ namespace CRTG.Notification
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public override bool UploadReport(DataTable dt, bool include_header_row, string url, string username, string password)
+        public override bool UploadReport(DataTable dt, bool include_header_row, string url, HttpVerb verb, string username, string password)
         {
             if (dt == null) return false;
             string csv = dt.WriteToString(include_header_row);
             byte[] raw = Encoding.UTF8.GetBytes(csv);
-            return InternalUploadReport(raw, url, username, password);
+            return InternalUploadReport(raw, url, verb, username, password);
         }
         #endregion
 
@@ -173,14 +173,14 @@ namespace CRTG.Notification
         /// <param name="url"></param>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        private bool InternalUploadReport(byte[] contents, string url, string username, string password)
+        private bool InternalUploadReport(byte[] contents, string url, HttpVerb verb, string username, string password)
         {
             if (String.IsNullOrWhiteSpace(url)) return false;
 
             // Is this object intended to upload to a web resource?
             try {
                 WebRequest wr = WebRequest.Create(url);
-                wr.Method = "POST";
+                wr.Method = verb.ToString();
 
                 // Add credentials
                 wr.Credentials = new NetworkCredential(username, password);

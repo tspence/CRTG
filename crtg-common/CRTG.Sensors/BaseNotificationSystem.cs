@@ -27,12 +27,12 @@ namespace CRTG.Sensors
             throw new NotImplementedException();
         }
 
-        public virtual bool UploadReport<T>(List<T> list, bool include_header_row, string url, string username, string password)
+        public virtual bool UploadReport<T>(List<T> list, bool include_header_row, string url, HttpVerb verb, string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool UploadReport(DataTable dt, bool include_header_row, string url, string username, string password)
+        public virtual bool UploadReport(DataTable dt, bool include_header_row, string url, HttpVerb verb, string username, string password)
         {
             throw new NotImplementedException();
         }

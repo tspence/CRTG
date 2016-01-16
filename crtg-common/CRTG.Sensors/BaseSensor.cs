@@ -140,19 +140,10 @@ namespace CRTG
         [AutoUI(Group = "Notifications", Label = "Recipients", Help = "A comma-separated list of email addresses.")]
         public string Recipients;
 
-        [AutoUI(Group = "ReportUpload", Help = "(optional) If this report is to be uploaded to a web resource, this is the URL where it is published.")]
-        public string UploadUrl;
+        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, this is the ID of the datasource where it is to be published.")]
+        public string KlipfolioId;
 
-        [AutoUI(Group = "ReportUpload", Help = "(optional) The username to use when uploading this report to a web resource.")]
-        public string UploadUsername;
-
-        [AutoUI(Group = "ReportUpload", Help = "(optional) The password to use when uploading this report to a web resource.")]
-        public string UploadPassword;
-
-        [AutoUI(Group = "ReportUpload", Help = "(optional) How frequently to upload this report.")]
-        public Interval UploadFrequency;
-
-        [AutoUI(Group = "ReportUpload", Help = "(optional) How much data to upload for this report.")]
+        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, how much data should be uploaded?")]
         public ViewTimeframe UploadAmount;
 
         /// <summary>
@@ -221,16 +212,19 @@ namespace CRTG
             // Now, all elements that can safely be moved after the inflight flag is turned off
             if (success) {
                 TestAllNotifications(collect_start_time, value);
-                UploadCollection();
+                KlipfolioUpload();
             }
         }
 
-        protected virtual void UploadCollection()
+        /// <summary>
+        /// If this report is uploaded via Klipfolio, let's do it!
+        /// </summary>
+        protected virtual void KlipfolioUpload()
         {
-            if (!String.IsNullOrEmpty(UploadUrl)) {
+            if (!String.IsNullOrEmpty(KlipfolioId)) {
                 try {
                     TimeSpan ts = DateTime.UtcNow - LastUploadTime;
-                    if ((ts.TotalSeconds > (int)UploadFrequency) && (this.SensorDataFile != null)) {
+                    if (this.SensorDataFile != null) {
 
                         // Filter to just the amount we care about
                         List<SensorData> list = null;
@@ -240,7 +234,11 @@ namespace CRTG
                             var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
                             list = (from sd in this.SensorDataFile.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
                         }
-                        if (SensorProject.Current.Notifications.UploadReport(list, false, UploadUrl, UploadUsername, UploadPassword)) {
+
+                        // Determine the correct URL
+                        string UploadUrl = String.Format("https://app.klipfolio.com/api/1/datasources/{0}/data", KlipfolioId);
+                        if (SensorProject.Current.Notifications.UploadReport(list, false, UploadUrl, HttpVerb.PUT,
+                            SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
                             LastUploadTime = DateTime.UtcNow;
                         }
                     }
