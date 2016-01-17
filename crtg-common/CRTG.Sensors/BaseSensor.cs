@@ -245,7 +245,8 @@ namespace CRTG
 
                 // Catch problems in uploading
                 } catch (Exception ex) {
-                    SensorProject.LogException("Error uploading collection", ex);
+                    string headline = String.Format("Error uploading {0} ({1}) to Klipfolio", this.Name, this.Identity);
+                    SensorProject.LogException(headline, ex);
                 }
             }
         }

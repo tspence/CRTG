@@ -183,7 +183,9 @@ namespace CRTG.Notification
                 wr.Method = verb.ToString();
 
                 // Add credentials
-                wr.Credentials = new NetworkCredential(username, password);
+                string authInfo = username + ":" + password;
+                authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
+                wr.Headers["Authorization"] = "Basic " + authInfo;
 
                 // Add the payload
                 using (var s = wr.GetRequestStream()) {
