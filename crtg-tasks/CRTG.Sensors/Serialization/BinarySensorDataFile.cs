@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using CRTG.Sensors.Data;
 
 namespace CRTG.Serialization
 {

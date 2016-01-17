@@ -73,9 +73,8 @@
     <Compile Include="AutoUI.cs" />
     <Compile Include="BaseNotificationSystem.cs" />
     <Compile Include="BaseSensor.cs" />
-    <Compile Include="Data\SensorData.cs" />
+    <Compile Include="Data\SqliteDataStore.cs" />
     <Compile Include="Devices\DeviceContext.cs" />
-    <Compile Include="Enums.cs" />
     <Compile Include="SensorLibrary\BasicWmiSensor.cs" />
     <Compile Include="SensorLibrary\FileSensor.cs" />
     <Compile Include="SensorLibrary\FolderSensor.cs" />
@@ -85,8 +84,7 @@
     <Compile Include="SensorUI.cs" />
     <Compile Include="Serialization\BaseSensorDataFile.cs" />
     <Compile Include="Serialization\BinarySensorDataFile.cs" />
-    <Compile Include="Serialization\CSVSensorDataFile.cs" />
-    <Compile Include="Serialization\SensorDataFactory.cs" />
+    <Compile Include="Data\CSVSensorDataStore.cs" />
     <Compile Include="SensorLibrary\SqlReportSensor.cs" />
     <Compile Include="SensorLibrary\SqlSensor.cs" />
     <Compile Include="SensorLibrary\WmiCpuSensor.cs" />
@@ -101,6 +99,12 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\crtg-common\CRTG.Common\CRTG.Common.csproj">
+      <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
+      <Name>CRTG.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\System.Data.SQLite.Core.1.0.98.1\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\..\packages\System.Data.SQLite.Core.1.0.98.1\build\net45\System.Data.SQLite.Core.targets')" />

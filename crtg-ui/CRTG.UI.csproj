@@ -234,24 +234,32 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crtg-common\CRTG.Charts\CRTG.Charts.csproj">
-      <Project>{46d705ff-c4e0-4814-8c45-5977129752d5}</Project>
-      <Name>CRTG.Charts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\crtg-common\CRTG.Sensors\CRTG.Sensors.csproj">
-      <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>
-      <Name>CRTG.Sensors</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CRTG.Notification\CRTG.Notification.csproj">
-      <Project>{fac62bab-b187-4fe5-a638-392aa1089de8}</Project>
-      <Name>CRTG.Notification</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\pulse-8x.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CRTG.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crtg-common\CRTG.Charts\CRTG.Charts.csproj">
+      <Project>{46d705ff-c4e0-4814-8c45-5977129752d5}</Project>
+      <Name>CRTG.Charts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crtg-common\CRTG.Common\CRTG.Common.csproj">
+      <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
+      <Name>CRTG.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crtg-tasks\CRTG.Conditions\CRTG.Conditions.csproj">
+      <Project>{12bb5344-21ea-458d-81f2-614b2c9b5633}</Project>
+      <Name>CRTG.Conditions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crtg-tasks\CRTG.Notification\CRTG.Notification.csproj">
+      <Project>{fac62bab-b187-4fe5-a638-392aa1089de8}</Project>
+      <Name>CRTG.Notification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crtg-tasks\CRTG.Sensors\CRTG.Sensors.csproj">
+      <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>
+      <Name>CRTG.Sensors</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

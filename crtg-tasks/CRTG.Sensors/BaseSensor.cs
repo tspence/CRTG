@@ -18,7 +18,7 @@ using System.Collections.Concurrent;
 using CRTG.Serialization;
 using CRTG.Sensors.Devices;
 using CRTG.Sensors.SensorLibrary;
-using CRTG.Sensors.Data;
+using CRTG.Common;
 
 namespace CRTG
 {

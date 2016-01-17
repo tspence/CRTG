@@ -10,13 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CRTG.Sensors.Data
+namespace CRTG.Common
 {
     public class SensorData
     {
         public DateTime Time { get; set; }
         public decimal Value { get; set; }
-        public string Exception { get; set; }
         public int CollectionTimeMs { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.IO;
-using CRTG.Sensors.Data;
+using CRTG.Common;
 
 namespace CRTG.Charts
 {
@@ -26,7 +26,7 @@ namespace CRTG.Charts
         private Image _chart_image;
         private Bitmap _chart_bitmap;
 
-        public CrtgChart(BaseSensor sensor, ViewTimeframe viewtime, int width, int height)
+        public CrtgChart(ISensor sensor, ViewTimeframe viewtime, int width, int height)
         {
             _raw_data = new List<SensorData>();
             if (sensor != null && sensor.SensorDataFile != null) {
