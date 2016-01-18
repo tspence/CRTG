@@ -679,7 +679,7 @@ namespace CRTG.UI
         }
         #endregion
 
-        #region Show tooltip when hovering over the chart so you can observe values for a particular time range
+        #region Chart tooltips
         private string _current_tooltip = null;
         private void pbChart_MouseMove(object sender, MouseEventArgs e)
         {

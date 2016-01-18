@@ -17,7 +17,7 @@ using CRTG.Sensors.Data;
 
 namespace CRTG.Sensors.Data
 {
-    public class CSVSensorDataStore : BaseDataStore
+    public class CSVSensorDataStore : IDataStore
     {
         protected string _csv_folder_path;
 
@@ -92,7 +92,8 @@ namespace CRTG.Sensors.Data
         /// <returns></returns>
         private string GetFilename(ISensor sensor)
         {
-            return Path.Combine(_csv_folder_path, sensor.Identity.ToString() + ".csv");
+            string fn= Path.Combine(_csv_folder_path, sensor.Identity.ToString() + ".csv");
+            return fn;
         }
 
         /// <summary>
@@ -123,6 +124,30 @@ namespace CRTG.Sensors.Data
             string fn = GetFilename(sensor);
             string csv = CSV.SaveArray<SensorData>(new SensorData[] { data_to_save }, false, false);
             File.AppendAllText(fn, csv);
+        }
+
+        /// <summary>
+        /// Append one item of data
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="data_to_save"></param>
+        public void AppendData(ISensor sensor, SensorException exception_to_save)
+        {
+        }
+
+        /// <summary>
+        /// Delete all data for this sensor
+        /// </summary>
+        /// <param name="sensor"></param>
+        public void DeleteSensorData(ISensor sensor)
+        {
+        }
+
+        /// <summary>
+        /// Remove cached information, if any, from this data store
+        /// </summary>
+        public void FlushCache()
+        {
         }
     }
 }

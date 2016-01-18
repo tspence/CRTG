@@ -96,7 +96,7 @@ namespace CRTG
         /// Indicates the method we use to store data
         /// </summary>
         [AutoUI(Skip=true)]
-        public BaseDataStore DataStore { get; set; }
+        public IDataStore DataStore { get; set; }
 
 
         #region Logging
@@ -210,16 +210,13 @@ namespace CRTG
                             if (!_keep_running) return;
 
                             // Okay, let's work on this sensor
-                            BaseSensor s = dc.Sensors[j];
+                            ISensor s = dc.Sensors[j];
                             if (s.Enabled && !s.InFlight) {
 
                                 // Spawn a work item in the thread pool to do this collection task
                                 if (s.NextCollectTime <= DateTime.UtcNow) {
                                     s.InFlight = true;
-                                    ThreadPool.QueueUserWorkItem(delegate { s.OuterCollect(null); });
-                                    //ThreadStart ts = new ParameterizedThreadStart(s.Collect);
-                                    //Thread t = new Thread(ts);
-                                    //t.Start();
+                                    ThreadPool.QueueUserWorkItem(delegate { s.OuterCollect(); });
                                     collect_count++;
 
                                     // If it's not time yet, use this to factor when next to wake up
@@ -250,6 +247,13 @@ namespace CRTG
         #region Serialization and Singleton
         [AutoUI(Skip = true)]
         public static SensorProject Current = null;
+
+        public SensorProject()
+        {
+            Devices = new List<DeviceContext>();
+            string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            DataStore = new CSVSensorDataStore(Path.Combine(path, "sensors"));
+        }
 
         /// <summary>
         /// Read a sensor back from a node from an XML file

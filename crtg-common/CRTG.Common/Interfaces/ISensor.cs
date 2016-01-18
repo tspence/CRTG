@@ -35,5 +35,10 @@ namespace CRTG.Common
         string KlipfolioId { get; set; }
         ViewTimeframe UploadAmount { get; set; }
         DateTime LastUploadTime { get; set; }
+
+        /// <summary>
+        /// This function collects data for the sensor
+        /// </summary>
+        void OuterCollect();
     }
 }

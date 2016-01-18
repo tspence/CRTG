@@ -17,6 +17,6 @@ namespace CRTG.Common
         string WindowsDomain { get; set; }
         DeviceType Category { get; set; }
         string DeviceInformation { get; set; }
-        string ODBCConnectionString { get; set; }
+        string ConnectionString { get; set; }
     }
 }

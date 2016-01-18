@@ -152,6 +152,7 @@ namespace CRTG
         [XmlIgnore, AutoUI(Skip = true)]
         public DateTime LastUploadTime { get; set; }
 
+
         #region Helper functions for data collection
         /// <summary>
         /// Add this value to the time series data and advance our next collection time
@@ -174,7 +175,7 @@ namespace CRTG
         /// <summary>
         /// Collect data for this sensor (with parameter - not used!)
         /// </summary>
-        public void OuterCollect(object o)
+        public void OuterCollect()
         {
             DateTime collect_start_time = DateTime.UtcNow;
             Decimal value = 0;
@@ -342,7 +343,11 @@ namespace CRTG
 
             // Set most recent collect time, if one is available
             var most_recent_record = SensorData.GetLastData();
-            LastCollectTime = most_recent_record.Time;
+            if (most_recent_record != null) {
+                LastCollectTime = most_recent_record.Time;
+            } else {
+                LastCollectTime = DateTime.MinValue;
+            }
 
             // Determine last exception message
             var ex = SensorData.GetLastException();

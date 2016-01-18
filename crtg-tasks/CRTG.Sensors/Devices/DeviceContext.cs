@@ -15,10 +15,10 @@ using CRTG.Common;
 namespace CRTG.Sensors.Devices
 {
     [Serializable]
-    public class DeviceContext
+    public class DeviceContext : IDevice
     {
         [AutoUI(Skip=true)]
-        public List<BaseSensor> Sensors { get; set; }
+        public List<ISensor> Sensors { get; set; }
 
         /// <summary>
         /// Serialized ID number of the device
@@ -56,7 +56,7 @@ namespace CRTG.Sensors.Devices
         #region Constructor
         public DeviceContext()
         {
-            Sensors = new List<BaseSensor>();
+            Sensors = new List<ISensor>();
         }
         #endregion
     }

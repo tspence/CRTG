@@ -54,7 +54,7 @@ namespace CRTG.Sensors.SensorLibrary
         {
             // Connect to the database and retrieve this value
             DataTable dt = null;
-            using (SqlConnection conn = new SqlConnection(this.Device.ODBCConnectionString)) {
+            using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
                     cmd.CommandTimeout = TimeoutSeconds;
