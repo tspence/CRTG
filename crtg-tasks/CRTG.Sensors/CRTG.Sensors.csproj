@@ -73,6 +73,7 @@
     <Compile Include="AutoUI.cs" />
     <Compile Include="BaseNotificationSystem.cs" />
     <Compile Include="BaseSensor.cs" />
+    <Compile Include="Data\BaseDataStore.cs" />
     <Compile Include="Data\SqliteDataStore.cs" />
     <Compile Include="Devices\DeviceContext.cs" />
     <Compile Include="SensorLibrary\BasicWmiSensor.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="SensorLibrary\WmiDiskSensor.cs" />
     <Compile Include="SensorLibrary\WmiMemorySensor.cs" />
     <Compile Include="Toolkit\UNCAccessWithCredentials.cs" />
+    <Compile Include="Toolkit\WmiHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

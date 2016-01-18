@@ -26,7 +26,7 @@ namespace CRTG
     XmlInclude(typeof(SqlReportSensor)), XmlInclude(typeof(WmiDiskSensor)), XmlInclude(typeof(WmiMemorySensor)),
     XmlInclude(typeof(WmiDiskActivity)), XmlInclude(typeof(FileSensor)), XmlInclude(typeof(FolderSensor)), XmlInclude(typeof(HttpXmlSensor)), 
     XmlInclude(typeof(BaseNotificationSystem))]
-    public class BaseSensor
+    public class BaseSensor : ISensor
     {
         /// <summary>
         /// The sensor's identity
@@ -69,7 +69,7 @@ namespace CRTG
         /// All the data collected with this sensor over time
         /// </summary>
         [XmlIgnore, AutoUI(Skip = true)]
-        public BaseSensorDataFile SensorDataFile { get; set; }
+        public SensorDataCollection SensorData { get; set; }
 
         /// <summary>
         /// The latest available data from the sensor
@@ -92,20 +92,20 @@ namespace CRTG
         /// <summary>
         /// Keeps track of whether a collection call is in flight
         /// </summary>
-        [XmlIgnore, AutoUI(Skip=true)]
-        public bool InFlight = false;
+        [XmlIgnore, AutoUI(Skip = true)]
+        public bool InFlight { get; set; }
 
         /// <summary>
         /// Keeps track of whether a collection call is in flight
         /// </summary>
         [XmlIgnore, AutoUI(Skip=true)]
-        public DeviceContext Device;
+        public IDevice Device { get; set; }
 
         /// <summary>
         /// Track whether this collector is erroring out
         /// </summary>
         [AutoUI(Skip=true)]
-        public bool InError = false;
+        public bool InError { get; set; }
 
         /// <summary>
         /// Track whether this collector is erroring out
@@ -114,43 +114,43 @@ namespace CRTG
         public string LastException { get; set; }
 
         [AutoUI(Group = "Error", Label = "High Threshold")]
-        public decimal? HighError;
+        public decimal? HighError { get; set; }
 
         [AutoUI(Group = "Error", Label = "Message")]
-        public string ErrorMessage;
+        public string ErrorMessage { get; set; }
 
         [AutoUI(Group = "Error", Label = "Low Threshold")]
-        public decimal? LowError;
+        public decimal? LowError { get; set; }
 
         [AutoUI(Group = "Warning", Label = "High Threshold")]
-        public decimal? HighWarning;
+        public decimal? HighWarning { get; set; }
 
         [AutoUI(Group = "Warning", Label = "Message")]
-        public string WarningMessage;
+        public string WarningMessage { get; set; }
 
         [AutoUI(Group = "Warning", Label = "Low Threshold")]
-        public decimal? LowWarning;
+        public decimal? LowWarning { get; set; }
 
         [AutoUI(Group = "Notifications", Label = "Notify on Change")]
-        public bool NotifyOnChange;
+        public bool NotifyOnChange { get; set; }
 
         [AutoUI(Group = "Notifications", Label = "Method")]
-        public NotificationMethod Method;
+        public NotificationMethod Method { get; set; }
 
         [AutoUI(Group = "Notifications", Label = "Recipients", Help = "A comma-separated list of email addresses.")]
-        public string Recipients;
+        public string Recipients { get; set; }
 
         [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, this is the ID of the datasource where it is to be published.")]
-        public string KlipfolioId;
+        public string KlipfolioId { get; set; }
 
         [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, how much data should be uploaded?")]
-        public ViewTimeframe UploadAmount;
+        public ViewTimeframe UploadAmount { get; set; }
 
         /// <summary>
         /// Keeps track of when we last uploaded this object
         /// </summary>
         [XmlIgnore, AutoUI(Skip = true)]
-        public DateTime LastUploadTime;
+        public DateTime LastUploadTime { get; set; }
 
         #region Helper functions for data collection
         /// <summary>
@@ -160,10 +160,10 @@ namespace CRTG
         public SensorData AddValue(decimal d, DateTime timestamp, int ms)
         {
             SensorData sd = new SensorData() { Time = timestamp, Value = d, CollectionTimeMs = ms };
-            if (SensorDataFile == null) {
+            if (SensorData == null) {
                 DataRead();
             }
-            SensorDataFile.Append(sd);
+            SensorProject.Current.DataStore.AppendData(this, sd);
             LatestData = d;
             return sd;
         }
@@ -224,15 +224,15 @@ namespace CRTG
             if (!String.IsNullOrEmpty(KlipfolioId)) {
                 try {
                     TimeSpan ts = DateTime.UtcNow - LastUploadTime;
-                    if (this.SensorDataFile != null) {
+                    if (this.SensorData != null) {
 
                         // Filter to just the amount we care about
                         List<SensorData> list = null;
                         if (UploadAmount == ViewTimeframe.AllTime) {
-                            list = this.SensorDataFile.Data.ToList();
+                            list = this.SensorData.Data.ToList();
                         } else {
                             var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
-                            list = (from sd in this.SensorDataFile.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
+                            list = (from sd in this.SensorData.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
                         }
 
                         // Determine the correct URL
@@ -338,20 +338,23 @@ namespace CRTG
         /// </summary>
         public void DataRead()
         {
-            SensorDataFile = SensorDataFactory.GetFile(Identity);
+            SensorData = SensorProject.Current.DataStore.RetrieveData(this);
 
-            // Set most recent collect time, exception, and value
-            if (SensorDataFile.Count > 0) {
-                var most_recent_record = SensorDataFile.Data[SensorDataFile.Count - 1];
-                this.LastCollectTime = most_recent_record.Time;
-                this.LastException = most_recent_record.Exception;
-                this.LatestData = most_recent_record.Value;
+            // Set most recent collect time, if one is available
+            var most_recent_record = SensorData.GetLastData();
+            LastCollectTime = most_recent_record.Time;
+
+            // Determine last exception message
+            var ex = SensorData.GetLastException();
+            if (ex != null && !ex.Cleared) {
+                LastException = ex.Description;
             }
         }
 
         public void ClearAllData()
         {
-            SensorDataFile.BackupAndClear();
+            throw new NotImplementedException();
+            //SensorData.BackupAndClear();
         }
         #endregion
 

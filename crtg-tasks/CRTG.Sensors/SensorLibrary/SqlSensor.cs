@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Data.SqlClient;
+using CRTG.Common;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -35,7 +36,7 @@ namespace CRTG.Sensors.SensorLibrary
             Decimal d = 0;
 
             // Connect to the database and retrieve this value
-            using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
+            using (SqlConnection conn = new SqlConnection(this.Device.ODBCConnectionString)) {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
 

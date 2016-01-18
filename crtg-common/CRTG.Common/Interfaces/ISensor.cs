@@ -15,7 +15,7 @@ namespace CRTG.Common
         Interval Frequency { get; set; }
         bool PauseOnError { get; set; }
         bool Enabled { get; set; }
-        SensorCollection SensorDataFile { get; set; }
+        SensorDataCollection SensorData { get; set; }
         Decimal LatestData { get; set; }
         DateTime NextCollectTime { get; set; }
         DateTime LastCollectTime { get; set; }

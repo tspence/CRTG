@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CRTG.Notification
 {
-    class HttpUploadNotification : INotification
+    public class SaveChartNotification : INotification
     {
     }
 }

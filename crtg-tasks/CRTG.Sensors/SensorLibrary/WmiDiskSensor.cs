@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Management;
+using CRTG.Common;
+using CRTG.Sensors.Toolkit;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -26,7 +28,7 @@ namespace CRTG.Sensors.SensorLibrary
 
         public override decimal Collect()
         {
-            var coll = Device.WmiQuery(String.Format("SELECT * FROM Win32_LogicalDisk WHERE Name = '{0}:'", DriveLetter));
+            var coll = WmiHelper.WmiQuery(Device, String.Format("SELECT * FROM Win32_LogicalDisk WHERE Name = '{0}:'", DriveLetter));
 
             // Count usage of each OS instance (should really be only one!)
             decimal total = 0;

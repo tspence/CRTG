@@ -311,7 +311,7 @@ namespace CRTG.UI
                 }
 
                 // Only show last collection if there was any
-                if (SelectedSensor.SensorDataFile != null && SelectedSensor.SensorDataFile.Count > 0) {
+                if (SelectedSensor.SensorData != null) {
                     txtLastCollect.Text = SelectedSensor.LastCollectTime.ToString();
                 } else {
                     txtLastCollect.Text = "Never";
@@ -380,8 +380,8 @@ namespace CRTG.UI
 
             // Gather data information
             int data_size = 0;
-            if (SelectedSensor != null && SelectedSensor.SensorDataFile != null) {
-                data_size = SelectedSensor.SensorDataFile.Count;
+            if (SelectedSensor != null && SelectedSensor.SensorData != null) {
+                data_size = SelectedSensor.SensorData.Data.Count;
             }
             bool sensor_updated = false;
             if ((SelectedSensor != null) && (SelectedSensor.LastCollectTime > _last_update_time)) {
@@ -484,7 +484,7 @@ namespace CRTG.UI
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SqlSensor ss = new SqlSensor();
-            SensorProject.Current.AddSensor(SelectedDevice, ss);
+            SensorProject.Current.AddSensor((IDevice)SelectedDevice, ss);
             SelectedSensor = ss;
             SaveSensors();
             Rebind(true, true);
@@ -635,7 +635,7 @@ namespace CRTG.UI
                     BaseSensor bs = (BaseSensor)a.CreateInstance(t.FullName, true);
                     bs.Name = "New " + bs.GetType().Name;
                     bs.Frequency = Interval.FifteenMinutes;
-                    SensorProject.Current.AddSensor(SelectedDevice, bs);
+                    SensorProject.Current.AddSensor((IDevice)SelectedDevice, bs);
                     SaveSensors();
                     Rebind(true, true);
                     return;

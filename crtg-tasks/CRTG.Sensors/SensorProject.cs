@@ -18,15 +18,88 @@ using Microsoft.Win32;
 using CRTG.Sensors;
 using log4net;
 using CRTG.Sensors.Devices;
+using CRTG.Common;
+using CRTG.Sensors.Data;
 
 namespace CRTG
 {
     [Serializable]
     public class SensorProject
     {
-        #region Singletons
-        [AutoUI(Skip = true)]
-        public static SensorProject Current = null;
+        /// <summary>
+        /// All the sensors in a project
+        /// </summary>
+        [AutoUI(Skip=true)]
+        public List<DeviceContext> Devices { get; set; }
+
+        /// <summary>
+        /// Dependency injection for notifications
+        /// </summary>
+        [AutoUI(Skip = true), XmlIgnore]
+        public BaseNotificationSystem Notifications { get; set; }
+
+        /// <summary>
+        /// The hostname or IP address of the SMTP server
+        /// </summary>
+        [AutoUI(Group = "SMTP")]
+        public string SmtpHost { get; set; }
+
+        /// <summary>
+        /// username to provide to the SMTP server
+        /// </summary>
+        [AutoUI(Group = "SMTP")]
+        public string SmtpUsername { get; set; }
+
+        /// <summary>
+        /// username to provide to the SMTP server
+        /// </summary>
+        [AutoUI(Group = "SMTP", PasswordField = true)]
+        public string SmtpPassword { get; set; }
+
+        /// <summary>
+        /// Does the user want local time or GMT?
+        /// </summary>
+        [AutoUI(Group = "Preferences")]
+        public DateTimePreference TimeZonePreference { get; set; }
+
+        /// <summary>
+        /// Does the user want flat CSV files, or full OpenXML?
+        /// </summary>
+        [AutoUI(Group = "Preferences")]
+        public ReportFileFormat ReportFileFormatPreference { get; set; }
+
+        /// <summary>
+        /// The "from" name to use for the email message
+        /// </summary>
+        [AutoUI(Group = "SMTP")]
+        public string MessageFrom { get; set; }
+
+        /// <summary>
+        /// The subject line to use for notifications
+        /// </summary>
+        [AutoUI(Group = "Email Notifications")]
+        public string SubjectLineTemplate { get; set; }
+
+        /// <summary>
+        /// The message body to use for notifications
+        /// </summary>
+        [AutoUI(Group = "Email Notifications", MultiLine=20)]
+        public string MessageBodyTemplate { get; set; }
+
+        [AutoUI(Label = "Klipfolio Username", Group = "Klipfolio")]
+        public string KlipfolioUsername { get; set; }
+
+        [AutoUI(Label = "Klipfolio Password", Group = "Klipfolio", PasswordField = true)]
+        public string KlipfolioPassword { get; set; }
+
+        /// <summary>
+        /// Indicates the method we use to store data
+        /// </summary>
+        [AutoUI(Skip=true)]
+        public BaseDataStore DataStore { get; set; }
+
+
+        #region Logging
         private static ILog _logger = null;
 
         /// <summary>
@@ -49,73 +122,6 @@ namespace CRTG
         }
         #endregion
 
-        /// <summary>
-        /// All the sensors in a project
-        /// </summary>
-        [AutoUI(Skip=true)]
-        public List<DeviceContext> Devices = new List<DeviceContext>();
-
-        /// <summary>
-        /// Dependency injection for notifications
-        /// </summary>
-        [AutoUI(Skip = true), XmlIgnore]
-        public BaseNotificationSystem Notifications = null;
-
-        /// <summary>
-        /// The hostname or IP address of the SMTP server
-        /// </summary>
-        [AutoUI(Group = "SMTP")]
-        public string SmtpHost;
-
-        /// <summary>
-        /// username to provide to the SMTP server
-        /// </summary>
-        [AutoUI(Group = "SMTP")]
-        public string SmtpUsername;
-
-        /// <summary>
-        /// username to provide to the SMTP server
-        /// </summary>
-        [AutoUI(Group = "SMTP", PasswordField = true)]
-        public string SmtpPassword;
-
-        /// <summary>
-        /// Does the user want local time or GMT?
-        /// </summary>
-        [AutoUI(Group = "Preferences")]
-        public DateTimePreference TimeZonePreference;
-
-        /// <summary>
-        /// Does the user want flat CSV files, or full OpenXML?
-        /// </summary>
-        [AutoUI(Group = "Preferences")]
-        public ReportFileFormat ReportFileFormatPreference;
-
-        /// <summary>
-        /// The "from" name to use for the email message
-        /// </summary>
-        [AutoUI(Group = "SMTP")]
-        public string MessageFrom;
-
-        /// <summary>
-        /// The subject line to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications")]
-        public string SubjectLineTemplate;
-
-        /// <summary>
-        /// The message body to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications", MultiLine=20)]
-        public string MessageBodyTemplate;
-
-        [AutoUI(Label = "Klipfolio Username", Group = "Klipfolio")]
-        public string KlipfolioUsername;
-
-        [AutoUI(Label = "Klipfolio Password", Group = "Klipfolio", PasswordField = true)]
-        public string KlipfolioPassword;
-
-
 
         #region Managing the collection of sensors
         [AutoUI(Skip=true)]
@@ -126,7 +132,7 @@ namespace CRTG
         /// </summary>
         /// <param name="dc"></param>
         /// <param name="s"></param>
-        public void AddSensor(DeviceContext dc, BaseSensor s)
+        public void AddSensor(IDevice dc, BaseSensor s)
         {
             s.Identity = NextSensorNum++;
             s.Device = dc;
@@ -241,7 +247,10 @@ namespace CRTG
         #endregion
 
 
-        #region Serialization
+        #region Serialization and Singleton
+        [AutoUI(Skip = true)]
+        public static SensorProject Current = null;
+
         /// <summary>
         /// Read a sensor back from a node from an XML file
         /// </summary>
@@ -266,6 +275,7 @@ namespace CRTG
             } catch (Exception ex) {
                 SensorProject.LogException("Error loading sensor XML file", ex);
                 sp = new SensorProject();
+                sp.Devices = new List<DeviceContext>();
             }
 
             // Now make all the sensors read their data
@@ -278,7 +288,7 @@ namespace CRTG
                         bs.Identity = sp.NextSensorNum++;
                     }
                     sensor_id_list.Add(bs.Identity);
-                    bs.Device = dc;
+                    bs.Device = (IDevice)dc;
 
                     // Read in each sensor's data, and write it back out to disk 
                     // (this ensures that all files have the same fields in the same order - permits appending via AppendText later

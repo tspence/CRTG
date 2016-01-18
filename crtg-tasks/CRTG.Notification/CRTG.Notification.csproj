@@ -62,6 +62,7 @@
     <Compile Include="AttachmentHelpers\OpenDocumentAttachmentHelper.cs" />
     <Compile Include="ReportUploader.cs" />
     <Compile Include="HttpUploadNotification.cs" />
+    <Compile Include="SaveChartNotification.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\crtg-common\CRTG.Charts\CRTG.Charts.csproj">
@@ -72,7 +73,7 @@
       <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
       <Name>CRTG.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\crtg-common\CRTG.Sensors\CRTG.Sensors.csproj">
+    <ProjectReference Include="..\CRTG.Sensors\CRTG.Sensors.csproj">
       <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>
       <Name>CRTG.Sensors</Name>
     </ProjectReference>

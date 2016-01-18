@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using CRTG.Sensors.Helpers;
+using CRTG.Common;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -33,7 +34,7 @@ namespace CRTG.Sensors.SensorLibrary
                 using (UNCAccessWithCredentials unc = new UNCAccessWithCredentials()) {
 
                     // Detect problems connecting
-                    if (!unc.NetUseWithCredentials(Path, Device.WinUsername, Device.WinDomain, Device.WinPassword)) {
+                    if (!unc.NetUseWithCredentials(Path, Device.Username, Device.WindowsDomain, Device.Password)) {
                         throw new Exception("Unable to connect to file server with supplied credentials.");
                     }
 

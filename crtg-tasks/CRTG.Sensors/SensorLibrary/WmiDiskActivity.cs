@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Management;
+using CRTG.Sensors.Toolkit;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -20,7 +21,7 @@ namespace CRTG.Sensors.SensorLibrary
 
         public override decimal Collect()
         {
-            var coll = Device.WmiQuery("SELECT * FROM Win32_PerfFormattedData_PerfOS_System");
+            var coll = WmiHelper.WmiQuery(Device, "SELECT * FROM Win32_PerfFormattedData_PerfOS_System");
 
             // Count usage of each OS instance (should really be only one!)
             decimal total = 0;

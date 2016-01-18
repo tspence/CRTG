@@ -29,8 +29,8 @@ namespace CRTG.Charts
         public CrtgChart(ISensor sensor, ViewTimeframe viewtime, int width, int height)
         {
             _raw_data = new List<SensorData>();
-            if (sensor != null && sensor.SensorDataFile != null) {
-                _raw_data = sensor.SensorDataFile.Data.ToList();
+            if (sensor != null && sensor.SensorData != null) {
+                _raw_data = sensor.SensorData.Data.ToList();
             }
             _width = width;
             _height = height;

@@ -12,6 +12,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Xml;
+using CRTG.Common;
 
 namespace CRTG.Sensors.SensorLibrary
 {

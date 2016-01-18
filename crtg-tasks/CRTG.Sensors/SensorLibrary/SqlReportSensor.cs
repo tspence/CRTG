@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using CSVFile;
 using System.IO;
 using System.Net;
+using CRTG.Common;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -53,7 +54,7 @@ namespace CRTG.Sensors.SensorLibrary
         {
             // Connect to the database and retrieve this value
             DataTable dt = null;
-            using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
+            using (SqlConnection conn = new SqlConnection(this.Device.ODBCConnectionString)) {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
                     cmd.CommandTimeout = TimeoutSeconds;

@@ -13,13 +13,13 @@ using System.IO;
 using CSVFile;
 using System.Data;
 using CRTG.Common;
+using CRTG.Sensors.Data;
 
-namespace CRTG.Serialization
+namespace CRTG.Sensors.Data
 {
-    public class CSVSensorDataStore : IDataStore
+    public class CSVSensorDataStore : BaseDataStore
     {
         protected string _csv_folder_path;
-
 
         public CSVSensorDataStore(string csv_folder_path)
         {
