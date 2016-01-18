@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ namespace CRTG.Common
         DateTime NextCollectTime { get; set; }
         DateTime LastCollectTime { get; set; }
         bool InFlight { get; set; }
+
+        [JsonIgnore]
         IDevice Device { get; set; }
         bool InError { get; set; }
         string LastException { get; set; }

@@ -20,6 +20,7 @@ using log4net;
 using CRTG.Sensors.Devices;
 using CRTG.Common;
 using CRTG.Sensors.Data;
+using Newtonsoft.Json;
 
 namespace CRTG
 {
@@ -152,7 +153,7 @@ namespace CRTG
         /// <param name="s"></param>
         public void AddDevice(DeviceContext dc)
         {
-            dc.Identity = NextSensorNum++;
+            dc.Identity = NextDeviceNum++;
             Devices.Add(dc);
         }
         #endregion
@@ -252,6 +253,9 @@ namespace CRTG
         {
             Devices = new List<DeviceContext>();
             string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            if (path.StartsWith("file:\\", StringComparison.CurrentCultureIgnoreCase)) {
+                path = path.Substring(6);
+            }
             DataStore = new CSVSensorDataStore(Path.Combine(path, "sensors"));
         }
 
@@ -264,16 +268,13 @@ namespace CRTG
         {
             SensorProject sp = null;
 
-            XmlSerializer deserializer = new XmlSerializer(typeof(SensorProject));
-            deserializer.UnknownNode += new XmlNodeEventHandler(deserializer_UnknownNode);
-            deserializer.UnknownElement += new XmlElementEventHandler(deserializer_UnknownElement);
-            deserializer.UnknownAttribute += new XmlAttributeEventHandler(deserializer_UnknownAttribute);
-            deserializer.UnreferencedObject += new UnreferencedObjectEventHandler(deserializer_UnreferencedObject);
+            // Read in the text
             try {
-                using (TextReader textReader = new StreamReader(filename, Encoding.UTF8)) {
-                    sp = (SensorProject)deserializer.Deserialize(textReader);
-                    textReader.Close();
-                }
+                var settings = new JsonSerializerSettings();
+                settings.TypeNameHandling = TypeNameHandling.Objects;
+                settings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                string s = File.ReadAllText(filename);
+                sp = JsonConvert.DeserializeObject<SensorProject>(s, settings);
 
             // Failed to load
             } catch (Exception ex) {
@@ -283,6 +284,7 @@ namespace CRTG
             }
 
             // Now make all the sensors read their data
+            Current = sp;
             List<int> sensor_id_list = new List<int>();
             foreach (DeviceContext dc in sp.Devices) {
                 foreach (BaseSensor bs in dc.Sensors) {
@@ -304,7 +306,6 @@ namespace CRTG
             if (!Directory.Exists("logs")) Directory.CreateDirectory("Logs");
 
             // Save this as the current project
-            Current = sp;
             return sp;
         }
 
@@ -336,11 +337,11 @@ namespace CRTG
         public void Serialize(string filename)
         {
             try {
-                XmlSerializer serializer = new XmlSerializer(typeof(SensorProject));
-                using (TextWriter textWriter = new StreamWriter(filename, false, Encoding.UTF8, 4096)) {
-                    serializer.Serialize(textWriter, this);
-                    textWriter.Close();
-                }
+                var settings = new JsonSerializerSettings();
+                settings.TypeNameHandling = TypeNameHandling.Objects;
+                settings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                var s = JsonConvert.SerializeObject(SensorProject.Current, settings);
+                File.WriteAllText(filename, s);
             } catch (Exception ex) {
                 SensorProject.LogException("Error saving sensor project", ex);
             }
