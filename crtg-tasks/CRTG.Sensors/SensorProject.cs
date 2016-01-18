@@ -31,12 +31,12 @@ namespace CRTG
         /// All the sensors in a project
         /// </summary>
         [AutoUI(Skip=true)]
-        public List<DeviceContext> Devices { get; set; }
+        public List<IDevice> Devices { get; set; }
 
         /// <summary>
         /// Dependency injection for notifications
         /// </summary>
-        [AutoUI(Skip = true), XmlIgnore]
+        [AutoUI(Skip = true), JsonIgnore]
         public BaseNotificationSystem Notifications { get; set; }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace CRTG
 
                     // Loop through sensors, and spawn a work item for them
                     for (int i = 0; i < Devices.Count; i++) {
-                        DeviceContext dc = Devices[i];
+                        IDevice dc = Devices[i];
                         for (int j = 0; j < dc.Sensors.Count; j++) {
 
                             // Allow us to kick out
@@ -251,7 +251,7 @@ namespace CRTG
 
         public SensorProject()
         {
-            Devices = new List<DeviceContext>();
+            Devices = new List<IDevice>();
             string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             if (path.StartsWith("file:\\", StringComparison.CurrentCultureIgnoreCase)) {
                 path = path.Substring(6);
@@ -280,7 +280,7 @@ namespace CRTG
             } catch (Exception ex) {
                 SensorProject.LogException("Error loading sensor XML file", ex);
                 sp = new SensorProject();
-                sp.Devices = new List<DeviceContext>();
+                sp.Devices = new List<IDevice>();
             }
 
             // Now make all the sensors read their data

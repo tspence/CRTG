@@ -47,7 +47,7 @@ namespace CRTG.Sensors.Data
 
                             // Load the measurement time if present
                             int ms = 0;
-                            if (line.Length >= 4)  int.TryParse(line[3], out ms); 
+                            if (line.Length >= 3)  int.TryParse(line[2], out ms); 
 
                             // Save values
                             if (DateTime.TryParse(line[0], out t) && Decimal.TryParse(line[1], out val)) {

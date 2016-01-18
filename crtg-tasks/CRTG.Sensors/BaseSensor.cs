@@ -19,13 +19,10 @@ using CRTG.Serialization;
 using CRTG.Sensors.Devices;
 using CRTG.Sensors.SensorLibrary;
 using CRTG.Common;
+using Newtonsoft.Json;
 
 namespace CRTG
 {
-    [Serializable, XmlInclude(typeof(SqlSensor)), XmlInclude(typeof(WmiCpuSensor)), XmlInclude(typeof(BasicWmiSensor)), XmlInclude(typeof(HttpSensor)),
-    XmlInclude(typeof(SqlReportSensor)), XmlInclude(typeof(WmiDiskSensor)), XmlInclude(typeof(WmiMemorySensor)),
-    XmlInclude(typeof(WmiDiskActivity)), XmlInclude(typeof(FileSensor)), XmlInclude(typeof(FolderSensor)), XmlInclude(typeof(HttpXmlSensor)), 
-    XmlInclude(typeof(BaseNotificationSystem))]
     public class BaseSensor : ISensor
     {
         /// <summary>
@@ -68,7 +65,7 @@ namespace CRTG
         /// <summary>
         /// All the data collected with this sensor over time
         /// </summary>
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         public SensorDataCollection SensorData { get; set; }
 
         /// <summary>
@@ -92,13 +89,13 @@ namespace CRTG
         /// <summary>
         /// Keeps track of whether a collection call is in flight
         /// </summary>
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         public bool InFlight { get; set; }
 
         /// <summary>
         /// Keeps track of whether a collection call is in flight
         /// </summary>
-        [XmlIgnore, AutoUI(Skip=true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         public IDevice Device { get; set; }
 
         /// <summary>
@@ -149,7 +146,7 @@ namespace CRTG
         /// <summary>
         /// Keeps track of when we last uploaded this object
         /// </summary>
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         public DateTime LastUploadTime { get; set; }
 
 
@@ -199,16 +196,17 @@ namespace CRTG
                 } else {
                     SensorProject.LogException("Sensor error: (#" + this.Identity + ") " + this.Name, ex);
                 }
-            }
 
-            // Move forward to next collection time period - skip any number of intermediate time periods
-            while (NextCollectTime < DateTime.UtcNow) {
-                LastCollectTime = NextCollectTime;
-                NextCollectTime = NextCollectTime.AddSeconds((int)Frequency);
-            }
+            // Release the inflight status so that this sensor can collect again
+            } finally {
+                InFlight = false;
 
-            // Test all conditions for this sensor
-            InFlight = false;
+                // Move forward to next collection time period - skip any number of intermediate time periods
+                while (NextCollectTime < DateTime.UtcNow) {
+                    LastCollectTime = NextCollectTime;
+                    NextCollectTime = NextCollectTime.AddSeconds((int)Frequency);
+                }
+            }
 
             // Now, all elements that can safely be moved after the inflight flag is turned off
             if (success) {
@@ -252,13 +250,13 @@ namespace CRTG
             }
         }
 
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         private decimal? _prior_value;
 
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         private NotificationState _current_state = NotificationState.Normal;
 
-        [XmlIgnore, AutoUI(Skip = true)]
+        [JsonIgnore, AutoUI(Skip = true)]
         public NotificationState CurrentState
         {
             get { return _current_state; }
