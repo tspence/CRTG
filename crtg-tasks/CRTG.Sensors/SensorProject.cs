@@ -256,7 +256,10 @@ namespace CRTG
             if (path.StartsWith("file:\\", StringComparison.CurrentCultureIgnoreCase)) {
                 path = path.Substring(6);
             }
-            DataStore = new CSVSensorDataStore(Path.Combine(path, "sensors"));
+
+            // Refactor to move to SQLite
+            //DataStore = new CSVSensorDataStore(Path.Combine(path, "sensors"));
+            DataStore = new SqliteDataStore(Path.Combine(path, "sensors.sqlite"));
         }
 
         /// <summary>

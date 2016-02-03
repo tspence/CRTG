@@ -39,6 +39,10 @@
     <Reference Include="CSVFile">
       <HintPath>..\..\crtg-libraries\CSVFile\CSVFile.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DiffieHellman">
       <HintPath>..\..\crtg-libraries\SharpSSH\DiffieHellman.dll</HintPath>
     </Reference>
@@ -78,7 +82,15 @@
     <Compile Include="BaseNotificationSystem.cs" />
     <Compile Include="BaseSensor.cs" />
     <Compile Include="Data\SqliteDataStore.cs" />
+    <Compile Include="Data\SqliteHelperExtensions.cs" />
+    <Compile Include="Data\SqliteSensorData.cs" />
+    <Compile Include="Data\SqliteSensorException.cs" />
     <Compile Include="Devices\DeviceContext.cs" />
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
     <Compile Include="SensorLibrary\BasicWmiSensor.cs" />
     <Compile Include="SensorLibrary\FileSensor.cs" />
     <Compile Include="SensorLibrary\FolderSensor.cs" />
@@ -110,6 +122,18 @@
       <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
       <Name>CRTG.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\schema_exceptions_index.sql" />
+    <Content Include="Resources\schema_measurements_index.sql" />
+    <Content Include="Resources\schema_exceptions_table.sql" />
+    <Content Include="Resources\schema_measurements_table.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\System.Data.SQLite.Core.1.0.98.1\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\..\packages\System.Data.SQLite.Core.1.0.98.1\build\net45\System.Data.SQLite.Core.targets')" />
