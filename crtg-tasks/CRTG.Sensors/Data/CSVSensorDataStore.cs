@@ -24,6 +24,12 @@ namespace CRTG.Sensors.Data
         public CSVSensorDataStore(string csv_folder_path)
         {
             _csv_folder_path = csv_folder_path;
+            if (String.IsNullOrEmpty(_csv_folder_path)) {
+                _csv_folder_path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location),"SensorData");
+            }
+            if (!Directory.Exists(_csv_folder_path)) {
+                Directory.CreateDirectory(_csv_folder_path);
+            }
         }
 
         public SensorDataCollection RetrieveData(ISensor sensor, DateTime? start_date = null, DateTime? end_date = null, bool fetch_exceptions = false)
@@ -92,7 +98,7 @@ namespace CRTG.Sensors.Data
         /// <returns></returns>
         private string GetFilename(ISensor sensor)
         {
-            string fn= Path.Combine(_csv_folder_path, sensor.Identity.ToString() + ".csv");
+            string fn = Path.Combine(_csv_folder_path, sensor.Identity.ToString() + ".csv");
             return fn;
         }
 

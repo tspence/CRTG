@@ -10,7 +10,7 @@ namespace CRTG.Common
     {
         public DateTime ExceptionTime { get; set; }
         public string Description { get; set; }
-        public Exception Item { get; set; }
+        public string StackTrace { get; set; }
         public bool Cleared { get; set; }
     }
 }

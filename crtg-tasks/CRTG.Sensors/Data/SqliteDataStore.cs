@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using System.Data.Common;
+using System.IO;
 
 namespace CRTG.Sensors.Data
 {
@@ -21,7 +22,7 @@ namespace CRTG.Sensors.Data
             _sqlite_filename = filename;
 
             // Create the database if it does not exist or cannot be opened
-            string connstring = String.Format("Data Source={0};Version=3;Pooling=True;Max Pool Size=100;Compress=true;", _sqlite_filename);
+            _connstring = String.Format("Data Source={0};Version=3;Pooling=True;Max Pool Size=100;Compress=true;", _sqlite_filename);
             UpgradeDatabase();
         }
 
@@ -35,6 +36,13 @@ namespace CRTG.Sensors.Data
         {
             SQLiteConnection conn = null;
             try {
+
+                // First, does the database exist?  If not, create it
+                if (!File.Exists(_sqlite_filename)) {
+                    SQLiteConnection.CreateFile(_sqlite_filename);
+                }
+
+                // Open it
                 using (conn = new SQLiteConnection(_connstring)) {
                     conn.Open();
 
@@ -116,7 +124,32 @@ namespace CRTG.Sensors.Data
         /// <param name="data_to_save"></param>
         public void AppendData(ISensor sensor, SensorException exception_to_save)
         {
-            throw new Exception("Can't save exceptions yet");
+            using (var conn = new SQLiteConnection(_connstring)) {
+                conn.Open();
+
+                // Insert using raw compiled code
+                using (var cmd = conn.CreateCommand()) {
+                    cmd.CommandText = @"INSERT INTO exceptions (sensor_id, exception_time, exception_text, stacktrace, cleared) values (@sensor_id, @exception_time, @exception_text, @stacktrace, @cleared)";
+
+                    // Set up parameters
+                    string[] parameter_names = new[] { "@sensor_id", "@exception_time", "@exception_text", "@stacktrace", "@cleared" };
+                    DbParameter[] parameters = parameter_names.Select(pn =>
+                    {
+                        DbParameter parameter = cmd.CreateParameter();
+                        parameter.ParameterName = pn;
+                        cmd.Parameters.Add(parameter);
+                        return parameter;
+                    }).ToArray();
+
+                    // Iterate through the objects in this list
+                    parameters[0].Value = sensor.Identity;
+                    parameters[1].Value = exception_to_save.ExceptionTime.Ticks;
+                    parameters[2].Value = exception_to_save.Description;
+                    parameters[3].Value = exception_to_save.StackTrace;
+                    parameters[4].Value = exception_to_save.Cleared ? 1 : 0;
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         /// <summary>
@@ -129,7 +162,72 @@ namespace CRTG.Sensors.Data
         /// <returns></returns>
         public SensorDataCollection RetrieveData(ISensor sensor, DateTime? start_date = null, DateTime? end_date = null, bool fetch_exceptions = false)
         {
-            return null;
+            // Create a new sensor data collection object
+            SensorDataCollection result = new SensorDataCollection();
+            result.StartDate = DateTime.MinValue;
+            result.EndDate = DateTime.MaxValue;
+
+            // Start the query process
+            using (var conn = new SQLiteConnection(_connstring)) {
+                conn.Open();
+
+                // Insert using raw compiled code
+                using (var cmd = conn.CreateCommand()) {
+
+                    // Set up parameters
+                    string[] parameter_names = new[] { "@sensor_id", "@start_date", "@end_date" };
+                    DbParameter[] parameters = parameter_names.Select(pn =>
+                    {
+                        DbParameter parameter = cmd.CreateParameter();
+                        parameter.ParameterName = pn;
+                        cmd.Parameters.Add(parameter);
+                        return parameter;
+                    }).ToArray();
+                    
+                    // Next set up the actual query text
+                    string measurement_query = @"SELECT measurement_time, value, collection_time_ms FROM measurements WHERE sensor_id = @sensor_id";
+                    string exception_query = @"SELECT exception_time, exception_text, stacktrace, cleared FROM exceptions WHERE sensor_id = @sensor_id";
+                    parameters[0].Value = sensor.Identity;
+                    if (start_date.HasValue) {
+                        measurement_query += " AND measurement_time >= @start_date";
+                        exception_query += " AND exception_time >= @start_date";
+                        parameters[1].Value = start_date.Value.Ticks;
+                        result.StartDate = start_date.Value;
+                    }
+                    if (end_date.HasValue) {
+                        measurement_query += " AND measurement_time <= @end_date";
+                        exception_query += " AND exception_time <= @end_date";
+                        parameters[2].Value = end_date.Value.Ticks;
+                        result.EndDate = end_date.Value;
+                    }
+
+                    // Now query for measurements
+                    cmd.CommandText = measurement_query;
+                    using (var dr = cmd.ExecuteReader()) {
+                        while (dr.Read()) {
+                            SensorData sd = new SensorData();
+                            sd.Time = new DateTime(dr.GetInt64(0));
+                            sd.Value = dr.GetDecimal(1);
+                            sd.CollectionTimeMs = dr.GetInt32(2);
+                            result.Data.Add(sd);
+                        }
+                    }
+
+                    // Now reset the query for the exceptions table
+                    cmd.CommandText = exception_query;
+                    using (var dr = cmd.ExecuteReader()) {
+                        while (dr.Read()) {
+                            SensorException se = new SensorException();
+                            se.ExceptionTime = new DateTime(dr.GetInt64(0));
+                            se.Description = dr.GetString(1);
+                            se.StackTrace = dr.GetString(2);
+                            se.Cleared = (dr.GetInt32(3) == 1);
+                            result.Exceptions.Add(se);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -138,6 +236,7 @@ namespace CRTG.Sensors.Data
         /// <param name="sensor"></param>
         public void DeleteSensorData(ISensor sensor)
         {
+            throw new Exception("Can't delete data yet");
         }
 
         /// <summary>

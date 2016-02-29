@@ -96,7 +96,7 @@ namespace CRTG
         /// <summary>
         /// Indicates the method we use to store data
         /// </summary>
-        [AutoUI(Skip=true)]
+        [AutoUI(Skip = true), JsonIgnore]
         public IDataStore DataStore { get; set; }
 
 
