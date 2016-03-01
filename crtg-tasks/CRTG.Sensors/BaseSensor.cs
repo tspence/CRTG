@@ -364,53 +364,13 @@ namespace CRTG
 
         #region Duplicating a sensor
         /// <summary>
-        /// Convert a single sensor to XML
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public static string ToXml(BaseSensor s)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(BaseSensor));
-            using (MemoryStream ms = new MemoryStream()) {
-
-                // Write the XML to a memory object
-                var sw = new StreamWriter(ms, Encoding.UTF8);
-                serializer.Serialize(sw, s);
-
-                // Rewind
-                sw.Flush();
-                ms.Position = 0;
-
-                // Read back the XML we produced
-                using (var sr = new StreamReader(ms, Encoding.UTF8)) {
-                    return sr.ReadToEnd();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Convert a single sensor from XML into an object
-        /// </summary>
-        /// <param name="xml_string"></param>
-        /// <returns></returns>
-        public static BaseSensor FromXml(string xml_string)
-        {
-            XmlSerializer deserializer = new XmlSerializer(typeof(BaseSensor));
-            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(xml_string), false)) {
-                using (StreamReader sr = new StreamReader(ms, Encoding.UTF8)) {
-                    return (BaseSensor)deserializer.Deserialize(sr);
-                }
-            }
-        }
-
-        /// <summary>
         /// Duplicate this sensor
         /// </summary>
         /// <returns></returns>
         public BaseSensor Duplicate()
         {
-            string xml = ToXml(this);
-            var s = FromXml(xml);
+            var serialized = JsonConvert.SerializeObject(this);
+            var s = JsonConvert.DeserializeObject(serialized) as BaseSensor;
 
             // Set some sensible defaults
             s.Enabled = false;
@@ -419,6 +379,7 @@ namespace CRTG
             s.LastUploadTime = DateTime.MinValue;
             s.LatestData = 0.0m;
             s.NextCollectTime = DateTime.MinValue;
+            s.Identity = -1;
             s.Name = s.Name + " (Copy)";
 
             // Here's your dupe
