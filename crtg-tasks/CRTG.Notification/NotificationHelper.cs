@@ -275,7 +275,8 @@ namespace CRTG.Notification
 
                 // Does this message require a chart attachment?
                 if (body.Contains("@CHART@")) {
-                    chart = ChartHelper.GetDisplayPackage(sensor, ViewTimeframe.Day, 500, 300);
+                    var raw_data = SensorProject.Current.DataStore.RetrieveData(sensor, DateTime.UtcNow.AddMinutes(-(int)ViewTimeframe.Day), null, false);
+                    chart = ChartHelper.GetDisplayPackage(sensor, raw_data, ViewTimeframe.Day, 500, 300);
                     chart_attachment_file = Path.ChangeExtension(Path.GetTempFileName(), "png");
                     chart.SaveToFile(chart_attachment_file);
                     body = body.Replace("@CHART@", String.Format("<img src=\"cid:{0}\"/>", Path.GetFileName(chart_attachment_file)));

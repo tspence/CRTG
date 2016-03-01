@@ -26,11 +26,11 @@ namespace CRTG.Charts
         private Image _chart_image;
         private Bitmap _chart_bitmap;
 
-        public CrtgChart(ISensor sensor, ViewTimeframe viewtime, int width, int height)
+        public CrtgChart(ISensor sensor, SensorDataCollection data, ViewTimeframe viewtime, int width, int height)
         {
             _raw_data = new List<SensorData>();
-            if (sensor != null && sensor.SensorData != null) {
-                _raw_data = sensor.SensorData.Data.ToList();
+            if (data != null) {
+                _raw_data = data.Data.ToList();
             }
             _width = width;
             _height = height;

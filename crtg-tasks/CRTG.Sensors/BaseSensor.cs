@@ -199,13 +199,14 @@ namespace CRTG
 
             // Release the inflight status so that this sensor can collect again
             } finally {
-                InFlight = false;
 
                 // Move forward to next collection time period - skip any number of intermediate time periods
-                while (NextCollectTime < DateTime.UtcNow) {
-                    LastCollectTime = NextCollectTime;
-                    NextCollectTime = NextCollectTime.AddSeconds((int)Frequency);
+                if (NextCollectTime < DateTime.UtcNow) {
+                    NextCollectTime = DateTime.UtcNow.AddSeconds((int)Frequency);
                 }
+
+                // Allow this to be recollected again
+                InFlight = false;
             }
 
             // Now, all elements that can safely be moved after the inflight flag is turned off

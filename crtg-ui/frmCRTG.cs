@@ -376,23 +376,18 @@ namespace CRTG.UI
 
         private void RebindMeasurements(bool force)
         {
-            if (SelectedSensor == null) return;
+            var s = SelectedSensor;
+            if (s == null) return;
 
             // Gather data information
-            int data_size = 0;
-            if (SelectedSensor != null && SelectedSensor.SensorData != null) {
-                data_size = SelectedSensor.SensorData.Data.Count;
-            }
             bool sensor_updated = false;
-            if ((SelectedSensor != null) && (SelectedSensor.LastCollectTime > _last_update_time)) {
+            if (s.LastCollectTime > _last_update_time) {
                 sensor_updated = true;
             }
 
             // Only change things if the number of rows we want to show is different from our current row count
             if ((force) || (_current_grid_contents == null) || (sensor_updated)) {
-                if (SelectedSensor != null) {
-                    _last_update_time = SelectedSensor.LastCollectTime;
-                }
+                _last_update_time = SelectedSensor.LastCollectTime;
 
                 // Dispose of previous measurements
                 if (_current_measurements != null) {
@@ -405,7 +400,10 @@ namespace CRTG.UI
                 if (ddlChartTime.SelectedItem != null) {
                     vt = (ViewTimeframe)ddlChartTime.SelectedItem;
                 }
-                _current_measurements = ChartHelper.GetDisplayPackage(SelectedSensor, vt, pbChart.Width, pbChart.Height);
+
+                // Retrieve data and put it into the chart
+                var data = SensorProject.Current.DataStore.RetrieveData(s, DateTime.UtcNow.AddMinutes(- (int)vt), null, false);
+                _current_measurements = ChartHelper.GetDisplayPackage(s, data, vt, pbChart.Width, pbChart.Height);
 
                 // Show measurements
                 pbChart.Image = _current_measurements.ChartImage;

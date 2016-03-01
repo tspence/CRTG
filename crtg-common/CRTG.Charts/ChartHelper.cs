@@ -26,9 +26,9 @@ namespace CRTG.Charts
         /// <param name="chart_width"></param>
         /// <param name="chart_height"></param>
         /// <returns></returns>
-        public static CrtgChart GetDisplayPackage(ISensor sensor, ViewTimeframe viewtime, int width, int height)
+        public static CrtgChart GetDisplayPackage(ISensor sensor, SensorDataCollection data, ViewTimeframe viewtime, int width, int height)
         {
-            return new CrtgChart(sensor, viewtime, width, height);
+            return new CrtgChart(sensor, data, viewtime, width, height);
         }
     }
 }
