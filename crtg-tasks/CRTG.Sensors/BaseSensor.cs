@@ -183,7 +183,8 @@ namespace CRTG
             // Collect data and clock how long it took
             try {
                 value = Collect();
-                ts = DateTime.UtcNow - collect_start_time;
+                LastCollectTime = DateTime.UtcNow;
+                ts = LastCollectTime - collect_start_time;
                 sd = AddValue(value, collect_start_time, (int)ts.TotalMilliseconds);
                 success = true;
 
