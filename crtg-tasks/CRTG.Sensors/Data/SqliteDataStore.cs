@@ -188,13 +188,13 @@ namespace CRTG.Sensors.Data
                     string measurement_query = @"SELECT measurement_time, value, collection_time_ms FROM measurements WHERE sensor_id = @sensor_id";
                     string exception_query = @"SELECT exception_time, exception_text, stacktrace, cleared FROM exceptions WHERE sensor_id = @sensor_id";
                     parameters[0].Value = sensor.Identity;
-                    if (start_date.HasValue) {
+                    if (start_date != null && start_date.HasValue) {
                         measurement_query += " AND measurement_time >= @start_date";
                         exception_query += " AND exception_time >= @start_date";
                         parameters[1].Value = start_date.Value.Ticks;
                         result.StartDate = start_date.Value;
                     }
-                    if (end_date.HasValue) {
+                    if (end_date != null && end_date.HasValue) {
                         measurement_query += " AND measurement_time <= @end_date";
                         exception_query += " AND exception_time <= @end_date";
                         parameters[2].Value = end_date.Value.Ticks;
