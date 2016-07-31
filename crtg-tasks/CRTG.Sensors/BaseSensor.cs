@@ -1,5 +1,5 @@
 ﻿/*
- * 2012 - 2015 Ted Spence, http://tedspence.com
+ * 2012 - 2016 Ted Spence, http://tedspence.com
  * License: http://www.apache.org/licenses/LICENSE-2.0 
  * Home page: https://github.com/tspence/CRTG
  * 
@@ -8,16 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using CSVFile;
-using System.IO;
 using CRTG.Sensors;
-using System.Collections.Concurrent;
-using CRTG.Serialization;
-using CRTG.Sensors.Devices;
-using CRTG.Sensors.SensorLibrary;
 using CRTG.Common;
 using Newtonsoft.Json;
 

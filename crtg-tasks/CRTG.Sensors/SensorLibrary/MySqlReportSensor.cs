@@ -1,7 +1,7 @@
 ﻿using CRTG.Common;
 using MySql.Data.MySqlClient;
 /*
- * 2012 - 2015 Ted Spence, http://tedspence.com
+ * 2012 - 2016 Ted Spence, http://tedspence.com
  * License: http://www.apache.org/licenses/LICENSE-2.0 
  * Home page: https://github.com/tspence/CRTG
  * 

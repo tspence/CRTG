@@ -1,5 +1,5 @@
 ﻿/*
- * 2012 - 2015 Ted Spence, http://tedspence.com
+ * 2012 - 2016 Ted Spence, http://tedspence.com
  * License: http://www.apache.org/licenses/LICENSE-2.0 
  * Home page: https://github.com/tspence/CRTG
  * 
@@ -24,7 +24,6 @@ namespace CRTG.Charts
         private double _range_in_seconds, _range_in_value;
         private Rectangle _chart_rect;
         private Image _chart_image;
-        private Bitmap _chart_bitmap;
 
         public CrtgChart(ISensor sensor, SensorDataCollection data, ViewTimeframe viewtime, int width, int height)
         {
@@ -42,7 +41,9 @@ namespace CRTG.Charts
 
             // If there's an artificial limitation on the time window, use that instead
             if (viewtime == ViewTimeframe.AllTime) {
-                _min_date = (from r in _raw_data select r.Time).Min();
+                if (_raw_data.Count > 0) {
+                    _min_date = (from r in _raw_data select r.Time).Min();
+                }
             } else {
                 _min_date = _max_date.AddMinutes(-(int)viewtime);
             }
