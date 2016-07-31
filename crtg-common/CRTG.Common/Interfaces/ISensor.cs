@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRTG.Common
+namespace CRTG.Common.Interfaces
 {
-    public interface ISensor
+    public interface ISensor : ISensorTreeModel
     {
         int Identity { get; set; }
-        string Name { get; set; }
         string Description { get; set; }
         string MeasurementUnit { get; set; }
         Interval Frequency { get; set; }

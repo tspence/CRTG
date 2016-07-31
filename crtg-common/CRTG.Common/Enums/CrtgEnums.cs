@@ -177,4 +177,14 @@ namespace CRTG.Common
         DateDiffFromLocal = 1,
         Decimal = 2,
     }
+
+    public enum SensorIcon
+    {
+        SensorRoot = 0,
+        Device = 1,
+        SensorNormal = 2,
+        SensorPaused = 3,
+        SensorCollecting = 4,
+        SensorErrored = 5,
+    }
 }

@@ -55,6 +55,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\ISensor.cs" />
     <Compile Include="Data\SensorData.cs" />
+    <Compile Include="Interfaces\ISensorTreeModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

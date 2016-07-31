@@ -21,16 +21,46 @@ using CRTG.Sensors.Devices;
 using CRTG.Common;
 using CRTG.Sensors.Data;
 using Newtonsoft.Json;
+using CRTG.Common.Interfaces;
 
 namespace CRTG
 {
     [Serializable]
-    public class SensorProject
+    public class SensorProject : ISensorTreeModel
     {
+        #region Observables
         /// <summary>
-        /// All the sensors in a project
+        /// The name of this project
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The icon that should be displayed for this sensor
+        /// </summary>
+        public string IconPath
+        {
+            get
+            {
+                return "Resources/project.png";
+            }
+        }
+
+        /// <summary>
+        /// All the devices in this project
         /// </summary>
         [AutoUI(Skip=true)]
+        public IEnumerable<ISensorTreeModel> Children
+        {
+            get
+            {
+                return Devices;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// All the devices in this project
+        /// </summary>
         public List<IDevice> Devices { get; set; }
 
         /// <summary>

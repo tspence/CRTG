@@ -12,6 +12,7 @@ using System.Text;
 using System.Drawing;
 using System.IO;
 using CRTG.Common;
+using CRTG.Common.Interfaces;
 
 namespace CRTG.Charts
 {

@@ -13,6 +13,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Drawing;
 using CRTG.Common;
+using CRTG.Common.Interfaces;
 
 namespace CRTG.Charts
 {

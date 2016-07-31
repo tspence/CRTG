@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRTG.UI"
-        xmlns:models="clr-namespace:CRTG.UI.Models"
+        xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
         mc:Ignorable="d" 
         Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip">
     <Grid>
@@ -20,8 +20,12 @@
         <!-- Treeview on leftmost cell -->
         <TreeView Grid.Row="0" Grid.Column="0" x:Name="tvSensors1" ItemsSource="{Binding SensorTree}">
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type models:ITreeViewModel}">
-                    <TreeViewItem Header="{Binding Name}"/>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type i:ISensorTreeModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconPath}" />
+                        <TextBlock Text="{Binding IconPath}" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
@@ -32,10 +36,14 @@
         <!-- TabControl on rightmost cell -->
         <TabControl Grid.Row="0" Grid.Column="2" x:Name="tabControl1">
             <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="#FFE5E5E5">
+                    <Image Source="Resources/flag_orange.png" />
+                </Grid>
             </TabItem>
             <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="#FFE5E5E5">
+                    <Image Source="Resources/flag_orange.png" />
+                </Grid>
             </TabItem>
         </TabControl>
 

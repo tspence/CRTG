@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRTG.Common
+namespace CRTG.Common.Interfaces
 {
     public interface IDataStore
     {

@@ -14,6 +14,7 @@ using CSVFile;
 using System.Data;
 using CRTG.Common;
 using CRTG.Sensors.Data;
+using CRTG.Common.Interfaces;
 
 namespace CRTG.Sensors.Data
 {

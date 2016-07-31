@@ -11,21 +11,46 @@ using System.Linq;
 using CRTG.Sensors;
 using CRTG.Common;
 using Newtonsoft.Json;
+using CRTG.Common.Interfaces;
 
 namespace CRTG
 {
     public class BaseSensor : ISensor
     {
+        #region Observable
+        /// <summary>
+        /// Friendly name for this sensor
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The icon that should be displayed for this sensor
+        /// </summary>
+        public string IconPath
+        {
+            get
+            {
+                return "/AssemblyName;Resources/Sensor.png";
+            }
+        }
+
+        /// <summary>
+        /// Sensors have no children!
+        /// </summary>
+        public IEnumerable<ISensorTreeModel> Children
+        {
+            get
+            {
+                return null;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// The sensor's identity
         /// </summary>
         [AutoUI(Skip = true)]
         public int Identity { get; set; }
-
-        /// <summary>
-        /// Friendly name for this sensor
-        /// </summary>
-        public string Name { get; set; }
 
         /// <summary>
         /// Longer friendly description for this sensor

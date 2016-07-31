@@ -56,13 +56,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\BaseTreeViewModel.cs" />
-    <Compile Include="Models\ITreeViewModel.cs" />
-    <Compile Include="Resource1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource1.resx</DependentUpon>
-    </Compile>
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
@@ -101,10 +94,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resource1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -115,64 +104,64 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_green.png" />
+    <Resource Include="Resources\flag_green.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_orange.png" />
+    <Resource Include="Resources\flag_orange.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_pink.png" />
+    <Resource Include="Resources\flag_pink.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_purple.png" />
+    <Resource Include="Resources\flag_purple.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_red.png" />
+    <Resource Include="Resources\flag_red.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_yellow.png" />
+    <Resource Include="Resources\flag_yellow.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\folder.png" />
+    <Resource Include="Resources\project.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\hourglass.png" />
+    <Resource Include="Resources\hourglass.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\lightning.png" />
+    <Resource Include="Resources\lightning.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\pulse-8x.png" />
+    <Resource Include="Resources\pulse-8x.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\stop.png" />
+    <Resource Include="Resources\stop.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\accept.png" />
+    <Resource Include="Resources\accept.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\asterisk_orange.png" />
+    <Resource Include="Resources\asterisk_orange.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\cancel.png" />
+    <Resource Include="Resources\cancel.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\cog.png" />
+    <Resource Include="Resources\sensor.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\computer.png" />
+    <Resource Include="Resources\device.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\control_pause_blue.png" />
+    <Resource Include="Resources\control_pause_blue.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CRTG.ico" />
+    <Resource Include="Resources\CRTG.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\email.png" />
+    <Resource Include="Resources\email.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\flag_blue.png" />
+    <Resource Include="Resources\flag_blue.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\crtg-common\CRTG.Charts\CRTG.Charts.csproj">

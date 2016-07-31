@@ -11,12 +11,39 @@ using System.Linq;
 using System.Text;
 using System.Management;
 using CRTG.Common;
+using CRTG.Common.Interfaces;
 
 namespace CRTG.Sensors.Devices
 {
     [Serializable]
     public class DeviceContext : IDevice
     {
+        #region Observable
+        public string Name
+        {
+            get
+            {
+                return DeviceName;
+            }
+        }
+
+        public string IconPath
+        {
+            get
+            {
+                return "/AssemblyName;Resources/Device.png";
+            }
+        }
+
+        public IEnumerable<ISensorTreeModel> Children
+        {
+            get
+            {
+                return Sensors;
+            }
+        }
+        #endregion
+
         [AutoUI(Skip=true)]
         public List<ISensor> Sensors { get; set; }
 

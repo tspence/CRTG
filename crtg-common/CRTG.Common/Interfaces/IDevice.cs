@@ -1,16 +1,15 @@
-﻿using System;
+﻿using CRTG.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRTG.Common
+namespace CRTG.Common.Interfaces
 {
-    public interface IDevice
+    public interface IDevice : ISensorTreeModel
     {
-        List<ISensor> Sensors { get; set; }
         int Identity { get; set; }
-        string DeviceName { get; set; }
         string Address { get; set; }
         string Username { get; set; }
         string Password { get; set; }
@@ -18,5 +17,7 @@ namespace CRTG.Common
         DeviceType Category { get; set; }
         string DeviceInformation { get; set; }
         string ConnectionString { get; set; }
+        string DeviceName { get; set; }
+        List<ISensor> Sensors { get; set; }
     }
 }

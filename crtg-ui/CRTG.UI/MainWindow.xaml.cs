@@ -1,4 +1,4 @@
-﻿using CRTG.UI.Models;
+﻿using CRTG.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,27 +21,30 @@ namespace CRTG.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<BaseTreeViewModel> SensorTree { get; set; }
+        public List<ISensorTreeModel> SensorTree { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
             // Let's set up some models!
-            SensorTree = new List<BaseTreeViewModel>();
-            SensorTree.Add(MakeSample(5));
+            //SensorTree = new List<BaseTreeViewModel>();
+            //SensorTree.Add(MakeSample(5));
+            SensorTree = new List<ISensorTreeModel>();
+            SensorTree.Add(SensorProject.Current);
+            SensorProject.Current.Name = "Hi";
             tvSensors1.DataContext = this;
         }
 
-        private BaseTreeViewModel MakeSample(int v)
-        {
-            BaseTreeViewModel m = new BaseTreeViewModel();
-            m.Name = Guid.NewGuid().ToString();
-            m.Children = new List<ITreeViewModel>();
-            for (int i = 0; i < v; i++) {
-                m.Children.Add(MakeSample(v - 1));
-            }
-            return m;
-        }
+        //private BaseTreeViewModel MakeSample(int v)
+        //{
+        //    BaseTreeViewModel m = new BaseTreeViewModel();
+        //    m.Name = Guid.NewGuid().ToString();
+        //    m.Children = new List<ITreeViewModel>();
+        //    for (int i = 0; i < v; i++) {
+        //        m.Children.Add(MakeSample(v - 1));
+        //    }
+        //    return m;
+        //}
     }
 }

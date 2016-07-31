@@ -13,6 +13,7 @@ using System.Linq;
 using Dapper;
 using System.Data.Common;
 using System.IO;
+using CRTG.Common.Interfaces;
 
 namespace CRTG.Sensors.Data
 {
