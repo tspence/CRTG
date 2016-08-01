@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -7,6 +6,8 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace CRTG.Notification
 {
@@ -22,7 +23,7 @@ namespace CRTG.Notification
         {
             string fn = Path.GetTempFileName() + ".xlsx";
             try {
-                using (SpreadsheetDocument workbook = SpreadsheetDocument.Create(fn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook, true)) {
+                using (var workbook = SpreadsheetDocument.Create(fn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook, true)) {
 
                     // Construct the workbook parts
                     var workbookPart = workbook.AddWorkbookPart();

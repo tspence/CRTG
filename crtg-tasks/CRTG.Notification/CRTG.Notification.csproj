@@ -30,14 +30,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ClosedXML">
+    <Reference Include="ClosedXML, Version=0.76.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="CSVFile">
       <HintPath>..\..\crtg-libraries\CSVFile\CSVFile.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <HintPath>..\..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -78,10 +79,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
