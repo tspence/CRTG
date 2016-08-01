@@ -16,7 +16,7 @@ using CRTG.Common.Interfaces;
 namespace CRTG.Sensors.Devices
 {
     [Serializable]
-    public class DeviceContext : IDevice
+    public class SensorDevice : IDevice
     {
         #region Observable
         public string Name
@@ -81,7 +81,7 @@ namespace CRTG.Sensors.Devices
         public string ConnectionString { get; set; }
 
         #region Constructor
-        public DeviceContext()
+        public SensorDevice()
         {
             Sensors = new List<ISensor>();
         }

@@ -181,7 +181,7 @@ namespace CRTG
         /// </summary>
         /// <param name="dc"></param>
         /// <param name="s"></param>
-        public void AddDevice(DeviceContext dc)
+        public void AddDevice(SensorDevice dc)
         {
             dc.Identity = NextDeviceNum++;
             Devices.Add(dc);
@@ -319,7 +319,7 @@ namespace CRTG
             // Now make all the sensors read their data
             Current = sp;
             List<int> sensor_id_list = new List<int>();
-            foreach (DeviceContext dc in sp.Devices) {
+            foreach (SensorDevice dc in sp.Devices) {
                 foreach (BaseSensor bs in dc.Sensors) {
 
                     // Make sure each sensor is uniquely identified!  If any have duplicate IDs, uniqueify them

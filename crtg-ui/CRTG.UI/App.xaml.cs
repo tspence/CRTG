@@ -30,5 +30,13 @@ namespace CRTG.UI
             // Resume launching
             base.OnStartup(e);
         }
+
+        public void SaveSensors()
+        {
+            if (File.Exists(_filename)) {
+                File.Delete(_filename);
+            }
+            SensorProject.Current.Serialize(_filename);
+        }
     }
 }

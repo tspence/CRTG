@@ -7,6 +7,26 @@
         xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
         mc:Ignorable="d" 
         Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip">
+    <Window.Resources>
+        <ContextMenu Name="mnuProject" x:Key="mnuProject">
+            <MenuItem Header="Add _Device" Click="mnuProject_AddDevice_Click" />
+        </ContextMenu>
+        <ContextMenu Name="mnuDevice" x:Key="mnuDevice">
+            <MenuItem Header="Add _Sensor..." />
+            <Separator />
+            <MenuItem Header="_Remove Device" />
+        </ContextMenu>
+        <ContextMenu Name="mnuSensor" x:Key="mnuSensor">
+            <MenuItem Header="Check Now" />
+            <Separator />
+            <MenuItem Header="Pause" />
+            <MenuItem Header="Reset Error" />
+            <MenuItem Header="Empty History" />
+            <MenuItem Header="Duplicate" />
+            <Separator />
+            <MenuItem Header="_Remove Sensor" />
+        </ContextMenu>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -18,13 +38,12 @@
         </Grid.RowDefinitions>
         
         <!-- Treeview on leftmost cell -->
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="tvSensors1" ItemsSource="{Binding SensorTree}">
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="tvSensors1" ItemsSource="{Binding SensorTree}" PreviewMouseRightButtonDown="tvSensors1_PreviewMouseRightButtonDown" MouseRightButtonDown="tvSensors1_MouseRightButtonDown">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type i:ISensorTreeModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconPath}" />
-                        <TextBlock Text="{Binding IconPath}" />
-                        <TextBlock Text="{Binding Name}" />
+                        <Image Source="{Binding IconPath}" Margin="3,3,3,3" />
+                        <TextBlock Text="{Binding Name}" Margin="3,3,3,3" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
