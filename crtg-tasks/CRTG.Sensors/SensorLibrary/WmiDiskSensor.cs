@@ -12,22 +12,18 @@ using System.Text;
 using System.Management;
 using CRTG.Common;
 using CRTG.Sensors.Toolkit;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "WMI", Tooltip = "Measure disk statistics via WMI.")]
     public class WmiDiskSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/bricks.png";
-        }
+        [AutoUI(Group = "Drive")]
+        public string DriveLetter { get; set; }
 
         [AutoUI(Group = "Drive")]
-        public string DriveLetter;
-
-        [AutoUI(Group = "Drive")]
-        public DiskMeasurement Measurement;
+        public DiskMeasurement Measurement { get; set; }
 
         #region Implementation
 
@@ -68,6 +64,13 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Failed!
             throw new Exception("No disk query found!");
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
         }
         #endregion
     }

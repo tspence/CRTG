@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using CRTG.Common.Attributes;
 
 namespace CRTG
 {

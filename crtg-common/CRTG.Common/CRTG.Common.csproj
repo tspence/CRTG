@@ -46,6 +46,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Attributes\AutoUI.cs" />
     <Compile Include="BaseSensorTreeModel.cs" />
     <Compile Include="Data\SensorDataCollection.cs" />
     <Compile Include="Data\SensorException.cs" />

@@ -82,12 +82,15 @@
     <Compile Include="AddSensor.xaml.cs">
       <DependentUpon>AddSensor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AutoUIControl.xaml.cs">
+      <DependentUpon>AutoUIControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SensorViewModel.cs" />
     <Page Include="AddSensor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\SensorProjectControl.xaml">
+    <Page Include="Controls\AutoUIControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -98,9 +101,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Controls\SensorProjectControl.xaml.cs">
-      <DependentUpon>SensorProjectControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

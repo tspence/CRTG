@@ -13,43 +13,40 @@ using System.Net;
 using System.IO;
 using System.Xml;
 using CRTG.Common;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "Web", Tooltip = "Request a specific page via HTTP and find an object within that page via XML XPath.")]
     public class HttpXmlSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/html.png";
-        }
+        [AutoUI(Group = "HTTP")]
+        public string URL { get; set; }
 
         [AutoUI(Group = "HTTP")]
-        public string URL;
+        public RequestMethod HttpMethod { get; set; }
 
         [AutoUI(Group = "HTTP")]
-        public RequestMethod HttpMethod = RequestMethod.GET;
+        public string ContentType { get; set; }
 
         [AutoUI(Group = "HTTP")]
-        public string ContentType;
-
-        [AutoUI(Group = "HTTP")]
-        public string Content;
+        public string Content { get; set; }
 
         [AutoUI(Group="HTTP")]
-        public string Accept;
+        public string Accept { get; set; }
 
         [AutoUI(Group = "Xml")]
-        public string XPath;
+        public string XPath { get; set; }
 
         [AutoUI(Group = "Xml")]
-        public XmlObjectMeasurement Measurement;
+        public XmlObjectMeasurement Measurement { get; set; }
 
         [AutoUI(Group = "Test")]
-        public decimal ValueIfSuccess;
+        public decimal ValueIfSuccess { get; set; }
 
         [AutoUI(Group = "Test")]
-        public decimal ValueIfFailure;
+        public decimal ValueIfFailure { get; set; }
+
 
         #region Implementation
         /// <summary>
@@ -122,6 +119,13 @@ namespace CRTG.Sensors.SensorLibrary
                 SensorProject.LogException("HttpXmlSensor", x);
                 return ValueIfFailure;
             }
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/html.png";
         }
         #endregion
     }

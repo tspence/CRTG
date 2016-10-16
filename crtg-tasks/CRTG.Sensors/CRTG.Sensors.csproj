@@ -99,7 +99,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AutoUI.cs" />
     <Compile Include="BaseNotificationSystem.cs" />
     <Compile Include="BaseSensor.cs" />
     <Compile Include="Data\SqliteDataStore.cs" />

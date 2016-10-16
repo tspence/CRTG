@@ -17,11 +17,6 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "WMI", Tooltip = "Measure disk activity via WMI.")]
     public class WmiDiskActivity : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/bricks.png";
-        }
-
         #region Implementation
 
         public override decimal Collect()
@@ -44,6 +39,13 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Failed!
             throw new Exception("No disk query found!");
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
         }
         #endregion
     }

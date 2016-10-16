@@ -12,6 +12,7 @@ using CRTG.Sensors;
 using CRTG.Common;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
+using CRTG.Common.Attributes;
 
 namespace CRTG
 {

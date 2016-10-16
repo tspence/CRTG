@@ -1,4 +1,5 @@
 ﻿using CRTG.Common;
+using CRTG.Common.Attributes;
 using MySql.Data.MySqlClient;
 /*
  * 2012 - 2016 Ted Spence, http://tedspence.com
@@ -18,22 +19,18 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "MySQL", Tooltip = "Run a simple query and measure the results.")]
     public class MySqlSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/database.png";
-        }
-
         /// <summary>
         /// The SQL command to be executed to track this data
         /// </summary>
         [AutoUI(Group = "SQL", MultiLine = 10)]
-        public string Sql;
+        public string Sql { get; set; }
 
         /// <summary>
         /// What measurement to take
         /// </summary>
         [AutoUI(Group = "SQL")]
-        public SqlCollectionType Measurement = SqlCollectionType.ScalarValue;
+        public SqlCollectionType Measurement { get; set; }
+
 
         #region Implementation
         public override decimal Collect()
@@ -64,6 +61,13 @@ namespace CRTG.Sensors.SensorLibrary
 
             // That's our value
             return d;
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/database.png";
         }
         #endregion
     }

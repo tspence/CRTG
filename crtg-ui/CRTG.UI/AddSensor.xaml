@@ -16,6 +16,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
         <ListBox Grid.RowSpan="3" Grid.Column="0" Grid.Row="0" Margin="3" ItemsSource="{Binding SensorTypes}" SelectedItem="{Binding SelectedItem}">
@@ -28,6 +29,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <local:AutoUIControl x:Name="ctlDisplayObject" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="3">
+            
+        </local:AutoUIControl>
 
         <StackPanel Grid.ColumnSpan="2" Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="right">
             <Button Margin="3" Width="75" Click="Save_Click">Save</Button>

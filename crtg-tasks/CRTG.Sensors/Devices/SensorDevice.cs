@@ -13,6 +13,7 @@ using System.Management;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
 using System.Collections.ObjectModel;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.Devices
 {

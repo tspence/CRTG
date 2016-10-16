@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRTG.Sensors
+namespace CRTG.Common.Attributes
 {
     public class AutoUI : Attribute
     {

@@ -12,24 +12,21 @@ using System.Text;
 using System.IO;
 using CRTG.Sensors.Helpers;
 using CRTG.Common;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "File System", Tooltip = "Find a specific file and report on facts about that file.")]
     public class FileSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/file.png";
-        }
-
         [AutoUI(Group = "File")]
-        public FileMeasurement Measurement;
+        public FileMeasurement Measurement { get; set; }
 
-        [AutoUI(Group = "File", BrowseFile=true)]
-        public string Path;
+        [AutoUI(Group = "File", BrowseFile = true)]
+        public string Path { get; set; }
 
-        #region Implementation
+
+        #region Collect
         public override decimal Collect()
         {
             FileInfo fi = null;
@@ -67,6 +64,13 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Failed
             return 0m;
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/file.png";
         }
         #endregion
     }

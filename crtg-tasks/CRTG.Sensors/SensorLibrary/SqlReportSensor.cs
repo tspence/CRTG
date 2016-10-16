@@ -16,43 +16,40 @@ using CSVFile;
 using System.IO;
 using System.Net;
 using CRTG.Common;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "SQL", Tooltip = "Run a complex query and email that report to a list of recipients.")]
     public class SqlReportSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/database.png";
-        }
-
         /// <summary>
         /// The SQL command to be executed to track this data
         /// </summary>
         [AutoUI(Group = "SQL", MultiLine = 10)]
-        public string Sql;
+        public string Sql { get; set; }
 
         /// <summary>
         /// The number of seconds to wait for a timeout
         /// </summary>
         [AutoUI(Group = "SQL", Help="Select '0' for unlimited timeout.")]
-        public int TimeoutSeconds;
+        public int TimeoutSeconds { get; set; }
 
         [AutoUI(Group = "Report")]
-        public string ReportRecipients;
+        public string ReportRecipients { get; set; }
 
         [AutoUI(Group = "Report")]
-        public string ReportSubject;
+        public string ReportSubject { get; set; }
 
         [AutoUI(Group = "Report", MultiLine = 10)]
-        public string ReportMessage;
+        public string ReportMessage { get; set; }
 
         [AutoUI(Group = "Report", Help="A comma-separated list of the days of the month when this report should be sent.")]
-        public string DaysOfMonth;
+        public string DaysOfMonth { get; set; }
 
         [AutoUI(Group = "Report", Help = "In what format should this report be sent?")]
-        public ReportFileFormat ReportFormat;
+        public ReportFileFormat ReportFormat { get; set; }
+
 
         #region Implementation
         public override decimal Collect()
@@ -113,6 +110,13 @@ namespace CRTG.Sensors.SensorLibrary
         protected override void KlipfolioUpload()
         {
             // Nothing to do here - we do not upload measurement stats on an SQL report sensor
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/database.png";
         }
         #endregion
     }

@@ -25,7 +25,24 @@ namespace CRTG.UI
     {
         public ObservableCollection<Type> SensorTypes { get; set; }
 
-        public Type SelectedItem { get; set; }
+        public Type SelectedItem
+        {
+            get
+            {
+                return _selectedItem;
+            }
+            set
+            {
+                _selectedItem = value;
+                if (_selectedItem == null) {
+                    SensorToAdd = null;
+                } else {
+                    SensorToAdd = Activator.CreateInstance(SelectedItem) as ISensor;
+                }
+                ctlDisplayObject.DisplayObject = SensorToAdd;
+            }
+        }
+        private Type _selectedItem;
 
         public ISensor SensorToAdd { get; set; }
 

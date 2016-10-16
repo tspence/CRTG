@@ -12,19 +12,15 @@ using System.Text;
 using System.Management;
 using CRTG.Common;
 using CRTG.Sensors.Toolkit;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "WMI", Tooltip = "Measure memory statistics via WMI.")]
     public class WmiMemorySensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/bricks.png";
-        }
-
         [AutoUI(Group = "Memory")]
-        public MemoryMeasurement Measurement;
+        public MemoryMeasurement Measurement { get; set; }
 
         #region Implementation
 
@@ -48,6 +44,13 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Failed!
             throw new Exception("No OS found!");
+        }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
         }
         #endregion
     }

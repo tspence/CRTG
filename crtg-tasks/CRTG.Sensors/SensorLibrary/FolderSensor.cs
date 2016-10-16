@@ -11,22 +11,19 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using CRTG.Common;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category = "File System", Tooltip = "Find a specific folder and report on facts about that folder.")]
     public class FolderSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/file.png";
-        }
-
         [AutoUI(Group = "File")]
-        public FolderMeasurement Measurement;
+        public FolderMeasurement Measurement { get; set; }
 
-        [AutoUI(Group = "File", BrowseFolder=true)]
-        public string Path;
+        [AutoUI(Group = "File", BrowseFolder = true)]
+        public string Path { get; set; }
+
 
         #region Implementation
         public override decimal Collect()
@@ -69,5 +66,11 @@ namespace CRTG.Sensors.SensorLibrary
         }
         #endregion
 
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/file.png";
+        }
+        #endregion
     }
 }

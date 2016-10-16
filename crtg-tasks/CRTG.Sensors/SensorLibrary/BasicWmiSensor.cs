@@ -11,20 +11,19 @@ using System.Linq;
 using System.Text;
 using System.Management;
 using CRTG.Common;
+using CRTG.Common.Attributes;
 
 namespace CRTG.Sensors.SensorLibrary
 {
     [SensorUI(Category="WMI", Tooltip="Create a basic WMI sensor that measures one of a handful of simple facts.")]
     public class BasicWmiSensor : BaseSensor
     {
-        public override string GetNormalIconPath()
-        {
-            return "Resources/bricks.png";
-        }
 
-        [AutoUI(Label="Measurement")]
-        public BasicWmiQuery WmiQuery = BasicWmiQuery.CPU;
+        [AutoUI(Label = "Measurement")]
+        public BasicWmiQuery WmiQuery { get; set; }
 
+
+        #region Collect
         public override decimal Collect()
         {
             ObjectQuery wql = null;
@@ -62,5 +61,13 @@ namespace CRTG.Sensors.SensorLibrary
             // Failed!
             throw new Exception("No way to collect");
         }
+        #endregion
+
+        #region Icon
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
+        }
+        #endregion
     }
 }
