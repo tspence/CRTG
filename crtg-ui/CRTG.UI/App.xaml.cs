@@ -29,6 +29,7 @@ namespace CRTG.UI
             }
             SensorProject.Current.Notifications = new NotificationHelper();
             SensorProject.Current.PropertyChanged += SensorProjectChanged;
+            SensorProject.Current.Start();
 
             // Resume launching
             base.OnStartup(e);
@@ -38,20 +39,29 @@ namespace CRTG.UI
         {
             // Only one save at a time, to avoid conflicting writes
             lock (this) {
+                try {
+                    // Serialize to a temporary file, to avoid losing data if we crash in the middle of this
+                    if (File.Exists(_temp_filename)) File.Delete(_temp_filename);
+                    SensorProject.Current.Serialize(_temp_filename);
 
-                // Serialize to a temporary file, to avoid losing data if we crash in the middle of this
-                if (File.Exists(_temp_filename)) File.Delete(_temp_filename);
-                SensorProject.Current.Serialize(_temp_filename);
+                    // Rename file
+                    if (File.Exists(_filename)) {
+                        File.Move(_filename, _old_filename);
+                    }
+                    File.Move(_temp_filename, _filename);
 
-                // Rename file
-                if (File.Exists(_filename)) {
-                    File.Move(_filename, _old_filename);
-                }
-                File.Move(_temp_filename, _filename);
+                // If anything blew up, keep the old file
+                } catch (Exception ex) {
+                    SensorProject.LogException("Serialization", ex);
+                    if (File.Exists(_old_filename)) {
+                        File.Move(_old_filename, _filename);
+                    }
 
-                // Remove old file
-                if (File.Exists(_old_filename)) {
-                    File.Delete(_old_filename);
+                // Remove the old filename if it's still there
+                } finally {
+                    if (File.Exists(_old_filename)) {
+                        File.Delete(_old_filename);
+                    }
                 }
             }
         }

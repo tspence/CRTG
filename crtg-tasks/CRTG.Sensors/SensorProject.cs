@@ -149,6 +149,7 @@ namespace CRTG
         /// <param name="dc"></param>
         public void AddDevice(IDevice dc)
         {
+            dc.Parent = this;
             dc.Identity = GetNextDeviceNum();
             AddChild(dc);
         }
@@ -160,6 +161,7 @@ namespace CRTG
         public void AddSensor(IDevice dc, ISensor sensor)
         {
             sensor.Identity = GetNextSensorNum();
+            sensor.Parent = dc;
             dc.Children.Add(sensor);
             Notify("Children");
         }
@@ -247,7 +249,7 @@ namespace CRTG
 
                             // Okay, let's work on this sensor
                             ISensor s = dc.Children[j] as ISensor;
-                            if (s.Enabled && !s.InFlight) {
+                            if ((s.Enabled) && (!s.InFlight) && (s.Frequency != Interval.Never)) {
 
                                 // Spawn a work item in the thread pool to do this collection task
                                 if (s.NextCollectTime <= DateTime.UtcNow) {
@@ -255,7 +257,7 @@ namespace CRTG
                                     ThreadPool.QueueUserWorkItem(delegate { s.OuterCollect(); });
                                     collect_count++;
 
-                                    // If it's not time yet, use this to factor when next to wake up
+                                // If it's not time yet, use this to factor when next to wake up
                                 } else {
                                     if (s.NextCollectTime < next_collect_time) {
                                         next_collect_time = s.NextCollectTime;

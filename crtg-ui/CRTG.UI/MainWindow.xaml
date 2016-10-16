@@ -72,13 +72,23 @@
             <TabItem Header="Chart">
                 <Grid Background="#FFE5E5E5" Name="grdChart">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
                         <RowDefinition Height="300"/>
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Image Name="autoChart" Grid.Row="0" Grid.Column="0" />
+                    
+                    <!-- Dropdown for selecting time ranges -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                        <Label>View Timeframe:</Label>
+                        <ComboBox Width="Auto" Name="ddlViewTimeframe">
+                        </ComboBox>
+                    </StackPanel>
+                    
+                    <!-- Main chart image -->
+                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" />
                 </Grid>
             </TabItem>
             <TabItem Header="Properties">

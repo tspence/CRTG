@@ -24,7 +24,7 @@ namespace CRTG.Charts
         private decimal _min_value, _max_value;
         private double _range_in_seconds, _range_in_value;
         private Rectangle _chart_rect;
-        private Image _chart_image;
+        private Bitmap _chart_image;
 
         public CrtgChart(ISensor sensor, SensorDataCollection data, ViewTimeframe viewtime, int width, int height)
         {
@@ -88,15 +88,6 @@ namespace CRTG.Charts
             double xpos = ts.TotalSeconds / _range_in_seconds;
             return (int)(_chart_rect.X + (xpos * _chart_rect.Width));
         }
-
-        //public string DrawToTempFile()
-        //{
-        //    Image i = DrawToImage();
-        //    string tempfn = Path.ChangeExtension(Path.GetTempFileName(), "png");
-        //    i.Save(tempfn, System.Drawing.Imaging.ImageFormat.Png);
-        //    i.Dispose();
-        //    return tempfn;
-        //}
 
         private void DrawToImage()
         {
@@ -288,7 +279,7 @@ namespace CRTG.Charts
         /// <summary>
         /// Keep track of the image
         /// </summary>
-        public Image ChartImage
+        public Bitmap ChartImage
         {
             get
             {

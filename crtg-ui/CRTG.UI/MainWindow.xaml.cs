@@ -38,6 +38,10 @@ namespace CRTG.UI
             // Load the UI
             InitializeComponent();
             tvSensors1.SelectedItemChanged += TvSensors1_SelectedItemChanged;
+            foreach (var vt in Enum.GetValues(typeof(ViewTimeframe))) {
+                this.ddlViewTimeframe.Items.Add(vt);
+            }
+            this.ddlViewTimeframe.SelectedValue = ViewTimeframe.Day;
         }
 
         private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -47,18 +51,23 @@ namespace CRTG.UI
             // Put up a chart
             var sensor = tvSensors1.SelectedValue as ISensor;
             if (sensor != null) {
-                var chart = ChartHelper.GetDisplayPackage(sensor, null, ViewTimeframe.AllTime, (int)grdChart.ColumnDefinitions[0].ActualWidth, (int)grdChart.RowDefinitions[0].ActualHeight);
+                var coll = SensorProject.Current.DataStore.RetrieveData(sensor, null, null, false);
+                var chart = ChartHelper.GetDisplayPackage(sensor, 
+                    coll, 
+                    (ViewTimeframe)this.ddlViewTimeframe.SelectedValue, 
+                    (int)grdChart.ColumnDefinitions[0].ActualWidth, 
+                    (int)grdChart.RowDefinitions[1].ActualHeight);
                 this.autoChart.Source = BitmapToImageSource(chart.ChartImage);
             } else {
                 this.autoChart.Source = null;
             }
         }
 
-        private BitmapImage BitmapToImageSource(System.Drawing.Image img)
+        private BitmapImage BitmapToImageSource(System.Drawing.Bitmap bmp)
         {
-            if (img == null) return null;
+            if (bmp == null) return null;
             using (MemoryStream memory = new MemoryStream()) {
-                img.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();
@@ -171,7 +180,7 @@ namespace CRTG.UI
         private void mnuProject_ResetError_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedSensor != null) {
-                SelectedSensor.Enabled = !SelectedSensor.Enabled;
+                SelectedSensor.InError = false;
             }
         }
 

@@ -148,16 +148,33 @@ namespace CRTG
         private bool _inFlight;
 
         /// <summary>
-        /// Keeps track of whether a collection call is in flight
+        /// Shortcut to identify the parent device of this sensor
         /// </summary>
-        [JsonIgnore, AutoUI(Skip = true)]
-        public IDevice Device { get; set; }
+        public IDevice Device
+        {
+            get
+            {
+                return Parent as IDevice;
+            }
+        }
 
         /// <summary>
         /// Track whether this collector is erroring out
         /// </summary>
         [AutoUI(Skip=true)]
-        public bool InError { get; set; }
+        public bool InError
+        {
+            get
+            {
+                return _inError;
+            }
+            set
+            {
+                _inError = value;
+                Notify("IconPath");
+            }
+        }
+        private bool _inError;
 
         /// <summary>
         /// Track whether this collector is erroring out
