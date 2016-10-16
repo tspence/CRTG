@@ -128,5 +128,31 @@ namespace CRTG.UI
             SensorProject.Current.RemoveChild(SelectedDevice);
         }
         #endregion
+
+        private void mnuProject_Pause_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedSensor != null) {
+                SelectedSensor.Enabled = !SelectedSensor.Enabled;
+            }
+        }
+
+        private void mnuProject_ResetError_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedSensor != null) {
+                SelectedSensor.Enabled = !SelectedSensor.Enabled;
+            }
+        }
+
+        private void mnuProject_EmptyHistory_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void mnuProject_Duplicate_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void mnuProject_RemoveSensor_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }

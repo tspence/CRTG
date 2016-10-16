@@ -84,7 +84,20 @@ namespace CRTG
         /// Is this sensor enabled?
         /// </summary>
         [AutoUI(Skip=true)]
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+                Notify("IconPath");
+            }
+        }
+
+        private bool _enabled;
 
         /// <summary>
         /// All the data collected with this sensor over time
@@ -114,7 +127,20 @@ namespace CRTG
         /// Keeps track of whether a collection call is in flight
         /// </summary>
         [JsonIgnore, AutoUI(Skip = true)]
-        public bool InFlight { get; set; }
+        public bool InFlight
+        {
+            get
+            {
+                return _inFlight;
+            }
+            set
+            {
+                _inFlight = value;
+                Notify("IconPath");
+            }
+        }
+
+        private bool _inFlight;
 
         /// <summary>
         /// Keeps track of whether a collection call is in flight

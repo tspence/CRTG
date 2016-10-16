@@ -22,12 +22,12 @@
         <ContextMenu Name="mnuSensor" x:Key="mnuSensor">
             <MenuItem Header="Check Now" />
             <Separator />
-            <MenuItem Header="Pause" />
-            <MenuItem Header="Reset Error" />
-            <MenuItem Header="Empty History" />
-            <MenuItem Header="Duplicate" />
+            <MenuItem Header="Pause" Click="mnuProject_Pause_Click" />
+            <MenuItem Header="Reset Error" Click="mnuProject_ResetError_Click" />
+            <MenuItem Header="Empty History" Click="mnuProject_EmptyHistory_Click" />
+            <MenuItem Header="Duplicate" Click="mnuProject_Duplicate_Click" />
             <Separator />
-            <MenuItem Header="_Remove Sensor" />
+            <MenuItem Header="_Remove Sensor" Click="mnuProject_RemoveSensor_Click" />
         </ContextMenu>
     </Window.Resources>
     <Grid>
