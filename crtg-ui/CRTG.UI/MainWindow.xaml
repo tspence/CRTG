@@ -15,7 +15,7 @@
             <MenuItem Header="Add _Device" Click="mnuProject_AddDevice_Click" />
         </ContextMenu>
         <ContextMenu Name="mnuDevice" x:Key="mnuDevice">
-            <MenuItem Header="Add _Sensor..." />
+            <MenuItem Header="Add _Sensor..." Click="mnuProject_AddSensor_Click" />
             <Separator />
             <MenuItem Header="_Remove Device" Click="mnuProject_RemoveDevice_Click" />
         </ContextMenu>
@@ -57,8 +57,8 @@
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type i:ISensorTreeModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconPath}" Margin="3,3,3,3" />
-                        <TextBlock Text="{Binding Name}" Margin="3,3,3,3" />
+                        <Image Source="{Binding IconPath}" Margin="3" />
+                        <TextBlock Text="{Binding Name}" Margin="3" />
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>

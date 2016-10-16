@@ -37,11 +37,25 @@ namespace CRTG.UI
         }
 
         #region Convenience Properties
-        public SensorDevice SelectedDevice
+        /// <summary>
+        /// Identify currently selected device, if any
+        /// </summary>
+        public IDevice SelectedDevice
         {
             get
             {
-                return tvSensors1.SelectedItem as SensorDevice;
+                return tvSensors1.SelectedItem as IDevice;
+            }
+        }
+
+        /// <summary>
+        /// Identify currently selected sensor, if any
+        /// </summary>
+        public ISensor SelectedSensor
+        {
+            get
+            {
+                return tvSensors1.SelectedItem as ISensor;
             }
         }
         #endregion
@@ -86,21 +100,20 @@ namespace CRTG.UI
         #endregion
 
         #region Context Menu Items
-        private void mnuDevice_AddSensor_Click(object sender, EventArgs e)
+        private void mnuProject_AddSensor_Click(object sender, EventArgs e)
         {
-            //// Figure out the typename of the sensor
-            //Assembly a = typeof(BaseSensor).Assembly;
-            //string name = ((MenuItem)sender).Header.ToString();
-            //var matching_type = (from t in a.GetTypes() where t.Name == name select t).FirstOrDefault();
-            //if (matching_type != null) {
+            var d = SelectedDevice;
+            if (d != null) {
 
-            //    // Make an instance of this type
-            //    BaseSensor bs = (BaseSensor)a.CreateInstance(matching_type.FullName, true);
-            //    bs.Name = "New " + bs.GetType().Name;
-            //    bs.Frequency = Interval.FifteenMinutes;
-            //    SensorProject.Current.AddSensor((IDevice)SelectedDevice, bs);
-            //    ((App)(App.Current)).SaveSensors();
-            //}
+                // Pop up a window to design a new sensor
+                AddSensor dlg = new AddSensor();
+                var result = dlg.ShowDialog();
+                if (result.HasValue && result.Value) {
+
+                    // Add this sensor to the currently selected device
+                    SensorProject.Current.AddSensor(d, dlg.SensorToAdd);
+                }
+            }
         }
 
         private void mnuProject_AddDevice_Click(object sender, RoutedEventArgs e)
@@ -108,13 +121,11 @@ namespace CRTG.UI
             SensorDevice dc = new SensorDevice();
             dc.DeviceName = "New Device";
             SensorProject.Current.AddDevice(dc);
-            ((App)(App.Current)).SaveSensors();
         }
 
         private void mnuProject_RemoveDevice_Click(object sender, RoutedEventArgs e)
         {
             SensorProject.Current.RemoveChild(SelectedDevice);
-            ((App)(App.Current)).SaveSensors();
         }
         #endregion
     }

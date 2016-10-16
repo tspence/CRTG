@@ -79,7 +79,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddSensor.xaml.cs">
+      <DependentUpon>AddSensor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SensorViewModel.cs" />
+    <Page Include="AddSensor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\SensorProjectControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -160,8 +160,7 @@ namespace CRTG
         {
             sensor.Identity = GetNextSensorNum();
             dc.Children.Add(sensor);
-            dc.Identity = GetNextDeviceNum();
-            AddChild(dc);
+            Notify("Children");
         }
 
         [AutoUI(Skip = true)]

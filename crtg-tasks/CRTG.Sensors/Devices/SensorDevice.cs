@@ -24,7 +24,7 @@ namespace CRTG.Sensors.Devices
         {
             get
             {
-                return "/AssemblyName;Resources/Device.png";
+                return "Resources/Device.png";
             }
         }
         #endregion
