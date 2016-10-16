@@ -34,6 +34,12 @@ namespace CRTG.UI
 
             // Load the UI
             InitializeComponent();
+            tvSensors1.SelectedItemChanged += TvSensors1_SelectedItemChanged;
+        }
+
+        private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            this.autoProperties.DisplayObject = tvSensors1.SelectedValue;
         }
 
         #region Convenience Properties
@@ -60,7 +66,7 @@ namespace CRTG.UI
         }
         #endregion
 
-        #region Context Menu
+        #region Tree View
         private void tvSensors1_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var parent = sender as TreeView;
@@ -127,7 +133,6 @@ namespace CRTG.UI
         {
             SensorProject.Current.RemoveChild(SelectedDevice);
         }
-        #endregion
 
         private void mnuProject_Pause_Click(object sender, RoutedEventArgs e)
         {
@@ -154,5 +159,6 @@ namespace CRTG.UI
         private void mnuProject_RemoveSensor_Click(object sender, RoutedEventArgs e)
         {
         }
+        #endregion
     }
 }

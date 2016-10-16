@@ -156,35 +156,43 @@ namespace CRTG.UI
             string tooltip = e.ui.Help ?? vartype.ToString();
             Control ctl = null;
 
+            // Setup binding - each type of control has to map it slightly differently
+            Binding myBinding = new Binding(e.property.Name);
+            myBinding.Source = DisplayObject;
+            myBinding.Mode = BindingMode.TwoWay;
+
             // Enum variable controls
             if (vartype.IsEnum) {
                 var ddl = new ComboBox();
-                ddl.Items.Add("(select)");
                 foreach (var v in Enum.GetValues(vartype)) {
-                    ddl.Items.Add(v.ToString());
+                    ddl.Items.Add(v);
                 }
                 ddl.SelectedIndex = 0;
                 ddl.ToolTip = tooltip;
+                BindingOperations.SetBinding(ddl, ComboBox.SelectedValueProperty, myBinding);
                 ctl = ddl;
 
             // DateTime objects use the date pickers
             } else if (vartype == typeof(DateTime)) {
                 DatePicker dtp = new DatePicker();
                 dtp.ToolTip = tooltip;
+                BindingOperations.SetBinding(dtp, DatePicker.SelectedDateProperty, myBinding);
                 ctl = dtp;
 
             // Booleans are just checkboxes, or dropdowns
             } else if (vartype == typeof(bool)) {
                 ComboBox ddl = new ComboBox();
-                ddl.Items.Add("False");
-                ddl.Items.Add("True");
+                ddl.Items.Add(false);
+                ddl.Items.Add(true);
                 ddl.SelectedIndex = 0;
                 ddl.ToolTip = tooltip;
+                BindingOperations.SetBinding(ddl, ComboBox.SelectedValueProperty, myBinding);
                 ctl = ddl;
 
             // Multi line text boxes go hereText boxes use this control
             } else if (e.ui.MultiLine > 1) {
                 TextBox tb = new TextBox();
+                BindingOperations.SetBinding(tb, TextBox.TextProperty, myBinding);
                 tb.AcceptsReturn = true;
                 tb.Height = 150;
                 tb.FontFamily = new FontFamily("Courier New");
@@ -197,41 +205,31 @@ namespace CRTG.UI
             } else if (e.ui.PasswordField) {
                 PasswordBox pb = new PasswordBox();
                 pb.ToolTip = tooltip;
+                BindingOperations.SetBinding(pb, TextBox.TextProperty, myBinding);
                 ctl = pb;
 
-            // File browsers go here
-            } else if (e.ui.BrowseFile) {
-                TextBox tb = new TextBox();
-                tb.ToolTip = tooltip;
-                ctl = tb;
-
-                // Browse button
-                Button b = new Button();
-                b.Width = 30;
-                b.Content = "...";
-                b.Click += BrowseFileClick;
-                b.Tag = tb;
-                gbe.AddControl(b, 3);
-
-                // Folder browsers go here
-            } else if (e.ui.BrowseFolder) {
-                TextBox tb = new TextBox();
-                tb.ToolTip = tooltip;
-                ctl = tb;
-
-                // Browse button
-                Button b = new Button();
-                b.Width = 30;
-                b.Content = "...";
-                b.Tag = tb;
-                b.Click += BrowseFolderClick;
-                gbe.AddControl(b, 3);
-
-            // Regular text boxes go here
+            // Textboxes (and file/folder browsers go here)
             } else {
                 TextBox tb = new TextBox();
                 tb.ToolTip = tooltip;
+                BindingOperations.SetBinding(tb, TextBox.TextProperty, myBinding);
                 ctl = tb;
+
+                // Browse button
+                if (e.ui.BrowseFile || e.ui.BrowseFolder) {
+                    Button b = new Button();
+                    b.Width = 30;
+                    b.Content = "...";
+                    b.Tag = tb;
+
+                    // Hook control to a box
+                    if (e.ui.BrowseFolder) {
+                        b.Click += BrowseFileClick;
+                    } else if (e.ui.BrowseFile) {
+                        b.Click += BrowseFolderClick;
+                    }
+                    gbe.AddControl(b, 3);
+                }
             }
 
             // Is the parameter optional?

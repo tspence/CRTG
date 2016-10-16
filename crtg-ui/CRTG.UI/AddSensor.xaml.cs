@@ -65,14 +65,9 @@ namespace CRTG.UI
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedItem != null) {
-
-                // Construct this sensor
-                SensorToAdd = Activator.CreateInstance(SelectedItem) as ISensor;
-                if (SensorToAdd != null) {
-                    this.DialogResult = true;
-                    this.Close();
-                }
+            if (SelectedItem != null && SensorToAdd != null) {
+                this.DialogResult = true;
+                this.Close();
             }
         }
 

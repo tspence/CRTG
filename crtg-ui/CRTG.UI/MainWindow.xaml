@@ -69,15 +69,13 @@
 
         <!-- TabControl on rightmost cell -->
         <TabControl Grid.Row="0" Grid.Column="2" x:Name="tabControl1">
-            <TabItem Header="TabItem">
+            <TabItem Header="Chart">
                 <Grid Background="#FFE5E5E5">
                     <Image Source="Resources/flag_orange.png" />
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5">
-                    <Image Source="Resources/flag_orange.png" />
-                </Grid>
+            <TabItem Header="Properties">
+                <local:AutoUIControl x:Name="autoProperties" />
             </TabItem>
         </TabControl>
 
