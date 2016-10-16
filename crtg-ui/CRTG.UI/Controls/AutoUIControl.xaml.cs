@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -224,9 +225,9 @@ namespace CRTG.UI
 
                     // Hook control to a box
                     if (e.ui.BrowseFolder) {
-                        b.Click += BrowseFileClick;
-                    } else if (e.ui.BrowseFile) {
                         b.Click += BrowseFolderClick;
+                    } else if (e.ui.BrowseFile) {
+                        b.Click += BrowseFileClick;
                     }
                     gbe.AddControl(b, 3);
                 }
@@ -244,12 +245,57 @@ namespace CRTG.UI
 
         private void BrowseFolderClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Browse Folder");
+            Button b = sender as Button;
+            if (b != null) {
+                TextBox tb = b.Tag as TextBox;
+                if (tb != null) {
+                    var ofd = new Microsoft.Win32.OpenFileDialog()
+                    {
+                        CheckPathExists = true,
+                        Filter = "All Files (*.*)|*.*"
+                    };
+
+                    // Keep showing box until user picks a folder
+                    while (true) {
+                        var result = ofd.ShowDialog();
+                        if (result.HasValue && result.Value) {
+                            if (Directory.Exists(ofd.FileName)) {
+                                tb.Text = ofd.FileName;
+
+                                // Focus on and off triggers binding
+                                tb.Focus();
+                                b.Focus();
+                                break;
+                            } else {
+                                MessageBox.Show("Please select a folder.");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void BrowseFileClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Browse File");
+            Button b = sender as Button;
+            if (b != null) {
+                TextBox tb = b.Tag as TextBox;
+                if (tb != null) {
+                    var ofd = new Microsoft.Win32.OpenFileDialog()
+                    {
+                        CheckFileExists = true,
+                        CheckPathExists = true,
+                        Filter = "All Files (*.*)|*.*"
+                    };
+                    var result = ofd.ShowDialog();
+                    if (result.HasValue && result.Value) {
+                        tb.Text = ofd.FileName;
+                        // Focus on and off triggers binding
+                        tb.Focus();
+                        b.Focus();
+                    }
+                }
+            }
         }
 
         private void AddGroup(string name)
