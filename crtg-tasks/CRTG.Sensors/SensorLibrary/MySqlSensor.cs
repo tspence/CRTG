@@ -18,6 +18,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "MySQL", Tooltip = "Run a simple query and measure the results.")]
     public class MySqlSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/database.png";
+        }
+
         /// <summary>
         /// The SQL command to be executed to track this data
         /// </summary>

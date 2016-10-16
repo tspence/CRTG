@@ -18,6 +18,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "WMI", Tooltip = "Measure disk statistics via WMI.")]
     public class WmiDiskSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
+        }
+
         [AutoUI(Group = "Drive")]
         public string DriveLetter;
 

@@ -166,7 +166,7 @@
     <Resource Include="Resources\pulse-8x.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\stop.png" />
+    <Resource Include="Resources\sensor_error.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\accept.png" />

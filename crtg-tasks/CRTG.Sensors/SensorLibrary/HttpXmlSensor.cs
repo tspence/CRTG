@@ -19,6 +19,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "Web", Tooltip = "Request a specific page via HTTP and find an object within that page via XML XPath.")]
     public class HttpXmlSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/html.png";
+        }
+
         [AutoUI(Group = "HTTP")]
         public string URL;
 

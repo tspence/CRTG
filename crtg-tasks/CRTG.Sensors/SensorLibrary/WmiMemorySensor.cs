@@ -18,6 +18,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "WMI", Tooltip = "Measure memory statistics via WMI.")]
     public class WmiMemorySensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
+        }
+
         [AutoUI(Group = "Memory")]
         public MemoryMeasurement Measurement;
 

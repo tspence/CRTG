@@ -22,6 +22,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "SQL", Tooltip = "Run a complex query and email that report to a list of recipients.")]
     public class SqlReportSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/database.png";
+        }
+
         /// <summary>
         /// The SQL command to be executed to track this data
         /// </summary>

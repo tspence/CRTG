@@ -19,13 +19,37 @@ namespace CRTG
     {
         #region Icon
         /// <summary>
+        /// This is the icon path for this object when it is in normal operation.
+        /// Override this to show a more friendly icon.
+        /// </summary>
+        public virtual string GetNormalIconPath()
+        {
+            return "Resources/sensor.png";
+        }
+
+        /// <summary>
         /// The icon that should be displayed for this sensor
         /// </summary>
-        public override string IconPath
+        public sealed override string IconPath
         {
             get
             {
-                return "/AssemblyName;Resources/Sensor.png";
+                // Flicker the icon when we are collecting
+                if (InFlight) {
+                    return "Resources/hourglass.png";
+
+                // Show paused icons
+                } else if (!Enabled) {
+                    return "Resources/control_pause_blue.png";
+                
+                // Show sensors in error
+                } else if (InError) {
+                    return "Resources/sensor_error.png";
+
+                // Sensor is in normal state
+                } else {
+                    return GetNormalIconPath();
+                }
             }
         }
         #endregion

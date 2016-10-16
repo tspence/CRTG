@@ -19,6 +19,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "Web", Tooltip = "Request a specific page via HTTP and measure information about that request.")]
     public class HttpSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/html.png";
+        }
+
         [AutoUI(Group = "HTTP")]
         public string URL;
 

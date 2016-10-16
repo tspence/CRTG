@@ -17,6 +17,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "WMI", Tooltip = "Measure CPU activity via WMI.")]
     public class WmiCpuSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
+        }
+
         #region Implementation
         public override decimal Collect()
         {

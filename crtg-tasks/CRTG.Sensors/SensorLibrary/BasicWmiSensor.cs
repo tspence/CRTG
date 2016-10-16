@@ -17,6 +17,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category="WMI", Tooltip="Create a basic WMI sensor that measures one of a handful of simple facts.")]
     public class BasicWmiSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/bricks.png";
+        }
+
         [AutoUI(Label="Measurement")]
         public BasicWmiQuery WmiQuery = BasicWmiQuery.CPU;
 

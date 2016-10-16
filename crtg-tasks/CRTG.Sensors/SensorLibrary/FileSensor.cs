@@ -18,6 +18,11 @@ namespace CRTG.Sensors.SensorLibrary
     [SensorUI(Category = "File System", Tooltip = "Find a specific file and report on facts about that file.")]
     public class FileSensor : BaseSensor
     {
+        public override string GetNormalIconPath()
+        {
+            return "Resources/file.png";
+        }
+
         [AutoUI(Group = "File")]
         public FileMeasurement Measurement;
 
