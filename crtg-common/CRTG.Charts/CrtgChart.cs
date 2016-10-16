@@ -100,6 +100,8 @@ namespace CRTG.Charts
 
         private void DrawToImage()
         {
+            if (_width <= 0 && _height <= 0) return;
+
             // New version of drawing code does it all ourselves
             Bitmap bmp = new Bitmap(_width, _height);
             Graphics g = Graphics.FromImage(bmp);

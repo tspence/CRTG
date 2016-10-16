@@ -1,9 +1,12 @@
-﻿using CRTG.Common;
+﻿using CRTG.Charts;
+using CRTG.Common;
 using CRTG.Common.Interfaces;
 using CRTG.Sensors.Devices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,6 +43,30 @@ namespace CRTG.UI
         private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             this.autoProperties.DisplayObject = tvSensors1.SelectedValue;
+
+            // Put up a chart
+            var sensor = tvSensors1.SelectedValue as ISensor;
+            if (sensor != null) {
+                var chart = ChartHelper.GetDisplayPackage(sensor, null, ViewTimeframe.AllTime, (int)grdChart.ColumnDefinitions[0].ActualWidth, (int)grdChart.RowDefinitions[0].ActualHeight);
+                this.autoChart.Source = BitmapToImageSource(chart.ChartImage);
+            } else {
+                this.autoChart.Source = null;
+            }
+        }
+
+        private BitmapImage BitmapToImageSource(System.Drawing.Image img)
+        {
+            if (img == null) return null;
+            using (MemoryStream memory = new MemoryStream()) {
+                img.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+                return bitmapimage;
+            }
         }
 
         #region Convenience Properties

@@ -64,21 +64,25 @@ namespace CRTG
         /// <summary>
         /// Longer friendly description for this sensor
         /// </summary>
+        [AutoUI(Group = "Sensor")]
         public string Description { get; set; }
 
         /// <summary>
         /// What unit are we measuring?
         /// </summary>
+        [AutoUI(Group = "Sensor")]
         public string MeasurementUnit { get; set; }
 
         /// <summary>
         /// How often are we measuring it?
         /// </summary>
+        [AutoUI(Group = "Sensor")]
         public Interval Frequency { get; set; }
 
         /// <summary>
         /// How often are we measuring it?
         /// </summary>
+        [AutoUI(Group = "Sensor")]
         public bool PauseOnError { get; set; }
 
         /// <summary>
