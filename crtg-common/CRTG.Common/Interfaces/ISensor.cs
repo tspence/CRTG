@@ -22,7 +22,6 @@ namespace CRTG.Common.Interfaces
         bool InFlight { get; set; }
 
         [JsonIgnore]
-        IDevice Device { get; set; }
         bool InError { get; set; }
         string LastException { get; set; }
         decimal? HighError { get; set; }
@@ -42,5 +41,10 @@ namespace CRTG.Common.Interfaces
         /// This function collects data for the sensor
         /// </summary>
         void OuterCollect();
+
+        /// <summary>
+        /// This function reads data from the selected data storage system
+        /// </summary>
+        void DataRead();
     }
 }

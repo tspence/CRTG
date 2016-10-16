@@ -12,40 +12,22 @@ using System.Text;
 using System.Management;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace CRTG.Sensors.Devices
 {
     [Serializable]
-    public class SensorDevice : IDevice
+    public class SensorDevice : BaseSensorTreeModel, IDevice
     {
         #region Observable
-        public string Name
-        {
-            get
-            {
-                return DeviceName;
-            }
-        }
-
-        public string IconPath
+        public override string IconPath
         {
             get
             {
                 return "/AssemblyName;Resources/Device.png";
             }
         }
-
-        public IEnumerable<ISensorTreeModel> Children
-        {
-            get
-            {
-                return Sensors;
-            }
-        }
         #endregion
-
-        [AutoUI(Skip=true)]
-        public List<ISensor> Sensors { get; set; }
 
         /// <summary>
         /// Serialized ID number of the device
@@ -54,7 +36,7 @@ namespace CRTG.Sensors.Devices
         public int Identity { get; set; }
 
         /// <summary>
-        /// Human readable name describing the device
+        /// Formal name of the device as it is recognized by DNS
         /// </summary>
         [AutoUI(Group = "Device")]
         public string DeviceName { get; set; }
@@ -79,12 +61,5 @@ namespace CRTG.Sensors.Devices
 
         [AutoUI(Label = "ODBC Connection String", Group = "Database")]
         public string ConnectionString { get; set; }
-
-        #region Constructor
-        public SensorDevice()
-        {
-            Sensors = new List<ISensor>();
-        }
-        #endregion
     }
 }

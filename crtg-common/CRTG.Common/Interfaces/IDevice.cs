@@ -1,6 +1,7 @@
 ﻿using CRTG.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,5 @@ namespace CRTG.Common.Interfaces
         string DeviceInformation { get; set; }
         string ConnectionString { get; set; }
         string DeviceName { get; set; }
-        List<ISensor> Sensors { get; set; }
     }
 }

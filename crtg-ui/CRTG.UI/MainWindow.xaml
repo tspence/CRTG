@@ -7,6 +7,9 @@
         xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
         mc:Ignorable="d" 
         Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip">
+    <Window.DataContext>
+        <local:SensorViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <ContextMenu Name="mnuProject" x:Key="mnuProject">
             <MenuItem Header="Add _Device" Click="mnuProject_AddDevice_Click" />
@@ -14,7 +17,7 @@
         <ContextMenu Name="mnuDevice" x:Key="mnuDevice">
             <MenuItem Header="Add _Sensor..." />
             <Separator />
-            <MenuItem Header="_Remove Device" />
+            <MenuItem Header="_Remove Device" Click="mnuProject_RemoveDevice_Click" />
         </ContextMenu>
         <ContextMenu Name="mnuSensor" x:Key="mnuSensor">
             <MenuItem Header="Check Now" />
@@ -39,6 +42,18 @@
         
         <!-- Treeview on leftmost cell -->
         <TreeView Grid.Row="0" Grid.Column="0" x:Name="tvSensors1" ItemsSource="{Binding SensorTree}" PreviewMouseRightButtonDown="tvSensors1_PreviewMouseRightButtonDown" MouseRightButtonDown="tvSensors1_MouseRightButtonDown">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type i:ISensorTreeModel}">
                     <StackPanel Orientation="Horizontal">

@@ -22,47 +22,14 @@ using CRTG.Common;
 using CRTG.Sensors.Data;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace CRTG
 {
     [Serializable]
-    public class SensorProject : ISensorTreeModel
+    public class SensorProject : BaseSensorTreeModel
     {
-        #region Observables
-        /// <summary>
-        /// The name of this project
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The icon that should be displayed for this sensor
-        /// </summary>
-        public string IconPath
-        {
-            get
-            {
-                return "Resources/project.png";
-            }
-        }
-
-        /// <summary>
-        /// All the devices in this project
-        /// </summary>
-        [AutoUI(Skip=true)]
-        public IEnumerable<ISensorTreeModel> Children
-        {
-            get
-            {
-                return Devices;
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// All the devices in this project
-        /// </summary>
-        public List<IDevice> Devices { get; set; }
-
         /// <summary>
         /// Dependency injection for notifications
         /// </summary>
@@ -117,9 +84,15 @@ namespace CRTG
         [AutoUI(Group = "Email Notifications", MultiLine=20)]
         public string MessageBodyTemplate { get; set; }
 
+        /// <summary>
+        /// Credentials to use for Klipfolio
+        /// </summary>
         [AutoUI(Label = "Klipfolio Username", Group = "Klipfolio")]
         public string KlipfolioUsername { get; set; }
 
+        /// <summary>
+        /// Credentials to use for Klipfolio
+        /// </summary>
         [AutoUI(Label = "Klipfolio Password", Group = "Klipfolio", PasswordField = true)]
         public string KlipfolioPassword { get; set; }
 
@@ -128,6 +101,20 @@ namespace CRTG
         /// </summary>
         [AutoUI(Skip = true), JsonIgnore]
         public IDataStore DataStore { get; set; }
+
+
+        #region Observables
+        /// <summary>
+        /// The icon that should be displayed for this sensor
+        /// </summary>
+        public override string IconPath
+        {
+            get
+            {
+                return "Resources/project.png";
+            }
+        }
+        #endregion
 
 
         #region Logging
@@ -154,37 +141,55 @@ namespace CRTG
         #endregion
 
 
-        #region Managing the collection of sensors
-        [AutoUI(Skip=true)]
-        public int NextSensorNum = 1;
-
+        #region Managing the collection of sensors and devices
         /// <summary>
-        /// Add a sensor to the project
+        /// Adds a new device to the project
         /// </summary>
         /// <param name="dc"></param>
-        /// <param name="s"></param>
-        public void AddSensor(IDevice dc, BaseSensor s)
+        public void AddDevice(IDevice dc)
         {
-            s.Identity = NextSensorNum++;
-            s.Device = dc;
-            dc.Sensors.Add(s);
+            dc.Identity = GetNextDeviceNum();
+            AddChild(dc);
         }
-        #endregion
-
-
-        #region Managing the collection of devices
-        [AutoUI(Skip = true)]
-        public int NextDeviceNum = 1;
 
         /// <summary>
-        /// Add a device to the project
+        /// Adds a new device to the project
         /// </summary>
         /// <param name="dc"></param>
-        /// <param name="s"></param>
-        public void AddDevice(SensorDevice dc)
+        public void AddSensor(IDevice dc, ISensor sensor)
         {
-            dc.Identity = NextDeviceNum++;
-            Devices.Add(dc);
+            sensor.Identity = GetNextSensorNum();
+            dc.Children.Add(sensor);
+            dc.Identity = GetNextDeviceNum();
+            AddChild(dc);
+        }
+
+        [AutoUI(Skip = true)]
+        public int NextSensorNum { get; set; }
+
+        [AutoUI(Skip = true)]
+        public int NextDeviceNum { get; set; }
+
+        /// <summary>
+        /// Returns next sensor number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextSensorNum()
+        {
+            lock (this) {
+                return NextSensorNum++;
+            }
+        }
+
+        /// <summary>
+        /// Returns next device number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextDeviceNum()
+        {
+            lock (this) {
+                return NextDeviceNum++;
+            }
         }
         #endregion
 
@@ -233,15 +238,15 @@ namespace CRTG
                 try {
 
                     // Loop through sensors, and spawn a work item for them
-                    for (int i = 0; i < Devices.Count; i++) {
-                        IDevice dc = Devices[i];
-                        for (int j = 0; j < dc.Sensors.Count; j++) {
+                    for (int i = 0; i < Children.Count; i++) {
+                        IDevice dc = Children[i] as IDevice;
+                        for (int j = 0; j < dc.Children.Count; j++) {
 
                             // Allow us to kick out
                             if (!_keep_running) return;
 
                             // Okay, let's work on this sensor
-                            ISensor s = dc.Sensors[j];
+                            ISensor s = dc.Children[j] as ISensor;
                             if (s.Enabled && !s.InFlight) {
 
                                 // Spawn a work item in the thread pool to do this collection task
@@ -281,14 +286,13 @@ namespace CRTG
 
         public SensorProject()
         {
-            Devices = new List<IDevice>();
+            // Fetch data from the file
             string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             if (path.StartsWith("file:\\", StringComparison.CurrentCultureIgnoreCase)) {
                 path = path.Substring(6);
             }
 
             // Refactor to move to SQLite
-            //DataStore = new CSVSensorDataStore(Path.Combine(path, "sensors"));
             DataStore = new SqliteDataStore(Path.Combine(path, "sensors.sqlite"));
         }
 
@@ -311,23 +315,25 @@ namespace CRTG
 
             // Failed to load
             } catch (Exception ex) {
-                SensorProject.LogException("Error loading sensor XML file", ex);
+                SensorProject.LogException("Error loading sensor file", ex);
                 sp = new SensorProject();
-                sp.Devices = new List<IDevice>();
             }
 
             // Now make all the sensors read their data
             Current = sp;
             List<int> sensor_id_list = new List<int>();
-            foreach (SensorDevice dc in sp.Devices) {
-                foreach (BaseSensor bs in dc.Sensors) {
+            foreach (IDevice dc in sp.Children) {
+                dc.Parent = SensorProject.Current;
+
+                // Go through all sensors for this device
+                foreach (ISensor bs in dc.Children) {
 
                     // Make sure each sensor is uniquely identified!  If any have duplicate IDs, uniqueify them
                     if (sensor_id_list.Contains(bs.Identity)) {
                         bs.Identity = sp.NextSensorNum++;
                     }
                     sensor_id_list.Add(bs.Identity);
-                    bs.Device = (IDevice)dc;
+                    bs.Parent = (IDevice)dc;
 
                     // Read in each sensor's data, and write it back out to disk 
                     // (this ensures that all files have the same fields in the same order - permits appending via AppendText later

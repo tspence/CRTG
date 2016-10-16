@@ -15,33 +15,17 @@ using CRTG.Common.Interfaces;
 
 namespace CRTG
 {
-    public class BaseSensor : ISensor
+    public class BaseSensor : BaseSensorTreeModel, ISensor
     {
-        #region Observable
-        /// <summary>
-        /// Friendly name for this sensor
-        /// </summary>
-        public string Name { get; set; }
-
+        #region Icon
         /// <summary>
         /// The icon that should be displayed for this sensor
         /// </summary>
-        public string IconPath
+        public override string IconPath
         {
             get
             {
                 return "/AssemblyName;Resources/Sensor.png";
-            }
-        }
-
-        /// <summary>
-        /// Sensors have no children!
-        /// </summary>
-        public IEnumerable<ISensorTreeModel> Children
-        {
-            get
-            {
-                return null;
             }
         }
         #endregion
