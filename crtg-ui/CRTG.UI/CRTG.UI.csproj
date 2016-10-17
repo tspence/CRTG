@@ -82,7 +82,6 @@
     <Compile Include="AddSensor.xaml.cs">
       <DependentUpon>AddSensor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BitmapImageConverter.cs" />
     <Compile Include="Controls\AutoUIControl.xaml.cs">
       <DependentUpon>AutoUIControl.xaml</DependentUpon>
     </Compile>

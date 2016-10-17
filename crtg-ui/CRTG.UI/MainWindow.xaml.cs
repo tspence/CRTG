@@ -42,6 +42,8 @@ namespace CRTG.UI
                 this.ddlViewTimeframe.Items.Add(vt);
             }
             this.ddlViewTimeframe.SelectedValue = ViewTimeframe.Day;
+            //ViewModel.Chart.SetSize((int)autoChart.RenderSize.Width, (int)autoChart.RenderSize.Height);
+            ViewModel.Chart.SetSize(300, 300);
         }
 
         private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -52,31 +54,6 @@ namespace CRTG.UI
             var sensor = tvSensors1.SelectedValue as ISensor;
             if (sensor != null) {
                 ViewModel.Chart.Sensor = sensor;
-            //    ViewChart.Sensor = sensor;
-            //    var coll = SensorProject.Current.DataStore.RetrieveData(sensor, null, null, false);
-            //    var chart = ChartHelper.GetDisplayPackage(sensor, 
-            //        coll, 
-            //        (ViewTimeframe)this.ddlViewTimeframe.SelectedValue, 
-            //        (int)grdChart.ColumnDefinitions[0].ActualWidth, 
-            //        (int)grdChart.RowDefinitions[1].ActualHeight);
-            //    this.autoChart.Source = BitmapToImageSource(chart.ChartImage);
-            //} else {
-            //    this.autoChart.Source = null;
-            }
-        }
-
-        private BitmapImage BitmapToImageSource(System.Drawing.Bitmap bmp)
-        {
-            if (bmp == null) return null;
-            using (MemoryStream memory = new MemoryStream()) {
-                bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
-                memory.Position = 0;
-                BitmapImage bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-                return bitmapimage;
             }
         }
 
@@ -200,9 +177,16 @@ namespace CRTG.UI
         #endregion
 
         #region Charting
-        private void autoChart_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ViewModel.Chart.SetSize((int)e.NewSize.Width, (int)e.NewSize.Height);
+            //ViewModel.Chart.SetSize(300, 300); // (int)((FrameworkElement)sender).ActualWidth, (int)((FrameworkElement)sender).ActualHeight);
+        }
+        #endregion
+
+        #region Closing
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            SensorProject.Current.Stop();
         }
         #endregion
     }

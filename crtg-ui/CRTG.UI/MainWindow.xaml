@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CRTG.UI"
         xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
         mc:Ignorable="d" 
-        Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip">
+        Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
     <Window.DataContext>
         <local:SensorViewModel/>
     </Window.DataContext>
@@ -70,7 +70,7 @@
         <!-- TabControl on rightmost cell -->
         <TabControl Grid.Row="0" Grid.Column="2" x:Name="tabControl1">
             <TabItem Header="Chart">
-                <Grid Background="#FFE5E5E5" Name="grdChart">
+                <Grid Background="#FFE5E5E5" Name="grdChart" SizeChanged="grid_SizeChanged">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="300"/>
@@ -87,7 +87,7 @@
                     </StackPanel>
                     
                     <!-- Main chart image -->
-                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" SizeChanged="autoChart_SizeChanged" Source="{Binding Chart.ChartImage}" />
+                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" Source="{Binding ChartImageSource}" Width="300" Height="300" />
                 </Grid>
             </TabItem>
             <TabItem Header="Properties">

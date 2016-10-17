@@ -54,7 +54,10 @@ namespace CRTG.Charts
         private void DrawToImage()
         {
             // Kick out if we just don't have anything worthwhile
-            if (_width <= 0 || _height <= 0 || _sensor == null || _datastore == null) return;
+            if (_width <= 0 || _height <= 0 || _sensor == null || _datastore == null) {
+                return;
+            }
+            var start = DateTime.UtcNow;
 
             // Figure out window
             _max_date = DateTime.UtcNow;
@@ -73,7 +76,9 @@ namespace CRTG.Charts
             _range_in_seconds = (double)(_max_date - _min_date).TotalSeconds;
 
             // Filter data by time
-            _raw_data = _datastore.RetrieveData(_sensor, _min_date, _max_date, true);
+            if (_raw_data == null) {
+                _raw_data = _datastore.RetrieveData(_sensor, _min_date, _max_date, true);
+            }
             _filtered = (from r in _raw_data.Data where r.Time > _min_date && r.Time < _max_date orderby r.Time ascending select r).ToList();
             if (_filtered.Any()) {
 
@@ -106,6 +111,8 @@ namespace CRTG.Charts
             // Save this to a temporary filename
             g.Dispose();
             _chart_image = bmp;
+            var ts = DateTime.UtcNow - start;
+            System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString() + " Updated chart in " + ts.ToString());
             Notify("ChartImage");
         }
 
@@ -350,6 +357,7 @@ namespace CRTG.Charts
             set
             {
                 _sensor = value;
+                _raw_data = null;
                 Notify("Sensor");
                 DrawToImage();
             }
@@ -368,6 +376,7 @@ namespace CRTG.Charts
             set
             {
                 _datastore = value;
+                _raw_data = null;
                 Notify("DataStore");
                 DrawToImage();
             }
@@ -383,6 +392,10 @@ namespace CRTG.Charts
             {
                 if (_chart_image == null) {
                     DrawToImage();
+                    if (_chart_image != null) {
+                        if (File.Exists("test.png")) File.Delete("test.png");
+                        _chart_image.Save("test.png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
                 }
                 return _chart_image;
             }

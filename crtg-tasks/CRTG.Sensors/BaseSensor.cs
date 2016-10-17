@@ -150,6 +150,7 @@ namespace CRTG
         /// <summary>
         /// Shortcut to identify the parent device of this sensor
         /// </summary>
+        [JsonIgnore]
         public IDevice Device
         {
             get
