@@ -51,15 +51,17 @@ namespace CRTG.UI
             // Put up a chart
             var sensor = tvSensors1.SelectedValue as ISensor;
             if (sensor != null) {
-                var coll = SensorProject.Current.DataStore.RetrieveData(sensor, null, null, false);
-                var chart = ChartHelper.GetDisplayPackage(sensor, 
-                    coll, 
-                    (ViewTimeframe)this.ddlViewTimeframe.SelectedValue, 
-                    (int)grdChart.ColumnDefinitions[0].ActualWidth, 
-                    (int)grdChart.RowDefinitions[1].ActualHeight);
-                this.autoChart.Source = BitmapToImageSource(chart.ChartImage);
-            } else {
-                this.autoChart.Source = null;
+                ViewModel.Chart.Sensor = sensor;
+            //    ViewChart.Sensor = sensor;
+            //    var coll = SensorProject.Current.DataStore.RetrieveData(sensor, null, null, false);
+            //    var chart = ChartHelper.GetDisplayPackage(sensor, 
+            //        coll, 
+            //        (ViewTimeframe)this.ddlViewTimeframe.SelectedValue, 
+            //        (int)grdChart.ColumnDefinitions[0].ActualWidth, 
+            //        (int)grdChart.RowDefinitions[1].ActualHeight);
+            //    this.autoChart.Source = BitmapToImageSource(chart.ChartImage);
+            //} else {
+            //    this.autoChart.Source = null;
             }
         }
 
@@ -67,7 +69,7 @@ namespace CRTG.UI
         {
             if (bmp == null) return null;
             using (MemoryStream memory = new MemoryStream()) {
-                bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();
@@ -194,6 +196,13 @@ namespace CRTG.UI
 
         private void mnuProject_RemoveSensor_Click(object sender, RoutedEventArgs e)
         {
+        }
+        #endregion
+
+        #region Charting
+        private void autoChart_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ViewModel.Chart.SetSize((int)e.NewSize.Width, (int)e.NewSize.Height);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using CRTG.Common.Interfaces;
+﻿using CRTG.Charts;
+using CRTG.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,8 @@ namespace CRTG.UI
     {
         public ObservableCollection<ISensorTreeModel> SensorTree { get; set; }
 
+        public CrtgChart Chart { get; set; }
+
         #region Constructor
         public SensorViewModel()
         {
@@ -24,6 +27,8 @@ namespace CRTG.UI
             // Set up the sensor tree
             SensorTree = new ObservableCollection<ISensorTreeModel>();
             SensorTree.Add(SensorProject.Current);
+            Chart = new CrtgChart();
+            Chart.DataStore = SensorProject.Current.DataStore;
         }
         #endregion
 
@@ -32,8 +37,9 @@ namespace CRTG.UI
 
         void NotifiyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
+            if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
         }
         #endregion
     }

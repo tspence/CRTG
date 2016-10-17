@@ -235,7 +235,6 @@ namespace CRTG.Notification
         protected void NotifyEmail(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
         {
             string chart_attachment_file = null;
-            CrtgChart chart = null;
 
             // Do everything carefully
             try {
@@ -273,10 +272,23 @@ namespace CRTG.Notification
                 // Does this message require a chart attachment?
                 if (body.Contains("@CHART@")) {
                     var raw_data = SensorProject.Current.DataStore.RetrieveData(sensor, DateTime.UtcNow.AddMinutes(-(int)ViewTimeframe.Day), null, false);
-                    chart = ChartHelper.GetDisplayPackage(sensor, raw_data, ViewTimeframe.Day, 500, 300);
-                    chart_attachment_file = Path.ChangeExtension(Path.GetTempFileName(), "png");
-                    chart.SaveToFile(chart_attachment_file);
+
+                    // Create a chart file
+                    using (var chart = new CrtgChart()
+                    {
+                        ChartTimeframe = ViewTimeframe.Day,
+                        DataStore = SensorProject.Current.DataStore,
+                        Sensor = sensor,
+                        Width = 500,
+                        Height = 300
+                    }) {
+                        chart_attachment_file = Path.ChangeExtension(Path.GetTempFileName(), "png");
+                        chart.SaveToFile(chart_attachment_file);
+                    }
+
+                    // Attach this chart file
                     body = body.Replace("@CHART@", String.Format("<img src=\"cid:{0}\"/>", Path.GetFileName(chart_attachment_file)));
+
                 }
 
                 // Put together the mail message
@@ -293,9 +305,6 @@ namespace CRTG.Notification
             // Now clean up all the attachment files we created & the chart we put into memory
             if (chart_attachment_file != null) {
                 File.Delete(chart_attachment_file);
-            }
-            if (chart != null) {
-                chart.Dispose();
             }
         }
 

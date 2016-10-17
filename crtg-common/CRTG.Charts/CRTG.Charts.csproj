@@ -45,7 +45,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ChartHelper.cs" />
     <Compile Include="CrtgChart.cs" />
   </ItemGroup>
   <ItemGroup>

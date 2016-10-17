@@ -13,62 +13,24 @@ using System.Drawing;
 using System.IO;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
+using System.ComponentModel;
 
 namespace CRTG.Charts
 {
-    public class CrtgChart : IDisposable
+    public class CrtgChart : IDisposable, INotifyPropertyChanged
     {
-        private List<SensorData> _raw_data;
-        private int _width, _height;
+        private SensorDataCollection _raw_data;
+        private List<SensorData> _filtered;
         private DateTime _min_date, _max_date;
         private decimal _min_value, _max_value;
         private double _range_in_seconds, _range_in_value;
         private Rectangle _chart_rect;
-        private Bitmap _chart_image;
 
-        public CrtgChart(ISensor sensor, SensorDataCollection data, ViewTimeframe viewtime, int width, int height)
+        #region Constructor
+        public CrtgChart()
         {
-            _raw_data = new List<SensorData>();
-            if (data != null) {
-                _raw_data = data.Data.ToList();
-            }
-            _width = width;
-            _height = height;
-            _max_date = DateTime.UtcNow;
-            _min_date = _max_date;
-            _chart_rect = new Rectangle() { X = 5, Y = 5, Width = width - 10, Height = height - 10 };
-            _min_value = decimal.MaxValue;
-            _max_value = decimal.MinValue;
-
-            // If there's an artificial limitation on the time window, use that instead
-            if (viewtime == ViewTimeframe.AllTime) {
-                if (_raw_data.Count > 0) {
-                    _min_date = (from r in _raw_data select r.Time).Min();
-                }
-            } else {
-                _min_date = _max_date.AddMinutes(-(int)viewtime);
-            }
-            
-            // Filter data by time
-            _raw_data = (from r in _raw_data where r.Time > _min_date && r.Time < _max_date orderby r.Time ascending select r).ToList();
-            if (_raw_data.Any()) {
-
-                // Range checks and clamping
-                _min_value = (from r in _raw_data select r.Value).Min();
-                _max_value = (from r in _raw_data select r.Value).Max();
-                if (_min_value > 0) _min_value = 0;
-                if (_max_value < 0) _max_value = 0;
-
-                // Increase the maximum slightly so we can see the peak
-                if (_max_value > 0m) {
-                    _max_value = _max_value * 1.03m;
-                }
-
-                // Keep track of ranges
-                _range_in_seconds = (double)(_max_date - _min_date).TotalSeconds;
-                _range_in_value = (double)(_max_value - _min_value);
-            }
         }
+        #endregion
 
         #region Rendering Chart
         private Point PlotPoint(SensorData sensorData)
@@ -91,7 +53,40 @@ namespace CRTG.Charts
 
         private void DrawToImage()
         {
-            if (_width <= 0 && _height <= 0) return;
+            // Kick out if we just don't have anything worthwhile
+            if (_width <= 0 || _height <= 0 || _sensor == null || _datastore == null) return;
+
+            // Figure out window
+            _max_date = DateTime.UtcNow;
+            _min_date = _max_date;
+            _chart_rect = new Rectangle() { X = 5, Y = 5, Width = _width - 10, Height = _height - 10 };
+            _min_value = decimal.MaxValue;
+            _max_value = decimal.MinValue;
+            _range_in_value = 100.0;
+
+            // If there's an artificial limitation on the time window, use that instead
+            if (_chartTimeframe == ViewTimeframe.AllTime) {
+                _min_date = DateTime.MinValue;
+            } else {
+                _min_date = _max_date.AddMinutes(-(int)_chartTimeframe);
+            }
+            _range_in_seconds = (double)(_max_date - _min_date).TotalSeconds;
+
+            // Filter data by time
+            _raw_data = _datastore.RetrieveData(_sensor, _min_date, _max_date, true);
+            _filtered = (from r in _raw_data.Data where r.Time > _min_date && r.Time < _max_date orderby r.Time ascending select r).ToList();
+            if (_filtered.Any()) {
+
+                // Range checks and clamping
+                _min_value = (from r in _filtered select r.Value).Min();
+                _max_value = (from r in _filtered select r.Value).Max();
+                if (_min_value > 0) _min_value = 0;
+                if (_max_value < 0) _max_value = 0;
+
+                // Increase the maximum slightly so we can see the peak
+                if (_max_value > 0m) _max_value = _max_value * 1.03m;
+                _range_in_value = (double)(_max_value - _min_value);
+            }
 
             // New version of drawing code does it all ourselves
             Bitmap bmp = new Bitmap(_width, _height);
@@ -111,6 +106,7 @@ namespace CRTG.Charts
             // Save this to a temporary filename
             g.Dispose();
             _chart_image = bmp;
+            Notify("ChartImage");
         }
 
         private void DrawGraphLines(Graphics g)
@@ -262,12 +258,12 @@ namespace CRTG.Charts
         /// <param name="g"></param>
         private void DrawSensorData(Graphics g)
         {
-            if (_raw_data.Count > 0) {
+            if (_filtered.Count > 0) {
                 Pen blue = new Pen(Color.Blue, 2.5f);
                 blue.LineJoin = System.Drawing.Drawing2D.LineJoin.Bevel;
-                Point last_point = PlotPoint(_raw_data[0]);
-                for (int i = 1; i < _raw_data.Count; i++) {
-                    Point p = PlotPoint(_raw_data[i]);
+                Point last_point = PlotPoint(_filtered[0]);
+                for (int i = 1; i < _filtered.Count; i++) {
+                    Point p = PlotPoint(_filtered[i]);
                     g.DrawLine(blue, last_point, p);
                     last_point = p;
                 }
@@ -277,19 +273,121 @@ namespace CRTG.Charts
 
         #region Member Properties
         /// <summary>
-        /// Keep track of the image
+        /// Update both width and height so you don't force two draws
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public void SetSize(int width, int height)
+        {
+            _width = width;
+            _height = height;
+            DrawToImage();
+        }
+
+        /// <summary>
+        /// Width of the chart in pixels
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return _width;
+            }
+            set
+            {
+                _width = value;
+                Notify("Width");
+                DrawToImage();
+            }
+        }
+        private int _width;
+
+        /// <summary>
+        /// Height of the chart in pixels
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                return _height;
+            }
+            set
+            {
+                _height = value;
+                Notify("Height");
+                DrawToImage();
+            }
+        }
+        private int _height;
+
+        /// <summary>
+        /// Timeframe for the chart, relative to now
+        /// </summary>
+        public ViewTimeframe ChartTimeframe
+        {
+            get
+            {
+                return _chartTimeframe;
+            }
+            set
+            {
+                _chartTimeframe = value;
+                Notify("ChartTimeframe");
+                DrawToImage();
+            }
+        }
+        private ViewTimeframe _chartTimeframe;
+
+        /// <summary>
+        /// The sensor this chart is attached to
+        /// </summary>
+        public ISensor Sensor
+        {
+            get
+            {
+                return _sensor;
+            }
+            set
+            {
+                _sensor = value;
+                Notify("Sensor");
+                DrawToImage();
+            }
+        }
+        private ISensor _sensor;
+
+        /// <summary>
+        /// The sensor this chart is attached to
+        /// </summary>
+        public IDataStore DataStore
+        {
+            get
+            {
+                return _datastore;
+            }
+            set
+            {
+                _datastore = value;
+                Notify("DataStore");
+                DrawToImage();
+            }
+        }
+        private IDataStore _datastore;
+
+        /// <summary>
+        /// Current image of this chart
         /// </summary>
         public Bitmap ChartImage
         {
             get
             {
-                // Do we need to produce the chart image?
                 if (_chart_image == null) {
                     DrawToImage();
                 }
                 return _chart_image;
             }
         }
+        private Bitmap _chart_image;
 
         /// <summary>
         /// Save the chart to a file
@@ -301,24 +399,13 @@ namespace CRTG.Charts
         }
 
         /// <summary>
-        /// Data used to build the chart
-        /// </summary>
-        public List<SensorData> RawData
-        {
-            get
-            {
-                return _raw_data;
-            }
-        }
-
-        /// <summary>
         /// Determine the most useful information to show
         /// </summary>
         /// <param name="distance"></param>
         /// <returns></returns>
         public string TooltipFromPoint(float horizontal_distance)
         {
-            if (_raw_data != null && _raw_data.Count > 0) {
+            if (_raw_data != null && _raw_data.Data.Count > 0) {
 
                 // Figure out what time point this distance represents
                 double num_seconds_from_chart_left_side = (_range_in_seconds * horizontal_distance);
@@ -326,7 +413,7 @@ namespace CRTG.Charts
 
                 // Find the best available data point
                 SensorData sd = null;
-                foreach (var r in _raw_data) {
+                foreach (var r in _raw_data.Data) {
                     if (r.Time > best_available_time) break;
                     sd = r;
                 }
@@ -335,6 +422,17 @@ namespace CRTG.Charts
                 }
             }
             return "";
+        }
+        #endregion
+
+        #region Notification
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void Notify(string name)
+        {
+            if (PropertyChanged != null) {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
         }
         #endregion
 

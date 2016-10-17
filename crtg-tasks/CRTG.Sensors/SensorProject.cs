@@ -269,7 +269,7 @@ namespace CRTG
 
                 // Failsafe
                 } catch (Exception ex) {
-                    Console.WriteLine(ex.ToString());
+                    SensorProject.LogException("Collect", ex);
                 }
 
                 // Sleep until next collection time, but allow ourselves to kick out

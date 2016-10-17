@@ -83,12 +83,11 @@
                     <!-- Dropdown for selecting time ranges -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
                         <Label>View Timeframe:</Label>
-                        <ComboBox Width="Auto" Name="ddlViewTimeframe">
-                        </ComboBox>
+                        <ComboBox Width="Auto" Name="ddlViewTimeframe" SelectedValue="{Binding Chart.ChartTimeframe}" />
                     </StackPanel>
                     
                     <!-- Main chart image -->
-                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" />
+                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" SizeChanged="autoChart_SizeChanged" Source="{Binding Chart.ChartImage}" />
                 </Grid>
             </TabItem>
             <TabItem Header="Properties">
