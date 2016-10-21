@@ -87,7 +87,7 @@
                     </StackPanel>
                     
                     <!-- Main chart image -->
-                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0" Source="{Binding ChartImageSource}" Width="300" Height="300" />
+                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Properties">

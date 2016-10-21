@@ -69,7 +69,11 @@ namespace CRTG.Charts
 
             // If there's an artificial limitation on the time window, use that instead
             if (_chartTimeframe == ViewTimeframe.AllTime) {
-                _min_date = DateTime.MinValue;
+                if (_raw_data != null && _raw_data.Data.Count > 0) {
+                    _min_date = (from r in _raw_data.Data select r.Time).Min();
+                } else {
+                    _min_date = _max_date.AddHours(-1);
+                }
             } else {
                 _min_date = _max_date.AddMinutes(-(int)_chartTimeframe);
             }
@@ -97,32 +101,37 @@ namespace CRTG.Charts
             Bitmap bmp = new Bitmap(_width, _height);
             Graphics g = Graphics.FromImage(bmp);
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            //System.Diagnostics.Debug.WriteLine("Startup chart in " + (DateTime.UtcNow - start).ToString());
 
             // We have a 5px border around each edge, and remember the positions
             Pen black = new Pen(Color.Black);
             g.DrawRectangle(black, _chart_rect);
+            //System.Diagnostics.Debug.WriteLine("Rectangle in " + (DateTime.UtcNow - start).ToString());
 
             // Only draw something if values make sense
             if (_range_in_value > 0 && _range_in_seconds > 0) {
                 DrawGraphLines(g);
+                //System.Diagnostics.Debug.WriteLine("GraphLines in " + (DateTime.UtcNow - start).ToString());
                 DrawSensorData(g);
+                //System.Diagnostics.Debug.WriteLine("SensorData in " + (DateTime.UtcNow - start).ToString());
             }
 
             // Save this to a temporary filename
             g.Dispose();
             _chart_image = bmp;
-            var ts = DateTime.UtcNow - start;
-            System.Diagnostics.Debug.WriteLine(DateTime.UtcNow.ToString() + " Updated chart in " + ts.ToString());
+            //System.Diagnostics.Debug.WriteLine("Updated chart in " + (DateTime.UtcNow - start).ToString());
             Notify("ChartImage");
         }
 
         private void DrawGraphLines(Graphics g)
         {
+            DateTime start = DateTime.UtcNow;
             Pen graphline = new Pen(Color.DarkSlateGray);
             graphline.DashPattern = new float[] { 4, 4 };
             Brush tb = new SolidBrush(Color.Black);
             Font graph_label = new Font(FontFamily.GenericSansSerif, 10.0f, FontStyle.Regular);
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            //System.Diagnostics.Debug.WriteLine("Setup graphlines in " + (DateTime.UtcNow - start).ToString());
 
             // Calculate number of grid lines to draw horizontally
             int gridline_scale = ChooseScale();
@@ -139,6 +148,7 @@ namespace CRTG.Charts
                 // Move on to next line
                 pos += gridline_scale;
             }
+            //System.Diagnostics.Debug.WriteLine("Finish lines in " + (DateTime.UtcNow - start).ToString());
 
             // Now let's do some vertical gridlines
             string date_time_format = null;
@@ -146,6 +156,7 @@ namespace CRTG.Charts
             DateTime dtpos = _min_date.AddSeconds(time_scale_in_seconds);
             dtpos = RoundDateTime(dtpos, time_scale_in_seconds);
             string current_date = null;
+            //System.Diagnostics.Debug.WriteLine("Prep for text in " + (DateTime.UtcNow - start).ToString());
             while (dtpos < _max_date) {
 
                 // Draw a dotted line at this position
@@ -167,6 +178,7 @@ namespace CRTG.Charts
                 // Move on to next line
                 dtpos = dtpos.AddSeconds(time_scale_in_seconds);
             }
+            //System.Diagnostics.Debug.WriteLine("Finish graphlines in " + (DateTime.UtcNow - start).ToString());
         }
 
         private DateTime RoundDateTime(DateTime dtpos, int time_scale_in_seconds)

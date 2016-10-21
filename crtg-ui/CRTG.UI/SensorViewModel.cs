@@ -20,20 +20,6 @@ namespace CRTG.UI
 
         public CrtgChart Chart { get; set; }
 
-        public BitmapImage ChartImageSource
-        {
-            get
-            {
-                return _chartImageSource;
-            }
-            set
-            {
-                _chartImageSource = value;
-                Notify("ChartImageSource");
-            }
-        }
-        private BitmapImage _chartImageSource;
-
         #region Constructor
         public SensorViewModel()
         {
@@ -54,23 +40,27 @@ namespace CRTG.UI
         {
             // The image changed!
             if (e.PropertyName == "ChartImage") {
-
-                // Convert the image to an image source
-                var bmp = Chart.ChartImage;
-                if (bmp != null) {
-                    System.Diagnostics.Debug.WriteLine("Converting chart");
-                    MemoryStream ms = new MemoryStream();
-                    bmp.Save(ms, ImageFormat.Bmp);
-                    BitmapImage bi = new BitmapImage();
-                    bi.BeginInit();
-                    ms.Seek(0, SeekOrigin.Begin);
-                    bi.StreamSource = ms;
-                    bi.EndInit();
-                    ChartImageSource = bi;
-                } else {
-                    ChartImageSource = null;
-                }
+                Notify("ChartImage");
             }
+
+            //    // Convert the image to an image source
+            //    DateTime start = DateTime.UtcNow;
+            //    var bmp = Chart.ChartImage;
+            //    if (bmp != null) {
+            //        MemoryStream ms = new MemoryStream();
+            //        bmp.Save(ms, ImageFormat.Bmp);
+            //        BitmapImage bi = new BitmapImage();
+            //        bi.BeginInit();
+            //        ms.Seek(0, SeekOrigin.Begin);
+            //        bi.StreamSource = ms;
+            //        bi.EndInit();
+            //        ChartImageSource = bi;
+            //    } else {
+            //        ChartImageSource = null;
+            //    }
+            //    var ts = DateTime.UtcNow - start;
+            //    System.Diagnostics.Debug.WriteLine("Converted chart in " + ts.ToString());
+            //}
         }
         #endregion
 

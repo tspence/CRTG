@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -42,8 +43,27 @@ namespace CRTG.UI
                 this.ddlViewTimeframe.Items.Add(vt);
             }
             this.ddlViewTimeframe.SelectedValue = ViewTimeframe.Day;
-            //ViewModel.Chart.SetSize((int)autoChart.RenderSize.Width, (int)autoChart.RenderSize.Height);
-            ViewModel.Chart.SetSize(300, 300);
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "ChartImage") {
+                var bmp = ViewModel.Chart.ChartImage;
+                System.Diagnostics.Debug.WriteLine("Refreshing Image: {0}x{1}", bmp.Width, bmp.Height);
+                if (bmp != null) {
+                    MemoryStream ms = new MemoryStream();
+                    bmp.Save(ms, ImageFormat.Bmp);
+                    BitmapImage bi = new BitmapImage();
+                    bi.BeginInit();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    bi.StreamSource = ms;
+                    bi.EndInit();
+                    this.autoChart.Source = bi;
+                } else {
+                    this.autoChart.Source = null;
+                }
+            }
         }
 
         private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -179,7 +199,7 @@ namespace CRTG.UI
         #region Charting
         private void grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //ViewModel.Chart.SetSize(300, 300); // (int)((FrameworkElement)sender).ActualWidth, (int)((FrameworkElement)sender).ActualHeight);
+            ViewModel.Chart.SetSize((int)((FrameworkElement)sender).ActualWidth, (int)((FrameworkElement)sender).ActualHeight);
         }
         #endregion
 
