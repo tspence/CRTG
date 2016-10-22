@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRTG.UI"
         mc:Ignorable="d"
-        Title="AddSensor" Height="300" Width="500" ResizeMode="CanResizeWithGrip">
+        Title="AddSensor" Height="650" Width="750" ResizeMode="CanResizeWithGrip" Icon="Resources/CRTG.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

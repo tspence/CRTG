@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CRTG.UI"
         xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
         mc:Ignorable="d" 
-        Title="CRTG" Height="350" Width="525" ResizeMode="CanResizeWithGrip" Closing="Window_Closing">
+        Title="CRTG" Height="700" Width="800" ResizeMode="CanResizeWithGrip" Closing="Window_Closing" Icon="Resources/CRTG.ico">
     <Window.DataContext>
         <local:SensorViewModel/>
     </Window.DataContext>
