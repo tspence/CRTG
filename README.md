@@ -1,7 +1,6 @@
-# CRTG
-CSharp real time graphing monitor
+# CSharp Real Time Graphing (CRTG)
 
-You can create your own sensors, tracking tasks, and automated notifications via a simple, programmable solution.
+Create your own sensors, tracking tasks, and automated notifications via an open source solution.
 
 Monitor your own databases, servers, or REST API products via a simple and configurable open-source program.
 * NO licensing costs
@@ -15,7 +14,7 @@ The program stores all configuration data in a JSON file and stores all data gat
 Fully open source (APACHE 2.0 license).  
 
 Download latest executable:
-* <a href="https://github.com/tspence/CRTG/tree/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
+* <a href="https://raw.githubusercontent.com/tspence/CRTG/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
 
 ![Version 1.0 Refactored Preview]
 (https://raw.githubusercontent.com/tspence/CRTG/master/crtg.preview.png)
