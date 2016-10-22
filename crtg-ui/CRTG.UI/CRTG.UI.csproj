@@ -27,12 +27,12 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://github.com/tspence/CRTG/tree/master/Publish/</InstallUrl>
+    <InstallUrl>https://cdn.rawgit.com/tspence/CRTG/tree/master/Publish/</InstallUrl>
     <SupportUrl>https://github.com/tspence/CRTG/issues</SupportUrl>
     <ProductName>CRTG</ProductName>
     <PublisherName>Ted Spence</PublisherName>
     <ApplicationRevision>3</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.3.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
