@@ -1,0 +1,466 @@
+﻿/*
+ * 2012 - 2016 Ted Spence, http://tedspence.com
+ * License: http://www.apache.org/licenses/LICENSE-2.0 
+ * Home page: https://github.com/tspence/CRTG
+ * 
+ * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CRTG.Sensors;
+using CRTG.Common;
+using Newtonsoft.Json;
+using CRTG.Common.Interfaces;
+using CRTG.Common.Attributes;
+
+namespace CRTG
+{
+    public class BaseSensor : BaseSensorTreeModel, ISensor
+    {
+        #region Icon
+        /// <summary>
+        /// This is the icon path for this object when it is in normal operation.
+        /// Override this to show a more friendly icon.
+        /// </summary>
+        public virtual string GetNormalIconPath()
+        {
+            return "Resources/sensor.png";
+        }
+
+        /// <summary>
+        /// The icon that should be displayed for this sensor
+        /// </summary>
+        public sealed override string IconPath
+        {
+            get
+            {
+                // Flicker the icon when we are collecting
+                if (InFlight) {
+                    return "Resources/hourglass.png";
+
+                // Show paused icons
+                } else if (!Enabled) {
+                    return "Resources/control_pause_blue.png";
+                
+                // Show sensors in error
+                } else if (InError) {
+                    return "Resources/sensor_error.png";
+
+                // Sensor is in normal state
+                } else {
+                    return GetNormalIconPath();
+                }
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// The sensor's identity
+        /// </summary>
+        [AutoUI(Skip = true)]
+        public int Identity { get; set; }
+
+        /// <summary>
+        /// Longer friendly description for this sensor
+        /// </summary>
+        [AutoUI(Group = "Sensor")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// What unit are we measuring?
+        /// </summary>
+        [AutoUI(Group = "Sensor")]
+        public string MeasurementUnit { get; set; }
+
+        /// <summary>
+        /// How often are we measuring it?
+        /// </summary>
+        [AutoUI(Group = "Sensor")]
+        public Interval Frequency { get; set; }
+
+        /// <summary>
+        /// How often are we measuring it?
+        /// </summary>
+        [AutoUI(Group = "Sensor")]
+        public bool PauseOnError { get; set; }
+
+        /// <summary>
+        /// Is this sensor enabled?
+        /// </summary>
+        [AutoUI(Skip=true)]
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+                Notify("IconPath");
+            }
+        }
+
+        private bool _enabled;
+
+        /// <summary>
+        /// All the data collected with this sensor over time
+        /// </summary>
+        [JsonIgnore, AutoUI(Skip = true)]
+        public SensorDataCollection SensorData { get; set; }
+
+        /// <summary>
+        /// The latest available data from the sensor
+        /// </summary>
+        [AutoUI(Skip = true)]
+        public Decimal LatestData { get; set; }
+
+        /// <summary>
+        /// Next recommended time to collect data
+        /// </summary>
+        [AutoUI(Skip = true)]
+        public DateTime NextCollectTime { get; set; }
+
+        /// <summary>
+        /// Next recommended time to collect data
+        /// </summary>
+        [AutoUI(Skip = true)]
+        public DateTime LastCollectTime { get; set; }
+
+        /// <summary>
+        /// Keeps track of whether a collection call is in flight
+        /// </summary>
+        [JsonIgnore, AutoUI(Skip = true)]
+        public bool InFlight
+        {
+            get
+            {
+                return _inFlight;
+            }
+            set
+            {
+                _inFlight = value;
+                Notify("IconPath");
+            }
+        }
+
+        private bool _inFlight;
+
+        /// <summary>
+        /// Shortcut to identify the parent device of this sensor
+        /// </summary>
+        [JsonIgnore]
+        public IDevice Device
+        {
+            get
+            {
+                return Parent as IDevice;
+            }
+        }
+
+        /// <summary>
+        /// Track whether this collector is erroring out
+        /// </summary>
+        [AutoUI(Skip=true)]
+        public bool InError
+        {
+            get
+            {
+                return _inError;
+            }
+            set
+            {
+                _inError = value;
+                Notify("IconPath");
+            }
+        }
+        private bool _inError;
+
+        /// <summary>
+        /// Track whether this collector is erroring out
+        /// </summary>
+        [AutoUI(Skip=true)]
+        public string LastException { get; set; }
+
+        [AutoUI(Group = "Error", Label = "High Threshold")]
+        public decimal? HighError { get; set; }
+
+        [AutoUI(Group = "Error", Label = "Message")]
+        public string ErrorMessage { get; set; }
+
+        [AutoUI(Group = "Error", Label = "Low Threshold")]
+        public decimal? LowError { get; set; }
+
+        [AutoUI(Group = "Warning", Label = "High Threshold")]
+        public decimal? HighWarning { get; set; }
+
+        [AutoUI(Group = "Warning", Label = "Message")]
+        public string WarningMessage { get; set; }
+
+        [AutoUI(Group = "Warning", Label = "Low Threshold")]
+        public decimal? LowWarning { get; set; }
+
+        [AutoUI(Group = "Notifications", Label = "Notify on Change")]
+        public bool NotifyOnChange { get; set; }
+
+        [AutoUI(Group = "Notifications", Label = "Method")]
+        public NotificationMethod Method { get; set; }
+
+        [AutoUI(Group = "Notifications", Label = "Recipients", Help = "A comma-separated list of email addresses.")]
+        public string Recipients { get; set; }
+
+        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, this is the ID of the datasource where it is to be published.")]
+        public string KlipfolioId { get; set; }
+
+        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, how much data should be uploaded?")]
+        public ViewTimeframe UploadAmount { get; set; }
+
+        /// <summary>
+        /// Keeps track of when we last uploaded this object
+        /// </summary>
+        [JsonIgnore, AutoUI(Skip = true)]
+        public DateTime LastUploadTime { get; set; }
+
+
+        #region Helper functions for data collection
+        /// <summary>
+        /// Add this value to the time series data and advance our next collection time
+        /// </summary>
+        /// <param name="d"></param>
+        public SensorData AddValue(decimal d, DateTime timestamp, int ms)
+        {
+            SensorData sd = new SensorData() { Time = timestamp, Value = d, CollectionTimeMs = ms };
+            if (SensorData == null) {
+                DataRead();
+            }
+            SensorProject.Current.DataStore.AppendData(this, sd);
+            LatestData = d;
+            return sd;
+        }
+        #endregion
+
+
+        #region Collection and notification wrappers
+        /// <summary>
+        /// Collect data for this sensor (with parameter - not used!)
+        /// </summary>
+        public void OuterCollect()
+        {
+            DateTime collect_start_time = DateTime.UtcNow;
+            Decimal value = 0;
+            bool success = false;
+            TimeSpan ts = new TimeSpan();
+            SensorData sd = null;
+
+            // Collect data and clock how long it took
+            try {
+                value = Collect();
+                LastCollectTime = DateTime.UtcNow;
+                ts = LastCollectTime - collect_start_time;
+                sd = AddValue(value, collect_start_time, (int)ts.TotalMilliseconds);
+                success = true;
+
+            } catch (Exception ex) {
+                LastException = ex.ToString();
+                InError = true;
+                if (PauseOnError) {
+                    Enabled = false;
+                    SensorProject.LogException("Sensor error & pause: (#" + this.Identity + ") " + this.Name, ex);
+                } else {
+                    SensorProject.LogException("Sensor error: (#" + this.Identity + ") " + this.Name, ex);
+                }
+
+            // Release the inflight status so that this sensor can collect again
+            } finally {
+
+                // Move forward to next collection time period - skip any number of intermediate time periods
+                if (NextCollectTime < DateTime.UtcNow) {
+                    NextCollectTime = DateTime.UtcNow.AddSeconds((int)Frequency);
+                }
+
+                // Allow this to be recollected again
+                InFlight = false;
+            }
+
+            // Now, all elements that can safely be moved after the inflight flag is turned off
+            if (success) {
+                this.Notify("SensorData");
+                TestAllNotifications(collect_start_time, value);
+                KlipfolioUpload();
+            }
+        }
+
+        /// <summary>
+        /// If this report is uploaded via Klipfolio, let's do it!
+        /// </summary>
+        protected virtual void KlipfolioUpload()
+        {
+            if (!String.IsNullOrEmpty(KlipfolioId)) {
+                try {
+                    TimeSpan ts = DateTime.UtcNow - LastUploadTime;
+                    if (this.SensorData != null) {
+
+                        // Filter to just the amount we care about
+                        List<SensorData> list = null;
+                        if (UploadAmount == ViewTimeframe.AllTime) {
+                            list = this.SensorData.Data.ToList();
+                        } else {
+                            var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
+                            list = (from sd in this.SensorData.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
+                        }
+
+                        // Determine the correct URL
+                        string UploadUrl = String.Format("https://app.klipfolio.com/api/1/datasources/{0}/data", KlipfolioId);
+                        if (SensorProject.Current.Notifications.UploadReport(list, false, UploadUrl, HttpVerb.PUT,
+                            SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
+                            LastUploadTime = DateTime.UtcNow;
+                        }
+                    }
+
+                // Catch problems in uploading
+                } catch (Exception ex) {
+                    string headline = String.Format("Error uploading {0} ({1}) to Klipfolio", this.Name, this.Identity);
+                    SensorProject.LogException(headline, ex);
+                }
+            }
+        }
+
+        [JsonIgnore, AutoUI(Skip = true)]
+        private decimal? _prior_value;
+
+        [JsonIgnore, AutoUI(Skip = true)]
+        private NotificationState _current_state = NotificationState.Normal;
+
+        [JsonIgnore, AutoUI(Skip = true)]
+        public NotificationState CurrentState
+        {
+            get { return _current_state; }
+        }
+
+        /// <summary>
+        /// Test all notification states and generate any email messages if necessary
+        /// </summary>
+        private void TestAllNotifications(DateTime timestamp, decimal value)
+        {
+            // What's our current state?  If this is a state change, notify
+            NotificationState ns = TestState(value);
+            if (ns != _current_state) {
+                string s = "";
+                switch (ns) {
+                    case NotificationState.ErrorHigh:
+                    case NotificationState.ErrorLow:
+                        s = ErrorMessage;
+                        break;
+                    case NotificationState.WarningHigh:
+                    case NotificationState.WarningLow:
+                        s = WarningMessage;
+                        break;
+                    case NotificationState.Normal:
+                        s = "Sensor returned to normal";
+                        break;
+                }
+                if (SensorProject.Current.Notifications != null) {
+                    SensorProject.Current.Notifications.Notify(this, ns, timestamp, value, s);
+                }
+                _current_state = ns;
+            }
+
+            // Check for notification on value changes
+            if (this.NotifyOnChange) {
+                if ((_prior_value != null) && (_prior_value != value)) {
+                    if (SensorProject.Current.Notifications != null) {
+                        SensorProject.Current.Notifications.Notify(this, NotificationState.ValueChanged, timestamp, value, String.Format("Changed from {0} to {1}", _prior_value.Value, value));
+                    }
+                }
+                _prior_value = value;
+            }
+        }
+
+        private NotificationState TestState(decimal value)
+        {
+            // Test states in order so they don't falsely alarm
+            if (HighError != null && value > HighError.Value) {
+                return NotificationState.ErrorHigh;
+            } else if (HighWarning != null && value > HighWarning.Value) {
+                return NotificationState.WarningHigh;
+            } else if (LowError != null && value < LowError.Value) {
+                return NotificationState.ErrorLow;
+            } else if (LowWarning != null && value < LowWarning.Value) {
+                return NotificationState.WarningLow;
+            }
+
+            // No state
+            return NotificationState.Normal;
+        }
+        #endregion
+
+
+        #region Functions to override
+        /// <summary>
+        /// Collect data for this sensor
+        /// </summary>
+        public virtual decimal Collect()
+        {
+            throw new Exception("You must override this function.");
+        }
+        #endregion
+
+
+        #region Reading and writing the raw sensor data
+        /// <summary>
+        /// Read all data from disk
+        /// </summary>
+        public void DataRead()
+        {
+            SensorData = SensorProject.Current.DataStore.RetrieveData(this);
+
+            // Set most recent collect time, if one is available
+            var most_recent_record = SensorData.GetLastData();
+            if (most_recent_record != null) {
+                LastCollectTime = most_recent_record.Time;
+            } else {
+                LastCollectTime = DateTime.MinValue;
+            }
+
+            // Determine last exception message
+            var ex = SensorData.GetLastException();
+            if (ex != null && !ex.Cleared) {
+                LastException = ex.Description;
+            }
+        }
+
+        public void ClearAllData()
+        {
+            throw new NotImplementedException();
+            //SensorData.BackupAndClear();
+        }
+        #endregion
+
+
+        #region Duplicating a sensor
+        /// <summary>
+        /// Duplicate this sensor
+        /// </summary>
+        /// <returns></returns>
+        public BaseSensor Duplicate()
+        {
+            var serialized = JsonConvert.SerializeObject(this);
+            var s = JsonConvert.DeserializeObject(serialized) as BaseSensor;
+
+            // Set some sensible defaults
+            s.Enabled = false;
+            s.ErrorMessage = "";
+            s.LastCollectTime = DateTime.MinValue;
+            s.LastUploadTime = DateTime.MinValue;
+            s.LatestData = 0.0m;
+            s.NextCollectTime = DateTime.MinValue;
+            s.Identity = -1;
+            s.Name = s.Name + " (Copy)";
+
+            // Here's your dupe
+            return s;
+        }
+        #endregion
+    }
+}

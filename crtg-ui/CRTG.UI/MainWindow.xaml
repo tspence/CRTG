@@ -1,0 +1,99 @@
+﻿<Window x:Class="CRTG.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRTG.UI"
+        xmlns:i="clr-namespace:CRTG.Common.Interfaces;assembly=CRTG.Common"
+        mc:Ignorable="d" 
+        Title="CRTG" Height="700" Width="800" ResizeMode="CanResizeWithGrip" Closing="Window_Closing" Icon="Resources/CRTG.ico">
+    <Window.DataContext>
+        <local:SensorViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ContextMenu Name="mnuProject" x:Key="mnuProject">
+            <MenuItem Header="Add _Device" Click="mnuProject_AddDevice_Click" />
+        </ContextMenu>
+        <ContextMenu Name="mnuDevice" x:Key="mnuDevice">
+            <MenuItem Header="Add _Sensor..." Click="mnuProject_AddSensor_Click" />
+            <Separator />
+            <MenuItem Header="_Remove Device" Click="mnuProject_RemoveDevice_Click" />
+        </ContextMenu>
+        <ContextMenu Name="mnuSensor" x:Key="mnuSensor">
+            <MenuItem Header="Check Now" />
+            <Separator />
+            <MenuItem Header="Pause" Click="mnuProject_Pause_Click" />
+            <MenuItem Header="Reset Error" Click="mnuProject_ResetError_Click" />
+            <MenuItem Header="Empty History" Click="mnuProject_EmptyHistory_Click" />
+            <MenuItem Header="Duplicate" Click="mnuProject_Duplicate_Click" />
+            <Separator />
+            <MenuItem Header="_Remove Sensor" Click="mnuProject_RemoveSensor_Click" />
+        </ContextMenu>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Treeview on leftmost cell -->
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="tvSensors1" ItemsSource="{Binding SensorTree}" PreviewMouseRightButtonDown="tvSensors1_PreviewMouseRightButtonDown" MouseRightButtonDown="tvSensors1_MouseRightButtonDown">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type i:ISensorTreeModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconPath}" Margin="3" />
+                        <TextBlock Text="{Binding Name}" Margin="3" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
+        <!-- Splitter -->
+        <GridSplitter Grid.Row="0" Grid.Column="1" Width="10" HorizontalAlignment="Stretch" Margin="0" Name="gridSplitter1" ResizeDirection="Columns" />
+
+        <!-- TabControl on rightmost cell -->
+        <TabControl Grid.Row="0" Grid.Column="2" x:Name="tabControl1">
+            <TabItem Header="Chart">
+                <Grid Background="#FFE5E5E5" Name="grdChart" SizeChanged="grid_SizeChanged">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="300"/>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Dropdown for selecting time ranges -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                        <Label>View Timeframe:</Label>
+                        <ComboBox Width="Auto" Name="ddlViewTimeframe" SelectedValue="{Binding Chart.ChartTimeframe}" />
+                    </StackPanel>
+                    
+                    <!-- Main chart image -->
+                    <Image Name="autoChart" Grid.Row="1" Grid.Column="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Properties">
+                <local:AutoUIControl x:Name="autoProperties" />
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>

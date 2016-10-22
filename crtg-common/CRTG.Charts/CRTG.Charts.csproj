@@ -45,17 +45,16 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ChartHelper.cs" />
     <Compile Include="CrtgChart.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CRTG.Sensors\CRTG.Sensors.csproj">
-      <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>
-      <Name>CRTG.Sensors</Name>
-    </ProjectReference>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\CRTG.Common\CRTG.Common.csproj">
+      <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
+      <Name>CRTG.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
