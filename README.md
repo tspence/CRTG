@@ -17,4 +17,5 @@ Fully open source (APACHE 2.0 license).
 Download latest executable:
 * <a href="https://github.com/tspence/CRTG/tree/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
 
-(https://github.com/tspence/CRTG/tree/master/crtg.preview.png "Version 1.0 Preview")
+![Version 1.0 Refactored Preview]
+(https://github.com/tspence/CRTG/tree/master/crtg.preview.png)
