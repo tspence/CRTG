@@ -292,15 +292,17 @@ namespace CRTG.Charts
 
         #region Member Properties
         /// <summary>
-        /// Update both width and height so you don't force two draws
+        /// Update both width and height so you don't force two draws for one change
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
         public void SetSize(int width, int height)
         {
-            _width = width;
-            _height = height;
-            DrawToImage();
+            if ((width != _width) || (height != _height)) {
+                _width = width;
+                _height = height;
+                DrawToImage();
+            }
         }
 
         /// <summary>
