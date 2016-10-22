@@ -33,11 +33,13 @@ namespace CRTG.UI
 
         public MainWindow()
         {
-            // Start up our view model
-            ViewModel = new SensorViewModel();
-
             // Load the UI
             InitializeComponent();
+
+            // Detect the view model
+            ViewModel = this.DataContext as SensorViewModel;
+
+            // Okay, now let's proceed
             tvSensors1.SelectedItemChanged += TvSensors1_SelectedItemChanged;
             foreach (var vt in Enum.GetValues(typeof(ViewTimeframe))) {
                 this.ddlViewTimeframe.Items.Add(vt);
@@ -55,20 +57,22 @@ namespace CRTG.UI
                 System.Diagnostics.Debug.WriteLine("Refreshing Image: {0}x{1}", bmp.Width, bmp.Height);
 
                 // Push the change to the UI
-                Application.Current.Dispatcher.Invoke(new Action(() => 
-                {
-                    BitmapImage bi = null;
-                    if (bmp != null) {
-                        MemoryStream ms = new MemoryStream();
-                        bmp.Save(ms, ImageFormat.Bmp);
-                        bi = new BitmapImage();
-                        bi.BeginInit();
-                        ms.Seek(0, SeekOrigin.Begin);
-                        bi.StreamSource = ms;
-                        bi.EndInit();
-                    }
-                    this.autoChart.Source = bi;
-                }));
+                if (!isClosing) {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        BitmapImage bi = null;
+                        if (bmp != null) {
+                            MemoryStream ms = new MemoryStream();
+                            bmp.Save(ms, ImageFormat.Bmp);
+                            bi = new BitmapImage();
+                            bi.BeginInit();
+                            ms.Seek(0, SeekOrigin.Begin);
+                            bi.StreamSource = ms;
+                            bi.EndInit();
+                        }
+                        this.autoChart.Source = bi;
+                    }));
+                }
             }
         }
 
@@ -205,13 +209,17 @@ namespace CRTG.UI
         #region Charting
         private void grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ViewModel.Chart.SetSize((int)((FrameworkElement)sender).ActualWidth, (int)((FrameworkElement)sender).ActualHeight);
+            var width = grdChart.ColumnDefinitions[0].ActualWidth;
+            var height = grdChart.RowDefinitions[1].ActualHeight;
+            ViewModel.Chart.SetSize((int)width, (int)height);
         }
         #endregion
 
         #region Closing
+        private bool isClosing = false;
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            isClosing = true;
             SensorProject.Current.Stop();
         }
         #endregion
