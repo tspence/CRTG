@@ -1,10 +1,20 @@
 # CRTG
 CSharp real time graphing monitor
 
-This program monitors values via HTTP, WMI, REST/JSON, or SQL queries, and produces very simplified charts showing trends over time.  All data is saved on disk in CSV format for ease of use in other applications.
+You can create your own sensors, tracking tasks, and automated notifications via a simple, programmable solution.
 
-The program produces automatic alerts and reports regularly, and is fully open source (APACHE 2.0 license).  
+Monitor your own databases, servers, or REST API products via a simple and configurable open-source program.
+* NO licensing costs
+* NO terms-of-use
+* NO complex setup
+* NO database requirements
+* Easy to get started
+
+The program stores all configuration data in a JSON file and stores all data gathered in a SQLite database on the local computer.  You don't need to run a server or any other components; just download the app and point it at whatever you want to monitor.
+
+Fully open source (APACHE 2.0 license).  
 
 Download latest executable:
-* <a href="https://github.com/tspence/CRTG/raw/master/Releases/crtg-1.2.zip">CRTG 1.2 (Windows, ZIP)</a>
-* <a href="https://github.com/tspence/CRTG/raw/master/Releases/releasenotes.txt">Release Notes</a>
+* <a href="https://github.com/tspence/CRTG/tree/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
+
+(https://github.com/tspence/CRTG/tree/master/crtg.preview.png "Version 1.0 Preview")
