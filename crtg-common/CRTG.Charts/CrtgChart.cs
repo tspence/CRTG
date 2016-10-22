@@ -100,6 +100,7 @@ namespace CRTG.Charts
             // New version of drawing code does it all ourselves
             Bitmap bmp = new Bitmap(_width, _height);
             Graphics g = Graphics.FromImage(bmp);
+            g.FillRectangle(Brushes.White, new Rectangle(new Point(0, 0), new Size(_width, _height)));
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             //System.Diagnostics.Debug.WriteLine("Startup chart in " + (DateTime.UtcNow - start).ToString());
 
@@ -370,12 +371,33 @@ namespace CRTG.Charts
             }
             set
             {
+                // Remove notifications from existing sensor, if any
+                var notification = _sensor as INotifyPropertyChanged;
+                if (notification != null) {
+                    notification.PropertyChanged -= Sensor_PropertyChanged;
+                }
+
+                // Update the sensor
                 _sensor = value;
                 _raw_data = null;
                 Notify("Sensor");
                 DrawToImage();
+
+                // Add notifications from the new sensor, if any
+                notification = _sensor as INotifyPropertyChanged;
+                if (notification != null) {
+                    notification.PropertyChanged += Sensor_PropertyChanged;
+                }
             }
         }
+
+        private void Sensor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SensorData") {
+                DrawToImage();
+            }
+        }
+
         private ISensor _sensor;
 
         /// <summary>

@@ -285,6 +285,7 @@ namespace CRTG
 
             // Now, all elements that can safely be moved after the inflight flag is turned off
             if (success) {
+                this.Notify("SensorData");
                 TestAllNotifications(collect_start_time, value);
                 KlipfolioUpload();
             }

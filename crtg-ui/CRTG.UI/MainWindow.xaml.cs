@@ -49,20 +49,26 @@ namespace CRTG.UI
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ChartImage") {
+
+                // Track the new bitmap
                 var bmp = ViewModel.Chart.ChartImage;
                 System.Diagnostics.Debug.WriteLine("Refreshing Image: {0}x{1}", bmp.Width, bmp.Height);
-                if (bmp != null) {
-                    MemoryStream ms = new MemoryStream();
-                    bmp.Save(ms, ImageFormat.Bmp);
-                    BitmapImage bi = new BitmapImage();
-                    bi.BeginInit();
-                    ms.Seek(0, SeekOrigin.Begin);
-                    bi.StreamSource = ms;
-                    bi.EndInit();
+
+                // Push the change to the UI
+                Application.Current.Dispatcher.Invoke(new Action(() => 
+                {
+                    BitmapImage bi = null;
+                    if (bmp != null) {
+                        MemoryStream ms = new MemoryStream();
+                        bmp.Save(ms, ImageFormat.Bmp);
+                        bi = new BitmapImage();
+                        bi.BeginInit();
+                        ms.Seek(0, SeekOrigin.Begin);
+                        bi.StreamSource = ms;
+                        bi.EndInit();
+                    }
                     this.autoChart.Source = bi;
-                } else {
-                    this.autoChart.Source = null;
-                }
+                }));
             }
         }
 
