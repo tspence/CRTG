@@ -14,7 +14,7 @@ The program stores all configuration data in a JSON file and stores all data gat
 Fully open source (APACHE 2.0 license).  
 
 Download latest executable:
-* <a href="https://raw.githubusercontent.com/tspence/crtg/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
+* <a href="https://cdn.rawgit.com/tspence/CRTG/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
 
 ![Version 1.0 Refactored Preview]
 (https://raw.github.com/tspence/CRTG/master/crtg.preview.png)
