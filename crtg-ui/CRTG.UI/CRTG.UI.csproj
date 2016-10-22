@@ -27,8 +27,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://raw.githubusercontent.com/tspence/crtg/master/Publish/</InstallUrl>
-    <UpdateUrl>https://raw.githubusercontent.com/tspence/crtg/master/Publish/</UpdateUrl>
+    <InstallUrl>https://cdn.rawgit.com/tspence/CRTG/master/Publish/</InstallUrl>
+    <UpdateUrl>https://cdn.rawgit.com/tspence/CRTG/master/Publish/</UpdateUrl>
     <SupportUrl>https://github.com/tspence/CRTG/issues</SupportUrl>
     <ProductName>CRTG</ProductName>
     <PublisherName>Ted Spence</PublisherName>
