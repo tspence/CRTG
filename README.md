@@ -18,4 +18,4 @@ Download latest executable:
 * <a href="https://github.com/tspence/CRTG/tree/master/Publish/CRTG.UI.application">Install Automatically (Windows, ClickOnce)</a>
 
 ![Version 1.0 Refactored Preview]
-(https://github.com/tspence/CRTG/tree/master/crtg.preview.png)
+(https://raw.githubusercontent.com/tspence/CRTG/master/crtg.preview.png)
