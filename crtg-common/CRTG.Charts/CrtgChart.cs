@@ -394,6 +394,7 @@ namespace CRTG.Charts
         private void Sensor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SensorData") {
+                _raw_data = null;
                 DrawToImage();
             }
         }
