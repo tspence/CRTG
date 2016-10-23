@@ -13,6 +13,7 @@ using CRTG.Common;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG
 {
@@ -55,6 +56,7 @@ namespace CRTG
         }
         #endregion
 
+        #region Properties
         /// <summary>
         /// The sensor's identity
         /// </summary>
@@ -183,44 +185,11 @@ namespace CRTG
         [AutoUI(Skip=true)]
         public string LastException { get; set; }
 
-        [AutoUI(Group = "Error", Label = "High Threshold")]
-        public decimal? HighError { get; set; }
-
-        [AutoUI(Group = "Error", Label = "Message")]
-        public string ErrorMessage { get; set; }
-
-        [AutoUI(Group = "Error", Label = "Low Threshold")]
-        public decimal? LowError { get; set; }
-
-        [AutoUI(Group = "Warning", Label = "High Threshold")]
-        public decimal? HighWarning { get; set; }
-
-        [AutoUI(Group = "Warning", Label = "Message")]
-        public string WarningMessage { get; set; }
-
-        [AutoUI(Group = "Warning", Label = "Low Threshold")]
-        public decimal? LowWarning { get; set; }
-
-        [AutoUI(Group = "Notifications", Label = "Notify on Change")]
-        public bool NotifyOnChange { get; set; }
-
-        [AutoUI(Group = "Notifications", Label = "Method")]
-        public NotificationMethod Method { get; set; }
-
-        [AutoUI(Group = "Notifications", Label = "Recipients", Help = "A comma-separated list of email addresses.")]
-        public string Recipients { get; set; }
-
-        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, this is the ID of the datasource where it is to be published.")]
-        public string KlipfolioId { get; set; }
-
-        [AutoUI(Group = "Klipfolio", Help = "(optional) If this report is to be uploaded to a Klipfolio web resource, how much data should be uploaded?")]
-        public ViewTimeframe UploadAmount { get; set; }
-
         /// <summary>
-        /// Keeps track of when we last uploaded this object
+        /// List of conditions to test every time we do a measurement
         /// </summary>
-        [JsonIgnore, AutoUI(Skip = true)]
-        public DateTime LastUploadTime { get; set; }
+        public List<ICondition> Conditions { get; set; }
+        #endregion
 
 
         #region Helper functions for data collection
@@ -243,25 +212,41 @@ namespace CRTG
 
         #region Collection and notification wrappers
         /// <summary>
+        /// Attach to this event handler to be notified when this sensor collects data
+        /// </summary>
+        public SensorCollectEventHandler SensorCollect { get; set; }
+
+        /// <summary>
         /// Collect data for this sensor (with parameter - not used!)
         /// </summary>
         public void OuterCollect()
         {
-            DateTime collect_start_time = DateTime.UtcNow;
+            DateTime collectStartTime = DateTime.UtcNow;
             Decimal value = 0;
             bool success = false;
             TimeSpan ts = new TimeSpan();
             SensorData sd = null;
+            DateTime collectTime = DateTime.MinValue;
+            SensorCollectEventArgs args = new SensorCollectEventArgs();
 
             // Collect data and clock how long it took
             try {
                 value = Collect();
-                LastCollectTime = DateTime.UtcNow;
-                ts = LastCollectTime - collect_start_time;
-                sd = AddValue(value, collect_start_time, (int)ts.TotalMilliseconds);
+                collectTime = DateTime.UtcNow;
+                LastCollectTime = collectTime;
+                ts = LastCollectTime - collectStartTime;
+                sd = AddValue(value, collectStartTime, (int)ts.TotalMilliseconds);
                 success = true;
-
+                
+            // If something blew up, keep track of it
             } catch (Exception ex) {
+                args.Exception = new SensorException()
+                {
+                    Cleared = false,
+                    Description = ex.Message,
+                    ExceptionTime = DateTime.UtcNow,
+                    StackTrace = ex.StackTrace
+                };
                 LastException = ex.ToString();
                 InError = true;
                 if (PauseOnError) {
@@ -285,113 +270,23 @@ namespace CRTG
 
             // Now, all elements that can safely be moved after the inflight flag is turned off
             if (success) {
-                this.Notify("SensorData");
-                TestAllNotifications(collect_start_time, value);
-                KlipfolioUpload();
+                args.Data = new Common.SensorData()
+                {
+                    CollectionTimeMs = (int)ts.TotalMilliseconds,
+                    Time = collectTime,
+                    Value = value
+                };
+
+                // Is anyone listening?
+                if (this.SensorCollect != null) SensorCollect(this, args);
             }
-        }
 
-        /// <summary>
-        /// If this report is uploaded via Klipfolio, let's do it!
-        /// </summary>
-        protected virtual void KlipfolioUpload()
-        {
-            if (!String.IsNullOrEmpty(KlipfolioId)) {
-                try {
-                    TimeSpan ts = DateTime.UtcNow - LastUploadTime;
-                    if (this.SensorData != null) {
-
-                        // Filter to just the amount we care about
-                        List<SensorData> list = null;
-                        if (UploadAmount == ViewTimeframe.AllTime) {
-                            list = this.SensorData.Data.ToList();
-                        } else {
-                            var limit = DateTime.UtcNow.AddMinutes(-(int)UploadAmount);
-                            list = (from sd in this.SensorData.Data where (sd != null) && (sd.Time > limit) select sd).ToList();
-                        }
-
-                        // Determine the correct URL
-                        string UploadUrl = String.Format("https://app.klipfolio.com/api/1/datasources/{0}/data", KlipfolioId);
-                        if (SensorProject.Current.Notifications.UploadReport(list, false, UploadUrl, HttpVerb.PUT,
-                            SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
-                            LastUploadTime = DateTime.UtcNow;
-                        }
-                    }
-
-                // Catch problems in uploading
-                } catch (Exception ex) {
-                    string headline = String.Format("Error uploading {0} ({1}) to Klipfolio", this.Name, this.Identity);
-                    SensorProject.LogException(headline, ex);
+            // Notify everyone of what happened
+            if (Conditions != null) {
+                foreach (var c in Conditions) {
+                    c.Test(args);
                 }
             }
-        }
-
-        [JsonIgnore, AutoUI(Skip = true)]
-        private decimal? _prior_value;
-
-        [JsonIgnore, AutoUI(Skip = true)]
-        private NotificationState _current_state = NotificationState.Normal;
-
-        [JsonIgnore, AutoUI(Skip = true)]
-        public NotificationState CurrentState
-        {
-            get { return _current_state; }
-        }
-
-        /// <summary>
-        /// Test all notification states and generate any email messages if necessary
-        /// </summary>
-        private void TestAllNotifications(DateTime timestamp, decimal value)
-        {
-            // What's our current state?  If this is a state change, notify
-            NotificationState ns = TestState(value);
-            if (ns != _current_state) {
-                string s = "";
-                switch (ns) {
-                    case NotificationState.ErrorHigh:
-                    case NotificationState.ErrorLow:
-                        s = ErrorMessage;
-                        break;
-                    case NotificationState.WarningHigh:
-                    case NotificationState.WarningLow:
-                        s = WarningMessage;
-                        break;
-                    case NotificationState.Normal:
-                        s = "Sensor returned to normal";
-                        break;
-                }
-                if (SensorProject.Current.Notifications != null) {
-                    SensorProject.Current.Notifications.Notify(this, ns, timestamp, value, s);
-                }
-                _current_state = ns;
-            }
-
-            // Check for notification on value changes
-            if (this.NotifyOnChange) {
-                if ((_prior_value != null) && (_prior_value != value)) {
-                    if (SensorProject.Current.Notifications != null) {
-                        SensorProject.Current.Notifications.Notify(this, NotificationState.ValueChanged, timestamp, value, String.Format("Changed from {0} to {1}", _prior_value.Value, value));
-                    }
-                }
-                _prior_value = value;
-            }
-        }
-
-        private NotificationState TestState(decimal value)
-        {
-            // Test states in order so they don't falsely alarm
-            if (HighError != null && value > HighError.Value) {
-                return NotificationState.ErrorHigh;
-            } else if (HighWarning != null && value > HighWarning.Value) {
-                return NotificationState.WarningHigh;
-            } else if (LowError != null && value < LowError.Value) {
-                return NotificationState.ErrorLow;
-            } else if (LowWarning != null && value < LowWarning.Value) {
-                return NotificationState.WarningLow;
-            }
-
-            // No state
-            return NotificationState.Normal;
         }
         #endregion
 
@@ -402,7 +297,7 @@ namespace CRTG
         /// </summary>
         public virtual decimal Collect()
         {
-            throw new Exception("You must override this function.");
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -430,10 +325,12 @@ namespace CRTG
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
         public void ClearAllData()
         {
             throw new NotImplementedException();
-            //SensorData.BackupAndClear();
         }
         #endregion
 
@@ -450,9 +347,7 @@ namespace CRTG
 
             // Set some sensible defaults
             s.Enabled = false;
-            s.ErrorMessage = "";
             s.LastCollectTime = DateTime.MinValue;
-            s.LastUploadTime = DateTime.MinValue;
             s.LatestData = 0.0m;
             s.NextCollectTime = DateTime.MinValue;
             s.Identity = -1;

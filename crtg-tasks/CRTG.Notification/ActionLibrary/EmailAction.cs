@@ -1,48 +1,14 @@
-﻿/*
- * 2012 - 2016 Ted Spence, http://tedspence.com
- * License: http://www.apache.org/licenses/LICENSE-2.0 
- * Home page: https://github.com/tspence/CRTG
- * 
- * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
- */
-using CSVFile;
-using CRTG.Charts;
-using CRTG.Sensors;
-using CRTG.Sensors.Data;
-using Microsoft.Win32;
+﻿using CRTG.Common;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Text;
-using System.Net;
-using CRTG.Common;
+using System.Threading.Tasks;
 
-namespace CRTG.Notification
+namespace CRTG.Actions
 {
-    public class NotificationHelper : BaseNotificationSystem
+    public class EmailAction : BaseAction
     {
-        #region Implementation Details
-        /// <summary>
-        /// Public notification API
-        /// </summary>
-        /// <param name="method"></param>
-        /// <param name="notify_type"></param>
-        /// <param name="data"></param>
-        /// <param name="sensor"></param>
-        /// <param name="message"></param>
-        public override void Notify(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
-        {
-            // Parse this out to the correct notification method
-            switch (sensor.Method) {
-                case NotificationMethod.Email:
-                    NotifyEmail(sensor, notify_type, timestamp, data, message);
-                    break;
-            }
-        }
-
         /// <summary>
         /// Deliver a preprogrammed report
         /// </summary>
@@ -129,82 +95,7 @@ namespace CRTG.Notification
             }
         }
 
-        /// <summary>
-        /// Convenience shortcut for uploading a report if you have a list of sensor data or some other thing
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="url"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public override bool UploadReport<T>(List<T> list, bool include_header_row, string url, HttpVerb verb, string username, string password)
-        {
-            if (list == null) return false;
-            string csv = list.WriteToString(include_header_row);
-            byte[] raw = Encoding.UTF8.GetBytes(csv);
-            return InternalUploadReport(raw, url, verb, username, password);
-        }
 
-        /// <summary>
-        /// Convenience shortcut for uploading a report if you have a datatable
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <param name="url"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public override bool UploadReport(DataTable dt, bool include_header_row, string url, HttpVerb verb, string username, string password)
-        {
-            if (dt == null) return false;
-            string csv = dt.WriteToString(include_header_row);
-            byte[] raw = Encoding.UTF8.GetBytes(csv);
-            return InternalUploadReport(raw, url, verb, username, password);
-        }
-        #endregion
-
-        #region Helper Functions
-
-        /// <summary>
-        /// Upload this report to a URL data source on the Internet
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <param name="url"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        private bool InternalUploadReport(byte[] contents, string url, HttpVerb verb, string username, string password)
-        {
-            if (String.IsNullOrWhiteSpace(url)) return false;
-
-            // Is this object intended to upload to a web resource?
-            try {
-                WebRequest wr = WebRequest.Create(url);
-                wr.Method = verb.ToString();
-
-                // Add credentials
-                string authInfo = username + ":" + password;
-                authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
-                wr.Headers["Authorization"] = "Basic " + authInfo;
-
-                // Add the payload
-                using (var s = wr.GetRequestStream()) {
-                    s.Write(contents, 0, contents.Length);
-                }
-
-                // Transmit and get a response
-                var resp = wr.GetResponse();
-                using (var s2 = resp.GetResponseStream()) {
-                    using (var sr = new StreamReader(s2)) {
-                        string message = sr.ReadToEnd();
-                        return true;
-                    }
-                }
-
-                // Catch any problems
-            } catch (Exception ex) {
-                SensorProject.LogException("Uploading report", ex);
-                return false;
-            }
-        }
 
         /// <summary>
         /// Fix up a message that contains embedded tokens (in the form "@TOKEN@") with the correct values
@@ -213,7 +104,7 @@ namespace CRTG.Notification
         /// <param name="device"></param>
         /// <param name="sensor"></param>
         /// <returns></returns>
-        protected string FixupMessage(string text, BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
+        protected string FixupMessage(string text, BaseSensor sensor, ErrorState notify_type, DateTime timestamp, decimal data, string message)
         {
             return text
                 .Replace("@DEVICE@", sensor.Device.DeviceName)
@@ -232,7 +123,7 @@ namespace CRTG.Notification
         /// <param name="sensor"></param>
         /// <param name="chart"></param>
         /// <param name="message"></param>
-        protected void NotifyEmail(BaseSensor sensor, NotificationState notify_type, DateTime timestamp, decimal data, string message)
+        protected void NotifyEmail(BaseSensor sensor, ErrorState notify_type, DateTime timestamp, decimal data, string message)
         {
             string chart_attachment_file = null;
 
@@ -396,9 +287,5 @@ namespace CRTG.Notification
                 if (msg != null) msg.Dispose();
             }
         }
-
-
-
-        #endregion
     }
 }

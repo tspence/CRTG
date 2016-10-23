@@ -241,9 +241,9 @@
       <Project>{a0da040d-f65d-42e4-bc43-3a030867d353}</Project>
       <Name>CRTG.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\crtg-tasks\CRTG.Notification\CRTG.Notification.csproj">
+    <ProjectReference Include="..\..\crtg-tasks\CRTG.Notification\CRTG.Actions.csproj">
       <Project>{fac62bab-b187-4fe5-a638-392aa1089de8}</Project>
-      <Name>CRTG.Notification</Name>
+      <Name>CRTG.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\crtg-tasks\CRTG.Sensors\CRTG.Sensors.csproj">
       <Project>{188564fa-aa7a-47de-a5c8-8fb6e461f1d2}</Project>

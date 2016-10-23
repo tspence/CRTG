@@ -77,14 +77,14 @@ namespace CRTG.Common
         Email = 1,
     }
 
-    public enum NotificationState
+    public enum ErrorState
     {
         Normal = 0,
         ErrorHigh = 1,
         ErrorLow = 2,
         WarningHigh = 3,
         WarningLow = 4,
-        ValueChanged = 5,
+        Exception = 5,
     }
 
     public enum SqlCollectionType

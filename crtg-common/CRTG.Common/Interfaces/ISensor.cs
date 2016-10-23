@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CRTG.Common.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,22 +21,18 @@ namespace CRTG.Common.Interfaces
         DateTime NextCollectTime { get; set; }
         DateTime LastCollectTime { get; set; }
         bool InFlight { get; set; }
-
-        [JsonIgnore]
-        bool InError { get; set; }
         string LastException { get; set; }
-        decimal? HighError { get; set; }
-        string ErrorMessage { get; set; }
-        decimal? LowError { get; set; }
-        decimal? HighWarning { get; set; }
-        string WarningMessage { get; set; }
-        decimal? LowWarning { get; set; }
-        bool NotifyOnChange { get; set; }
-        NotificationMethod Method { get; set; }
-        string Recipients { get; set; }
-        string KlipfolioId { get; set; }
-        ViewTimeframe UploadAmount { get; set; }
-        DateTime LastUploadTime { get; set; }
+        bool InError { get; set; }
+
+        /// <summary>
+        /// List of conditions to test every time we make a measurement
+        /// </summary>
+        List<ICondition> Conditions { get; set; }
+
+        /// <summary>
+        /// Attach to this event to get notifications of new data
+        /// </summary>
+        SensorCollectEventHandler SensorCollect { get; set; }
 
         /// <summary>
         /// This function collects data for the sensor

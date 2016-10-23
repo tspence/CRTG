@@ -48,13 +48,14 @@
     </Compile>
     <Compile Include="Attributes\AutoUI.cs" />
     <Compile Include="BaseSensorTreeModel.cs" />
+    <Compile Include="Data\SensorCollectEventArgs.cs" />
     <Compile Include="Data\SensorDataCollection.cs" />
     <Compile Include="Data\SensorException.cs" />
     <Compile Include="Enums\CrtgEnums.cs" />
     <Compile Include="Interfaces\ICondition.cs" />
     <Compile Include="Interfaces\IDataStore.cs" />
     <Compile Include="Interfaces\IDevice.cs" />
-    <Compile Include="Interfaces\INotification.cs" />
+    <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Interfaces\ISensor.cs" />
     <Compile Include="Data\SensorData.cs" />
     <Compile Include="Interfaces\ISensorTreeModel.cs" />
