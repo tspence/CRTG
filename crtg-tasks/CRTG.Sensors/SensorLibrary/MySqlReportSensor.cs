@@ -103,11 +103,6 @@ namespace CRTG.Sensors.SensorLibrary
             // Datatable failed to load - we got nothing.  Just report zero.
             return 0;
         }
-
-        protected override void KlipfolioUpload()
-        {
-            // Nothing to do here - we do not upload measurement stats on an SQL report sensor
-        }
         #endregion
 
         #region Icon

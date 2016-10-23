@@ -14,44 +14,7 @@ namespace CRTG.Actions
         public List<IAction> Actions { get; set; }
         public string Condition { get; set; }
         public IDataStore DataStore { get; set; }
-        
-        #region Link to sensor
-        /// <summary>
-        /// Sensor this condition is attached to
-        /// </summary>
-        public ISensor Sensor
-        {
-            get
-            {
-                return _sensor;
-            }
-            set
-            {
-                if (_sensor != null) {
-                    _sensor.SensorCollect -= Sensor_PropertyChanged;
-                }
-                _sensor = value;
-                if (_sensor != null) {
-                    _sensor.SensorCollect += Sensor_PropertyChanged;
-                }
-                Notify("Sensor");
-            }
-        }
-
-        /// <summary>
-        /// Capture new data and test it
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Sensor_PropertyChanged(ISensor sender, SensorCollectEventArgs e)
-        {
-            if (Test(e)) {
-                foreach (var action in Actions) {
-                    action.Execute(DataStore, Sensor, this, e);
-                }
-            }
-        }
-        #endregion
+        public ISensor Sensor { get; set; }
 
         private ISensor _sensor;
 
@@ -59,9 +22,20 @@ namespace CRTG.Actions
         /// Execute this condition and return true if it meets the threshold
         /// </summary>
         /// <returns></returns>
-        public virtual bool Test(SensorCollectEventArgs args)
+        public virtual void TestCondition(SensorCollectEventArgs args)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Trigger all actions
+        /// </summary>
+        /// <param name="args"></param>
+        public virtual void TriggerActions(SensorCollectEventArgs args)
+        {
+            foreach (var act in Actions) {
+                act.Execute(DataStore, Sensor, this, args);
+            }
         }
     }
 }

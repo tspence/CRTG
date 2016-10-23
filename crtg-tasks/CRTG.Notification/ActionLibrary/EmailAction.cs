@@ -1,4 +1,5 @@
 ﻿using CRTG.Common;
+using CRTG.Common.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,22 @@ namespace CRTG.Actions
 {
     public class EmailAction : BaseAction
     {
+        [AutoUI(Group="Chart")]
+        public bool IncludeChart { get; set; }
+
+        [AutoUI(Group="Chart")]
+        public ViewTimeframe ChartTimeframe { get; set; }
+
+        [AutoUI(Group = "Email")]
+        public String Recipients { get; set; }
+
+        [AutoUI(Group = "Email")]
+        public String SubjectTemplate { get; set; }
+
+        [AutoUI(Group = "Email")]
+        public String BodyTemplate { get; set; }
+
+
         /// <summary>
         /// Deliver a preprogrammed report
         /// </summary>

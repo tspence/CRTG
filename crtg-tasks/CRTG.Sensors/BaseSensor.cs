@@ -284,7 +284,7 @@ namespace CRTG
             // Notify everyone of what happened
             if (Conditions != null) {
                 foreach (var c in Conditions) {
-                    c.Test(args);
+                    c.TestCondition(args);
                 }
             }
         }

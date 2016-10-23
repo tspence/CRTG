@@ -27,7 +27,7 @@ namespace CRTG.Actions.ConditionLibrary
 
         private ErrorState CurrentState { get; set; }
 
-        public override bool Test(SensorCollectEventArgs args)
+        public override void TestCondition(SensorCollectEventArgs args)
         {
             // Determine the state we are in
             ErrorState newState = ErrorState.Normal;
@@ -48,9 +48,11 @@ namespace CRTG.Actions.ConditionLibrary
             }
 
             // If the state has changed, notify
-            bool result = (newState != CurrentState);
+            if (newState != CurrentState) {
+                args.ConditionMessage = String.Format("{0}: {1} is now {2}", newState, Sensor.Name, args.Data.Value);
+                TriggerActions(args);
+            }
             CurrentState = newState;
-            return result;
         }
     }
 }
