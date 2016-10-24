@@ -13,6 +13,7 @@ using System.IO;
 using CRTG.Sensors.Helpers;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -27,7 +28,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Collect
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             FileInfo fi = null;
 
@@ -53,17 +54,17 @@ namespace CRTG.Sensors.SensorLibrary
             TimeSpan ts;
             switch (Measurement) {
                 case FileMeasurement.FileSizeBytes:
-                    return (decimal)fi.Length;
+                    return new CollectResult((decimal)fi.Length);
                 case FileMeasurement.MinutesSinceChanged:
                     ts = DateTime.UtcNow - fi.LastWriteTimeUtc;
-                    return (decimal)ts.TotalMinutes;
+                    return new CollectResult((decimal)ts.TotalMinutes);
                 case FileMeasurement.MinutesSinceCreated:
                     ts = DateTime.UtcNow - fi.CreationTimeUtc;
-                    return (decimal)ts.TotalMinutes;
+                    return new CollectResult((decimal)ts.TotalMinutes);
             }
 
-            // Failed
-            return 0m;
+            // No measurement we recognized
+            throw new Exception("Invalid measurement: " + Measurement.ToString());
         }
         #endregion
 

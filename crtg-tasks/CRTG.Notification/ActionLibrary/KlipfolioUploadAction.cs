@@ -39,10 +39,10 @@ namespace CRTG.Actions.ActionLibrary
 
                         // Determine the correct URL
                         string UploadUrl = String.Format("https://app.klipfolio.com/api/1/datasources/{0}/data", KlipfolioId);
-                        if (SensorProject.Current.Notifications.UploadReport<SensorData>(list.Data, false, UploadUrl, HttpVerb.PUT,
-                            SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
-                            LastUploadTime = DateTime.UtcNow;
-                        }
+                        //if (SensorProject.Current.Notifications.UploadReport<SensorData>(list.Data, false, UploadUrl, HttpVerb.PUT,
+                        //    SensorProject.Current.KlipfolioUsername, SensorProject.Current.KlipfolioPassword)) {
+                        //    LastUploadTime = DateTime.UtcNow;
+                        //}
                     }
 
                 // Catch problems in uploading

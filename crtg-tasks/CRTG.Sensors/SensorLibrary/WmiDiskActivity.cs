@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Management;
 using CRTG.Sensors.Toolkit;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -19,7 +20,7 @@ namespace CRTG.Sensors.SensorLibrary
     {
         #region Implementation
 
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             var coll = WmiHelper.WmiQuery(Device, "SELECT * FROM Win32_PerfFormattedData_PerfOS_System");
 
@@ -34,7 +35,7 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Average them out
             if (count > 0) {
-                return total / count;
+                return new CollectResult(total / count);
             }
 
             // Failed!

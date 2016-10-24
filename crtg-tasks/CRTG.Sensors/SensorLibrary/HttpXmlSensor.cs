@@ -14,6 +14,7 @@ using System.IO;
 using System.Xml;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -53,7 +54,7 @@ namespace CRTG.Sensors.SensorLibrary
         /// Check the HTTP 
         /// </summary>
         /// <returns></returns>
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             try {
 
@@ -77,12 +78,12 @@ namespace CRTG.Sensors.SensorLibrary
                 int before = Environment.TickCount;
                 HttpWebResponse resp = (HttpWebResponse)r.GetResponse();
                 if (resp == null) {
-                    return ValueIfFailure;
+                    return new CollectResult(ValueIfFailure);
                 }
 
                 // Is the response an error?
                 if (resp.StatusCode != HttpStatusCode.OK) {
-                    return ValueIfFailure;
+                    return new CollectResult(ValueIfFailure);
                 }
 
                 // Read in result
@@ -102,22 +103,22 @@ namespace CRTG.Sensors.SensorLibrary
                     case XmlObjectMeasurement.DateDiffFromLocal:
                         DateTime dt_local = DateTime.Parse(val);
                         TimeSpan ts_local = DateTime.UtcNow - dt_local;
-                        return (decimal)ts_local.TotalSeconds;
+                        return new CollectResult((decimal)ts_local.TotalSeconds);
                     case XmlObjectMeasurement.DateDiffFromUTC:
                         DateTime dt_utc = DateTime.Parse(val);
                         TimeSpan ts_utc = DateTime.UtcNow - dt_utc;
-                        return (decimal)ts_utc.TotalSeconds;
+                        return new CollectResult((decimal)ts_utc.TotalSeconds);
                     case XmlObjectMeasurement.Decimal:
-                        return Decimal.Parse(val);
+                        return new CollectResult(Decimal.Parse(val));
                 }
 
                 // Fallthrough!
-                return 0;
+                return new CollectResult(0);
 
             // Exceptions fail
             } catch (Exception x) {
                 SensorProject.LogException("HttpXmlSensor", x);
-                return ValueIfFailure;
+                return new CollectResult(ValueIfFailure);
             }
         }
         #endregion

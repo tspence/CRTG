@@ -56,6 +56,7 @@ namespace CRTG
         }
         #endregion
 
+
         #region Properties
         /// <summary>
         /// The sensor's identity
@@ -221,21 +222,23 @@ namespace CRTG
         /// </summary>
         public void OuterCollect()
         {
-            DateTime collectStartTime = DateTime.UtcNow;
-            Decimal value = 0;
+            DateTime collectStartTime = DateTime.MinValue;
+            DateTime collectFinishTime = DateTime.MinValue;
             bool success = false;
             TimeSpan ts = new TimeSpan();
             SensorData sd = null;
-            DateTime collectTime = DateTime.MinValue;
             SensorCollectEventArgs args = new SensorCollectEventArgs();
 
             // Collect data and clock how long it took
             try {
-                value = Collect();
-                collectTime = DateTime.UtcNow;
-                LastCollectTime = collectTime;
-                ts = LastCollectTime - collectStartTime;
-                sd = AddValue(value, collectStartTime, (int)ts.TotalMilliseconds);
+                collectStartTime = DateTime.UtcNow;
+                args.Raw = Collect();
+                collectFinishTime = DateTime.UtcNow;
+                ts = collectFinishTime - collectStartTime;
+
+                // Record what was collected
+                LastCollectTime = collectFinishTime;
+                sd = AddValue(args.Raw.Value, collectStartTime, (int)ts.TotalMilliseconds);
                 success = true;
                 
             // If something blew up, keep track of it
@@ -273,8 +276,8 @@ namespace CRTG
                 args.Data = new Common.SensorData()
                 {
                     CollectionTimeMs = (int)ts.TotalMilliseconds,
-                    Time = collectTime,
-                    Value = value
+                    Time = collectFinishTime,
+                    Value = args.Raw.Value
                 };
 
                 // Is anyone listening?
@@ -295,7 +298,7 @@ namespace CRTG
         /// <summary>
         /// Collect data for this sensor
         /// </summary>
-        public virtual decimal Collect()
+        public virtual CollectResult Collect()
         {
             throw new NotImplementedException();
         }

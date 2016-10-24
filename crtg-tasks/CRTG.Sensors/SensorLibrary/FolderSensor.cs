@@ -12,6 +12,7 @@ using System.Text;
 using System.IO;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -26,7 +27,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Implementation
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             //FileInfo fi = null;
 
@@ -62,7 +63,7 @@ namespace CRTG.Sensors.SensorLibrary
             //}
 
             // Failed
-            return 0;
+            throw new NotImplementedException();
         }
         #endregion
 

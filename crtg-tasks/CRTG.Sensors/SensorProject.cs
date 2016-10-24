@@ -32,12 +32,6 @@ namespace CRTG
     public class SensorProject : BaseSensorTreeModel
     {
         /// <summary>
-        /// Dependency injection for notifications
-        /// </summary>
-        [AutoUI(Skip = true), JsonIgnore]
-        public BaseNotificationSystem Notifications { get; set; }
-
-        /// <summary>
         /// The hostname or IP address of the SMTP server
         /// </summary>
         [AutoUI(Group = "SMTP")]

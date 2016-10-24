@@ -1,5 +1,6 @@
 ﻿using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 using MySql.Data.MySqlClient;
 /*
  * 2012 - 2016 Ted Spence, http://tedspence.com
@@ -33,7 +34,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Implementation
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             Decimal d = 0;
 
@@ -60,7 +61,7 @@ namespace CRTG.Sensors.SensorLibrary
             }
 
             // That's our value
-            return d;
+            return new CollectResult(d);
         }
         #endregion
 

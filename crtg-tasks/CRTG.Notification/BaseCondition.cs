@@ -16,8 +16,6 @@ namespace CRTG.Actions
         public IDataStore DataStore { get; set; }
         public ISensor Sensor { get; set; }
 
-        private ISensor _sensor;
-
         /// <summary>
         /// Execute this condition and return true if it meets the threshold
         /// </summary>

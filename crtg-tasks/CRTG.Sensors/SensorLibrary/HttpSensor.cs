@@ -14,6 +14,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -50,7 +51,7 @@ namespace CRTG.Sensors.SensorLibrary
         /// Check the HTTP 
         /// </summary>
         /// <returns></returns>
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             try {
 
@@ -74,12 +75,12 @@ namespace CRTG.Sensors.SensorLibrary
                 int before = Environment.TickCount;
                 HttpWebResponse resp = (HttpWebResponse)r.GetResponse();
                 if (resp == null) {
-                    return ValueIfFailure;
+                    return new CollectResult(ValueIfFailure);
                 }
 
                 // Is the response an error?
                 if (resp.StatusCode != HttpStatusCode.OK) {
-                    return ValueIfFailure;
+                    return new CollectResult(ValueIfFailure);
                 }
 
                 // Do we have a test we can apply to the result?
@@ -95,19 +96,19 @@ namespace CRTG.Sensors.SensorLibrary
                     Regex rx = new Regex(RegexTest);
                     Match m = rx.Match(result);
                     if (m.Success) {
-                        return ValueIfSuccess;
+                        return new CollectResult(ValueIfSuccess);
                     } else {
-                        return ValueIfFailure;
+                        return new CollectResult(ValueIfFailure);
                     }
                 }
 
                 // Everything has passed
-                return ValueIfSuccess;
+                return new CollectResult(ValueIfSuccess);
 
             // Exceptions fail
             } catch (Exception x) {
                 SensorProject.LogException("HttpSensor", x);
-                return ValueIfFailure;
+                return new CollectResult(ValueIfFailure);
             }
         }
         #endregion

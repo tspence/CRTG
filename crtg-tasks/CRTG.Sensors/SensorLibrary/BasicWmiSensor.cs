@@ -12,6 +12,7 @@ using System.Text;
 using System.Management;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -24,7 +25,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Collect
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             ObjectQuery wql = null;
             ManagementObjectSearcher searcher = null;
@@ -41,7 +42,7 @@ namespace CRTG.Sensors.SensorLibrary
                     foreach (ManagementObject mo in result) {
                         decimal total_mem = (decimal)mo["TotalVisibleMemorySize"];
                         decimal free_mem = (decimal)mo["FreePhysicalMemory"];
-                        return free_mem / total_mem;
+                        return new CollectResult(free_mem / total_mem);
                     }
                     break;
 
@@ -54,7 +55,7 @@ namespace CRTG.Sensors.SensorLibrary
                         count++;
                         total += (decimal)Convert.ChangeType(o, typeof(decimal));
                     }
-                    if (count > 0) return (100 - (total / count));
+                    if (count > 0) return new CollectResult(100 - (total / count));
                     throw new Exception("No CPUs found!");
             } 
 

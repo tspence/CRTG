@@ -13,6 +13,7 @@ using System.Xml;
 using System.Data.SqlClient;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -32,7 +33,7 @@ namespace CRTG.Sensors.SensorLibrary
         public SqlCollectionType Measurement { get; set; }
 
         #region Implementation
-        public override decimal Collect()
+        public override CollectResult Collect()
         {
             Decimal d = 0;
 
@@ -59,7 +60,7 @@ namespace CRTG.Sensors.SensorLibrary
             }
 
             // That's our value
-            return d;
+            return new CollectResult(d);
         }
         #endregion
 

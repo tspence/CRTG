@@ -25,7 +25,7 @@ namespace CRTG.Actions
         [AutoUI(Group = "Email")]
         public String BodyTemplate { get; set; }
 
-
+        /*
         /// <summary>
         /// Deliver a preprogrammed report
         /// </summary>
@@ -34,7 +34,7 @@ namespace CRTG.Actions
         /// <param name="message"></param>
         /// <param name="report_data"></param>
         /// <param name="attachment_filename"></param>
-        public override void SendReport(string[] recipients, string subject, string message, DataTable report_data, ReportFileFormat format, string attachment_filename)
+        public void SendReport(string[] recipients, string subject, string message, DataTable report_data, ReportFileFormat format, string attachment_filename)
         {
             // Do we have a real list of recipients?  Are all the recipients empty?
             if (recipients == null) return;
@@ -304,5 +304,6 @@ namespace CRTG.Actions
                 if (msg != null) msg.Dispose();
             }
         }
+        */
     }
 }

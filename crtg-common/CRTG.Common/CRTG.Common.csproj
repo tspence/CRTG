@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="Attributes\AutoUI.cs" />
     <Compile Include="BaseSensorTreeModel.cs" />
+    <Compile Include="Data\CollectResult.cs" />
     <Compile Include="Data\SensorCollectEventArgs.cs" />
     <Compile Include="Data\SensorDataCollection.cs" />
     <Compile Include="Data\SensorException.cs" />

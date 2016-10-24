@@ -11,7 +11,12 @@ namespace CRTG.Common.Data
     public class SensorCollectEventArgs : EventArgs
     {
         /// <summary>
-        /// The data that was collected from the sensor.  May be null if the sensor detects an exception.
+        /// The raw data received from the sensor.  May be null if the sensor throws an exception.
+        /// </summary>
+        public CollectResult Raw { get; set; }
+
+        /// <summary>
+        /// The finalized data stored to the datastore.  May be null if the sensor throws an exception.
         /// </summary>
         public SensorData Data { get; set; }
 
@@ -24,11 +29,6 @@ namespace CRTG.Common.Data
         /// This value is set by the condition when it is tested
         /// </summary>
         public string ConditionMessage { get; set; }
-
-        /// <summary>
-        /// If a report is included in the collection, this value is set.
-        /// </summary>
-        public DataTable Report { get; set; }
     }
 
     public delegate void SensorCollectEventHandler(ISensor sender, SensorCollectEventArgs e);
