@@ -20,21 +20,33 @@
             <MenuItem Header="_Remove Device" Click="mnuProject_RemoveDevice_Click" />
         </ContextMenu>
         <ContextMenu Name="mnuSensor" x:Key="mnuSensor">
-            <MenuItem Header="Check Now" />
+            <MenuItem Header="Add _Condition..." Click="mnuProject_AddCondition_Click" />
             <Separator />
-            <MenuItem Header="Pause" Click="mnuProject_Pause_Click" />
+            <MenuItem Header="Pause / Resume" Click="mnuProject_Pause_Click" />
             <MenuItem Header="Reset Error" Click="mnuProject_ResetError_Click" />
             <MenuItem Header="Empty History" Click="mnuProject_EmptyHistory_Click" />
             <MenuItem Header="Duplicate" Click="mnuProject_Duplicate_Click" />
             <Separator />
             <MenuItem Header="_Remove Sensor" Click="mnuProject_RemoveSensor_Click" />
         </ContextMenu>
+        <ContextMenu Name="mnuCondition" x:Key="mnuCondition">
+            <MenuItem Header="Add _Action..." Click="mnuProject_AddAction_Click" />
+            <Separator />
+            <MenuItem Header="Test" Click="mnuProject_ConditionTest_Click" />
+            <Separator />
+            <MenuItem Header="_Remove Condition" Click="mnuProject_RemoveCondition_Click" />
+        </ContextMenu>
+        <ContextMenu Name="mnuAction" x:Key="mnuAction">
+            <MenuItem Header="Test" Click="mnuProject_ConditionTest_Click" />
+            <Separator />
+            <MenuItem Header="_Remove Action" Click="mnuProject_RemoveAction_Click" />
+        </ContextMenu>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -88,10 +100,10 @@
                     
                     <!-- Main chart image -->
                     <Image Name="autoChart" Grid.Row="1" Grid.Column="0"/>
+                    
+                    <!-- Auto UI for properties -->
+                    <local:AutoUIControl x:Name="autoProperties" Grid.Row="2" Grid.Column="0" />
                 </Grid>
-            </TabItem>
-            <TabItem Header="Properties">
-                <local:AutoUIControl x:Name="autoProperties" />
             </TabItem>
         </TabControl>
 

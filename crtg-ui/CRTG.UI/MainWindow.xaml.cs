@@ -1,4 +1,5 @@
-﻿using CRTG.Charts;
+﻿using CRTG.Actions;
+using CRTG.Charts;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
 using CRTG.Sensors.Devices;
@@ -48,6 +49,7 @@ namespace CRTG.UI
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
 
+        #region Refresh chart image
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "ChartImage") {
@@ -75,17 +77,7 @@ namespace CRTG.UI
                 }
             }
         }
-
-        private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            this.autoProperties.DisplayObject = tvSensors1.SelectedValue;
-
-            // Put up a chart
-            var sensor = tvSensors1.SelectedValue as ISensor;
-            if (sensor != null) {
-                ViewModel.Chart.Sensor = sensor;
-            }
-        }
+        #endregion
 
         #region Convenience Properties
         /// <summary>
@@ -109,9 +101,46 @@ namespace CRTG.UI
                 return tvSensors1.SelectedItem as ISensor;
             }
         }
+
+        /// <summary>
+        /// Identify currently selected condition, if any
+        /// </summary>
+        public ICondition SelectedCondition
+        {
+            get
+            {
+                return tvSensors1.SelectedItem as ICondition;
+            }
+        }
+
+        /// <summary>
+        /// Identify currently selected action, if any
+        /// </summary>
+        public IAction SelectedAction
+        {
+            get
+            {
+                return tvSensors1.SelectedItem as IAction;
+            }
+        }
         #endregion
 
         #region Tree View
+        private void TvSensors1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            this.autoProperties.DisplayObject = tvSensors1.SelectedValue;
+
+            // Put up a chart
+            var sensor = tvSensors1.SelectedValue as ISensor;
+            if (sensor != null) {
+                ViewModel.Chart.Sensor = sensor;
+                this.grdChart.RowDefinitions[1].Height = new GridLength(300);
+                grid_SizeChanged(null, null);
+            } else {
+                this.grdChart.RowDefinitions[1].Height = new GridLength(0);
+            }
+        }
+
         private void tvSensors1_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var parent = sender as TreeView;
@@ -124,6 +153,8 @@ namespace CRTG.UI
                     mnu = (ContextMenu)this.Resources["mnuDevice"];
                 } else if (item is BaseSensor) {
                     mnu = (ContextMenu)this.Resources["mnuSensor"];
+                } else if (item is BaseCondition) {
+                    mnu = (ContextMenu)this.Resources["mnuCondition"];
                 }
                 if (mnu != null) {
                     mnu.IsOpen = true;
@@ -151,18 +182,50 @@ namespace CRTG.UI
         #endregion
 
         #region Context Menu Items
+        private void mnuProject_AddCondition_Click(object sender, EventArgs e)
+        {
+            var s = SelectedSensor;
+            if (s != null) {
+
+                // Pop up a window to design a new sensor
+                var dlg = new AddObjectWindow(typeof(BaseCondition));
+                var result = dlg.ShowDialog();
+                if (result.HasValue && result.Value) {
+
+                    // Add this sensor to the currently selected device
+                    SensorProject.Current.AddCondition(s, dlg.ObjectToAdd as ICondition);
+                }
+            }
+        }
+
+        private void mnuProject_AddAction_Click(object sender, EventArgs e)
+        {
+            var c = SelectedCondition;
+            if (c != null) {
+
+                // Pop up a window to design a new sensor
+                var dlg = new AddObjectWindow(typeof(BaseAction));
+                var result = dlg.ShowDialog();
+                if (result.HasValue && result.Value) {
+
+                    // Add this sensor to the currently selected device
+                    SensorProject.Current.AddAction(c, dlg.ObjectToAdd as IAction);
+                }
+            }
+        }
+
         private void mnuProject_AddSensor_Click(object sender, EventArgs e)
         {
             var d = SelectedDevice;
             if (d != null) {
 
                 // Pop up a window to design a new sensor
-                AddSensor dlg = new AddSensor();
+                var dlg = new AddObjectWindow(typeof(BaseSensor));
                 var result = dlg.ShowDialog();
                 if (result.HasValue && result.Value) {
 
                     // Add this sensor to the currently selected device
-                    SensorProject.Current.AddSensor(d, dlg.SensorToAdd);
+                    SensorProject.Current.AddSensor(d, dlg.ObjectToAdd as ISensor);
                 }
             }
         }
@@ -201,8 +264,29 @@ namespace CRTG.UI
         {
         }
 
+        private void mnuProject_ConditionTest_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
         private void mnuProject_RemoveSensor_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedSensor != null) {
+                SelectedSensor.Parent.RemoveChild(SelectedSensor);
+            }
+        }
+
+        private void mnuProject_RemoveCondition_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedCondition != null) {
+                SelectedCondition.Parent.RemoveChild(SelectedCondition);
+            }
+        }
+
+        private void mnuProject_RemoveAction_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedAction != null) {
+                SelectedAction.Parent.RemoveChild(SelectedAction);
+            }
         }
         #endregion
 

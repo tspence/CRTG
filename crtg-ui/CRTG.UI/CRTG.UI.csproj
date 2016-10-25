@@ -39,7 +39,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -115,14 +115,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AddSensor.xaml.cs">
-      <DependentUpon>AddSensor.xaml</DependentUpon>
+    <Compile Include="AddObjectWindow.xaml.cs">
+      <DependentUpon>AddObjectWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AutoUIControl.xaml.cs">
       <DependentUpon>AutoUIControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SensorViewModel.cs" />
-    <Page Include="AddSensor.xaml">
+    <Page Include="AddObjectWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

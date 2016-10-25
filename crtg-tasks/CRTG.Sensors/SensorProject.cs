@@ -68,18 +68,6 @@ namespace CRTG
         public string MessageFrom { get; set; }
 
         /// <summary>
-        /// The subject line to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications")]
-        public string SubjectLineTemplate { get; set; }
-
-        /// <summary>
-        /// The message body to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications", MultiLine=20)]
-        public string MessageBodyTemplate { get; set; }
-
-        /// <summary>
         /// Credentials to use for Klipfolio
         /// </summary>
         [AutoUI(Label = "Klipfolio Username", Group = "Klipfolio")]
@@ -140,31 +128,67 @@ namespace CRTG
         /// <summary>
         /// Adds a new device to the project
         /// </summary>
-        /// <param name="dc"></param>
-        public void AddDevice(IDevice dc)
+        /// <param name="deviceToAdd"></param>
+        public void AddDevice(IDevice deviceToAdd)
         {
-            dc.Parent = this;
-            dc.Identity = GetNextDeviceNum();
-            AddChild(dc);
+            deviceToAdd.Identity = GetNextDeviceNum();
+            AddChild(deviceToAdd);
         }
 
         /// <summary>
-        /// Adds a new device to the project
+        /// Adds a new sensor to a device
         /// </summary>
-        /// <param name="dc"></param>
-        public void AddSensor(IDevice dc, ISensor sensor)
+        /// <param name="device"></param>
+        public void AddSensor(IDevice device, ISensor sensorToAdd)
         {
-            sensor.Identity = GetNextSensorNum();
-            sensor.Parent = dc;
-            dc.Children.Add(sensor);
-            Notify("Children");
+            sensorToAdd.Identity = GetNextSensorNum();
+            device.AddChild(sensorToAdd);
         }
+
+        /// <summary>
+        /// Add a condition to a sensor
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="sensorToAdd"></param>
+        public void AddCondition(ISensor sensor, ICondition conditionToAdd)
+        {
+            conditionToAdd.Identity = GetNextConditionNum();
+            sensor.AddChild(conditionToAdd);
+        }
+
+        /// <summary>
+        /// Add an action to a condition
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="sensorToAdd"></param>
+        public void AddAction(ICondition condition, IAction sensorToAdd)
+        {
+            sensorToAdd.Identity = GetNextActionNum();
+            condition.AddChild(sensorToAdd);
+        }
+
+        [AutoUI(Skip = true)]
+        public int NextDeviceNum { get; set; }
 
         [AutoUI(Skip = true)]
         public int NextSensorNum { get; set; }
 
         [AutoUI(Skip = true)]
-        public int NextDeviceNum { get; set; }
+        public int NextConditionNum { get; set; }
+
+        [AutoUI(Skip = true)]
+        public int NextActionNum { get; set; }
+
+        /// <summary>
+        /// Returns next device number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextDeviceNum()
+        {
+            lock (this) {
+                return NextDeviceNum++;
+            }
+        }
 
         /// <summary>
         /// Returns next sensor number in sequence
@@ -178,15 +202,27 @@ namespace CRTG
         }
 
         /// <summary>
-        /// Returns next device number in sequence
+        /// Returns next condition number in sequence
         /// </summary>
         /// <returns></returns>
-        public int GetNextDeviceNum()
+        public int GetNextConditionNum()
         {
             lock (this) {
-                return NextDeviceNum++;
+                return NextConditionNum++;
             }
         }
+
+        /// <summary>
+        /// Returns next sensor number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextActionNum()
+        {
+            lock (this) {
+                return NextActionNum++;
+            }
+        }
+
         #endregion
 
 
@@ -334,6 +370,14 @@ namespace CRTG
                     // Read in each sensor's data, and write it back out to disk 
                     // (this ensures that all files have the same fields in the same order - permits appending via AppendText later
                     bs.DataRead();
+
+                    // Loop through all conditions / actions
+                    foreach (ICondition c in bs.Children) {
+                        c.Parent = bs;
+                        foreach (IAction a in c.Children) {
+                            a.Parent = c;
+                        }
+                    }
                 }
             }
 

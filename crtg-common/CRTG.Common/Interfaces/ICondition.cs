@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace CRTG.Common.Interfaces
 {
-    public interface ICondition
+    public interface ICondition : ISensorTreeModel
     {
-        List<IAction> Actions { get; set; }
         ISensor Sensor { get; set; }
         IDataStore DataStore { get; set; }
 

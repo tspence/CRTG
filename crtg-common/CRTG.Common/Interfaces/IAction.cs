@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CRTG.Common.Interfaces
 {
-    public interface IAction
+    public interface IAction : ISensorTreeModel
     {
         int Identity { get; set; }
         string Description { get; set; }

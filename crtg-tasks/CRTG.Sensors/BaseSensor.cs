@@ -59,12 +59,6 @@ namespace CRTG
 
         #region Properties
         /// <summary>
-        /// The sensor's identity
-        /// </summary>
-        [AutoUI(Skip = true)]
-        public int Identity { get; set; }
-
-        /// <summary>
         /// Longer friendly description for this sensor
         /// </summary>
         [AutoUI(Group = "Sensor")]
@@ -185,11 +179,6 @@ namespace CRTG
         /// </summary>
         [AutoUI(Skip=true)]
         public string LastException { get; set; }
-
-        /// <summary>
-        /// List of conditions to test every time we do a measurement
-        /// </summary>
-        public List<ICondition> Conditions { get; set; }
         #endregion
 
 
@@ -285,8 +274,8 @@ namespace CRTG
             }
 
             // Notify everyone of what happened
-            if (Conditions != null) {
-                foreach (var c in Conditions) {
+            if (Children != null) {
+                foreach (ICondition c in Children) {
                     c.TestCondition(args);
                 }
             }

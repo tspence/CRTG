@@ -1,4 +1,5 @@
-﻿using CRTG.Common.Interfaces;
+﻿using CRTG.Common.Attributes;
+using CRTG.Common.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace CRTG.Common
         /// <summary>
         /// The name of this item.  Renameable.
         /// </summary>
+        [AutoUI(Group="Identity")]
         public string Name
         {
             get
@@ -30,6 +32,12 @@ namespace CRTG.Common
                 Notify("Name");
             }
         }
+
+        /// <summary>
+        /// The unique integer ID number of this item.  Read only.
+        /// </summary>
+        [AutoUI(Group ="Identity", ReadOnly = true)]
+        public int Identity { get; set; }
 
         /// <summary>
         /// List of children
@@ -115,6 +123,7 @@ namespace CRTG.Common
         /// <param name="child"></param>
         public virtual void AddChild(ISensorTreeModel child)
         {
+            child.Parent = this;
             Children.Add(child);
             Notify("Children");
         }
@@ -125,6 +134,7 @@ namespace CRTG.Common
         /// <param name="child"></param>
         public virtual void RemoveChild(ISensorTreeModel child)
         {
+            child.Parent = null;
             Children.Remove(child);
             Notify("Children");
         }

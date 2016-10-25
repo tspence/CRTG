@@ -10,7 +10,6 @@ namespace CRTG.Common.Interfaces
 {
     public interface ISensor : ISensorTreeModel
     {
-        int Identity { get; set; }
         string Description { get; set; }
         string MeasurementUnit { get; set; }
         Interval Frequency { get; set; }
@@ -23,11 +22,6 @@ namespace CRTG.Common.Interfaces
         bool InFlight { get; set; }
         string LastException { get; set; }
         bool InError { get; set; }
-
-        /// <summary>
-        /// List of conditions to test every time we make a measurement
-        /// </summary>
-        List<ICondition> Conditions { get; set; }
 
         /// <summary>
         /// Attach to this event to get notifications of new data

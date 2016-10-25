@@ -15,6 +15,11 @@ namespace CRTG.Common.Interfaces
         string Name { get; set; }
 
         /// <summary>
+        /// The ID number of this item
+        /// </summary>
+        int Identity { get; set; }
+
+        /// <summary>
         /// The icon of this item (controlled by the item's type, non-changeable)
         /// </summary>
         string IconPath { get; }

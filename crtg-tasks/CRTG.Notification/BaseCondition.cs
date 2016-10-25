@@ -11,7 +11,6 @@ namespace CRTG.Actions
 {
     public class BaseCondition : BaseSensorTreeModel, ICondition
     {
-        public List<IAction> Actions { get; set; }
         public string Condition { get; set; }
         public IDataStore DataStore { get; set; }
         public ISensor Sensor { get; set; }
@@ -31,7 +30,7 @@ namespace CRTG.Actions
         /// <param name="args"></param>
         public virtual void TriggerActions(SensorCollectEventArgs args)
         {
-            foreach (var act in Actions) {
+            foreach (IAction act in Children) {
                 act.Execute(DataStore, Sensor, this, args);
             }
         }
