@@ -9,7 +9,6 @@ namespace CRTG.Common.Interfaces
 {
     public interface IAction : ISensorTreeModel
     {
-        int Identity { get; set; }
         string Description { get; set; }
 
         /// <summary>

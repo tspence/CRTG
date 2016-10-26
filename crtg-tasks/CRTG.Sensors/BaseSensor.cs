@@ -6,16 +6,13 @@
  * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using CRTG.Sensors;
 using CRTG.Common;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
 using CRTG.Common.Attributes;
 using CRTG.Common.Data;
 
-namespace CRTG
+namespace CRTG.Sensors
 {
     public class BaseSensor : BaseSensorTreeModel, ISensor
     {
@@ -204,7 +201,7 @@ namespace CRTG
         /// <summary>
         /// Attach to this event handler to be notified when this sensor collects data
         /// </summary>
-        public SensorCollectEventHandler SensorCollect { get; set; }
+        public event SensorCollectEventHandler SensorCollect;
 
         /// <summary>
         /// Collect data for this sensor (with parameter - not used!)

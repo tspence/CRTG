@@ -26,7 +26,7 @@ namespace CRTG.Common.Interfaces
         /// <summary>
         /// Attach to this event to get notifications of new data
         /// </summary>
-        SensorCollectEventHandler SensorCollect { get; set; }
+        event SensorCollectEventHandler SensorCollect;
 
         /// <summary>
         /// This function collects data for the sensor

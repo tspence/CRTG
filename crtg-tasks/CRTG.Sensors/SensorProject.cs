@@ -7,26 +7,17 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
 using System.Threading;
 using System.Xml.Serialization;
 using System.IO;
-using System.Net.Mail;
-using Microsoft.Win32;
-using CRTG.Sensors;
 using log4net;
-using CRTG.Sensors.Devices;
 using CRTG.Common;
 using CRTG.Sensors.Data;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
 using CRTG.Common.Attributes;
 
-namespace CRTG
+namespace CRTG.Sensors
 {
     [Serializable]
     public class SensorProject : BaseSensorTreeModel

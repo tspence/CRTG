@@ -7,6 +7,7 @@ using CRTG.Common.Data;
 using CRTG.Common.Interfaces;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Sensors;
 
 namespace CRTG.Actions.ActionLibrary
 {

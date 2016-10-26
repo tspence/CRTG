@@ -1,5 +1,6 @@
 ﻿using CRTG.Charts;
 using CRTG.Common.Interfaces;
+using CRTG.Sensors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

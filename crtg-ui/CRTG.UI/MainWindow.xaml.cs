@@ -1,27 +1,17 @@
 ﻿using CRTG.Actions;
-using CRTG.Charts;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
+using CRTG.Sensors;
 using CRTG.Sensors.Devices;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CRTG.UI
 {

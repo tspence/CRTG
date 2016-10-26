@@ -14,6 +14,7 @@ using System.IO;
 using CRTG.Common;
 using CRTG.Common.Interfaces;
 using System.ComponentModel;
+using CRTG.Common.Data;
 
 namespace CRTG.Charts
 {
@@ -372,9 +373,8 @@ namespace CRTG.Charts
             set
             {
                 // Remove notifications from existing sensor, if any
-                var notification = _sensor as INotifyPropertyChanged;
-                if (notification != null) {
-                    notification.PropertyChanged -= Sensor_PropertyChanged;
+                if (_sensor != null) {
+                    _sensor.SensorCollect -= Sensor_Collect;
                 }
 
                 // Update the sensor
@@ -384,19 +384,16 @@ namespace CRTG.Charts
                 DrawToImage();
 
                 // Add notifications from the new sensor, if any
-                notification = _sensor as INotifyPropertyChanged;
-                if (notification != null) {
-                    notification.PropertyChanged += Sensor_PropertyChanged;
+                if (_sensor != null) {
+                    _sensor.SensorCollect += Sensor_Collect;
                 }
             }
         }
 
-        private void Sensor_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Sensor_Collect(ISensor sender, SensorCollectEventArgs e)
         {
-            if (e.PropertyName == "SensorData") {
-                _raw_data = null;
-                DrawToImage();
-            }
+            _raw_data.Data.Add(e.Data);
+            DrawToImage();
         }
 
         private ISensor _sensor;

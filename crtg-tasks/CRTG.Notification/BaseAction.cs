@@ -13,7 +13,6 @@ namespace CRTG.Actions
     public class BaseAction : BaseSensorTreeModel, IAction
     {
         public string Description { get; set; }
-        public int Identity { get; set; }
         public ISensor Sensor { get; set; }
 
         #region Action implementation
