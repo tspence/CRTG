@@ -6,12 +6,10 @@
  * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -26,7 +24,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Implementation
-        public override decimal Collect()
+        public override async Task<CollectResult> Collect()
         {
             //FileInfo fi = null;
 
@@ -62,7 +60,7 @@ namespace CRTG.Sensors.SensorLibrary
             //}
 
             // Failed
-            return 0;
+            throw new NotImplementedException();
         }
         #endregion
 

@@ -12,6 +12,22 @@ using System.Text;
 
 namespace CRTG.Common
 {
+    /// <summary>
+    /// Type of measurement to take about an HTTP operation
+    /// </summary>
+    public enum HttpMeasurement
+    {
+        RequestTime = 0,
+        BytesReceived = 1,
+        JsonValue = 2,
+        XmlPath = 3,
+        RegexValue = 4,
+        RegexMatches = 5,
+    }
+
+    /// <summary>
+    /// Type of HTTP verb action to execute
+    /// </summary>
     public enum HttpVerb
     {
         GET = 0,
@@ -27,6 +43,8 @@ namespace CRTG.Common
     public enum Interval 
     { 
         Never = 0,
+        OneSecond = 1,
+        TenSeconds = 10,
         ThirtySeconds = 30, 
         Minute = 60, 
         FiveMinutes = 5 * 60, 
@@ -77,14 +95,14 @@ namespace CRTG.Common
         Email = 1,
     }
 
-    public enum NotificationState
+    public enum ErrorState
     {
         Normal = 0,
         ErrorHigh = 1,
         ErrorLow = 2,
         WarningHigh = 3,
         WarningLow = 4,
-        ValueChanged = 5,
+        Exception = 5,
     }
 
     public enum SqlCollectionType

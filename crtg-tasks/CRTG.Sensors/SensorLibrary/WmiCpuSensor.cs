@@ -6,11 +6,10 @@
  * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Management;
 using CRTG.Sensors.Toolkit;
+using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -18,7 +17,7 @@ namespace CRTG.Sensors.SensorLibrary
     public class WmiCpuSensor : BaseSensor
     {
         #region Implementation
-        public override decimal Collect()
+        public override async Task<CollectResult> Collect()
         {
             var coll = WmiHelper.WmiQuery(Device, "SELECT * FROM Win32_PerfFormattedData_Counters_ProcessorInformation");
 
@@ -33,7 +32,7 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Average them out
             if (count > 0) {
-                return (total / count);
+                return new CollectResult(total / count);
             }
 
             // Failed!

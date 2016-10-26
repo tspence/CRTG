@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using CRTG.Common;
+using CRTG.Sensors;
 
 namespace CRTG.Serialization
 {

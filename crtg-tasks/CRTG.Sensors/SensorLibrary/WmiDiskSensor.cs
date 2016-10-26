@@ -6,13 +6,12 @@
  * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Management;
 using CRTG.Common;
 using CRTG.Sensors.Toolkit;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -26,8 +25,7 @@ namespace CRTG.Sensors.SensorLibrary
         public DiskMeasurement Measurement { get; set; }
 
         #region Implementation
-
-        public override decimal Collect()
+        public override async Task<CollectResult> Collect()
         {
             var coll = WmiHelper.WmiQuery(Device, String.Format("SELECT * FROM Win32_LogicalDisk WHERE Name = '{0}:'", DriveLetter));
 
@@ -48,17 +46,17 @@ namespace CRTG.Sensors.SensorLibrary
             if (count > 0) {
                 switch (Measurement) {
                     case DiskMeasurement.BytesFree:
-                        return free;
+                        return new CollectResult(free);
                     case DiskMeasurement.BytesUsed:
-                        return total - free;
+                        return new CollectResult(total - free);
                     case DiskMeasurement.MegabytesFree:
-                        return free / 1024 / 1024;
+                        return new CollectResult(free / 1024 / 1024);
                     case DiskMeasurement.MegabytesUsed:
-                        return (total - free) / 1024 / 1024;
+                        return new CollectResult((total - free) / 1024 / 1024);
                     case DiskMeasurement.PercentFree:
-                        return (free / total) * 100;
+                        return new CollectResult((free / total) * 100);
                     case DiskMeasurement.PercentUsed:
-                        return 1 - (free / total) * 100;
+                        return new CollectResult(1 - (free / total) * 100);
                 }
             }
 

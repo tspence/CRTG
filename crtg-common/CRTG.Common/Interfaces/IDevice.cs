@@ -10,7 +10,6 @@ namespace CRTG.Common.Interfaces
 {
     public interface IDevice : ISensorTreeModel
     {
-        int Identity { get; set; }
         string Address { get; set; }
         string Username { get; set; }
         string Password { get; set; }

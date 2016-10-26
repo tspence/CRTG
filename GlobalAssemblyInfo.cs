@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("CRTG")]
-[assembly: AssemblyCopyright("Copyright (C) Ted Spence 2012 - 2015")]
+[assembly: AssemblyCopyright("Copyright (C) Ted Spence 2012 - 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

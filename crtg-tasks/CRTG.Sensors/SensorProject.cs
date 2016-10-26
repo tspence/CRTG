@@ -7,36 +7,22 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
 using System.Threading;
 using System.Xml.Serialization;
 using System.IO;
-using System.Net.Mail;
-using Microsoft.Win32;
-using CRTG.Sensors;
 using log4net;
-using CRTG.Sensors.Devices;
 using CRTG.Common;
 using CRTG.Sensors.Data;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
 using CRTG.Common.Attributes;
+using System.Threading.Tasks;
 
-namespace CRTG
+namespace CRTG.Sensors
 {
     [Serializable]
     public class SensorProject : BaseSensorTreeModel
     {
-        /// <summary>
-        /// Dependency injection for notifications
-        /// </summary>
-        [AutoUI(Skip = true), JsonIgnore]
-        public BaseNotificationSystem Notifications { get; set; }
-
         /// <summary>
         /// The hostname or IP address of the SMTP server
         /// </summary>
@@ -72,18 +58,6 @@ namespace CRTG
         /// </summary>
         [AutoUI(Group = "SMTP")]
         public string MessageFrom { get; set; }
-
-        /// <summary>
-        /// The subject line to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications")]
-        public string SubjectLineTemplate { get; set; }
-
-        /// <summary>
-        /// The message body to use for notifications
-        /// </summary>
-        [AutoUI(Group = "Email Notifications", MultiLine=20)]
-        public string MessageBodyTemplate { get; set; }
 
         /// <summary>
         /// Credentials to use for Klipfolio
@@ -146,31 +120,67 @@ namespace CRTG
         /// <summary>
         /// Adds a new device to the project
         /// </summary>
-        /// <param name="dc"></param>
-        public void AddDevice(IDevice dc)
+        /// <param name="deviceToAdd"></param>
+        public void AddDevice(IDevice deviceToAdd)
         {
-            dc.Parent = this;
-            dc.Identity = GetNextDeviceNum();
-            AddChild(dc);
+            deviceToAdd.Identity = GetNextDeviceNum();
+            AddChild(deviceToAdd);
         }
 
         /// <summary>
-        /// Adds a new device to the project
+        /// Adds a new sensor to a device
         /// </summary>
-        /// <param name="dc"></param>
-        public void AddSensor(IDevice dc, ISensor sensor)
+        /// <param name="device"></param>
+        public void AddSensor(IDevice device, ISensor sensorToAdd)
         {
-            sensor.Identity = GetNextSensorNum();
-            sensor.Parent = dc;
-            dc.Children.Add(sensor);
-            Notify("Children");
+            sensorToAdd.Identity = GetNextSensorNum();
+            device.AddChild(sensorToAdd);
         }
+
+        /// <summary>
+        /// Add a condition to a sensor
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="sensorToAdd"></param>
+        public void AddCondition(ISensor sensor, ICondition conditionToAdd)
+        {
+            conditionToAdd.Identity = GetNextConditionNum();
+            sensor.AddChild(conditionToAdd);
+        }
+
+        /// <summary>
+        /// Add an action to a condition
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="sensorToAdd"></param>
+        public void AddAction(ICondition condition, IAction sensorToAdd)
+        {
+            sensorToAdd.Identity = GetNextActionNum();
+            condition.AddChild(sensorToAdd);
+        }
+
+        [AutoUI(Skip = true)]
+        public int NextDeviceNum { get; set; }
 
         [AutoUI(Skip = true)]
         public int NextSensorNum { get; set; }
 
         [AutoUI(Skip = true)]
-        public int NextDeviceNum { get; set; }
+        public int NextConditionNum { get; set; }
+
+        [AutoUI(Skip = true)]
+        public int NextActionNum { get; set; }
+
+        /// <summary>
+        /// Returns next device number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextDeviceNum()
+        {
+            lock (this) {
+                return NextDeviceNum++;
+            }
+        }
 
         /// <summary>
         /// Returns next sensor number in sequence
@@ -184,15 +194,27 @@ namespace CRTG
         }
 
         /// <summary>
-        /// Returns next device number in sequence
+        /// Returns next condition number in sequence
         /// </summary>
         /// <returns></returns>
-        public int GetNextDeviceNum()
+        public int GetNextConditionNum()
         {
             lock (this) {
-                return NextDeviceNum++;
+                return NextConditionNum++;
             }
         }
+
+        /// <summary>
+        /// Returns next sensor number in sequence
+        /// </summary>
+        /// <returns></returns>
+        public int GetNextActionNum()
+        {
+            lock (this) {
+                return NextActionNum++;
+            }
+        }
+
         #endregion
 
 
@@ -207,9 +229,7 @@ namespace CRTG
         {
             if (_keep_running == false) {
                 _keep_running = true;
-                ParameterizedThreadStart ts = new ParameterizedThreadStart(CollectionThread);
-                _collection_thread = new Thread(ts);
-                _collection_thread.Start();
+                Task.Run(() => CollectionThread());
             }
         }
 
@@ -226,11 +246,8 @@ namespace CRTG
         /// <summary>
         /// This is the background thread for collecting data
         /// </summary>
-        public void CollectionThread(object o)
+        public async void CollectionThread()
         {
-            // Reset thread pool to run up to 16 concurrent requests - no idea why, I just picked this, so let's go with it
-            ThreadPool.SetMaxThreads(16, 16);
-
             // Okay, let's enter the loop
             while (_keep_running) {
                 int collect_count = 0;
@@ -254,7 +271,7 @@ namespace CRTG
                                 // Spawn a work item in the thread pool to do this collection task
                                 if (s.NextCollectTime <= DateTime.UtcNow) {
                                     s.InFlight = true;
-                                    ThreadPool.QueueUserWorkItem(delegate { s.OuterCollect(); });
+                                    Task.Run(() => s.OuterCollect());
                                     collect_count++;
 
                                 // If it's not time yet, use this to factor when next to wake up
@@ -276,7 +293,7 @@ namespace CRTG
                 if (!_keep_running) return;
                 TimeSpan time_to_sleep = next_collect_time - DateTime.UtcNow;
                 int clean_sleep_time = Math.Max(1, Math.Min((int)time_to_sleep.TotalMilliseconds, 1000));
-                System.Threading.Thread.Sleep(clean_sleep_time);
+                await Task.Delay(clean_sleep_time);
             }
         }
         #endregion
@@ -340,6 +357,14 @@ namespace CRTG
                     // Read in each sensor's data, and write it back out to disk 
                     // (this ensures that all files have the same fields in the same order - permits appending via AppendText later
                     bs.DataRead();
+
+                    // Loop through all conditions / actions
+                    foreach (ICondition c in bs.Children) {
+                        c.Parent = bs;
+                        foreach (IAction a in c.Children) {
+                            a.Parent = c;
+                        }
+                    }
                 }
             }
 

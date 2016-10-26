@@ -6,13 +6,11 @@
  * This program uses icons from http://www.famfamfam.com/lab/icons/silk/
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
 using System.Data.SqlClient;
 using CRTG.Common;
 using CRTG.Common.Attributes;
+using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -32,7 +30,7 @@ namespace CRTG.Sensors.SensorLibrary
         public SqlCollectionType Measurement { get; set; }
 
         #region Implementation
-        public override decimal Collect()
+        public override async Task<CollectResult> Collect()
         {
             Decimal d = 0;
 
@@ -59,7 +57,7 @@ namespace CRTG.Sensors.SensorLibrary
             }
 
             // That's our value
-            return d;
+            return new CollectResult(d);
         }
         #endregion
 

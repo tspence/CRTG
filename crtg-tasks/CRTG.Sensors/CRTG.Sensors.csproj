@@ -82,6 +82,7 @@
     </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Management.Instrumentation" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,7 +93,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BaseNotificationSystem.cs" />
     <Compile Include="BaseSensor.cs" />
     <Compile Include="Data\SqliteDataStore.cs" />
     <Compile Include="Data\SqliteHelperExtensions.cs" />
@@ -106,7 +106,6 @@
     <Compile Include="SensorLibrary\FileSensor.cs" />
     <Compile Include="SensorLibrary\FolderSensor.cs" />
     <Compile Include="SensorLibrary\HttpSensor.cs" />
-    <Compile Include="SensorLibrary\HttpXmlSensor.cs" />
     <Compile Include="SensorLibrary\MySqlReportSensor.cs" />
     <Compile Include="SensorLibrary\MySqlSensor.cs" />
     <Compile Include="SensorProject.cs" />

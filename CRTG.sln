@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Charts", "crtg-common\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Common", "crtg-common\CRTG.Common\CRTG.Common.csproj", "{A0DA040D-F65D-42E4-BC43-3A030867D353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Notification", "crtg-tasks\CRTG.Notification\CRTG.Notification.csproj", "{FAC62BAB-B187-4FE5-A638-392AA1089DE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Actions", "crtg-tasks\CRTG.Notification\CRTG.Actions.csproj", "{FAC62BAB-B187-4FE5-A638-392AA1089DE8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRTG.Sensors", "crtg-tasks\CRTG.Sensors\CRTG.Sensors.csproj", "{188564FA-AA7A-47DE-A5C8-8FB6E461F1D2}"
 EndProject

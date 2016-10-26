@@ -31,12 +31,6 @@ namespace CRTG.Sensors.Devices
         #endregion
 
         /// <summary>
-        /// Serialized ID number of the device
-        /// </summary>
-        [AutoUI(Skip = true)]
-        public int Identity { get; set; }
-
-        /// <summary>
         /// Formal name of the device as it is recognized by DNS
         /// </summary>
         [AutoUI(Group = "Device")]
