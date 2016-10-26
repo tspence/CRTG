@@ -12,6 +12,22 @@ using System.Text;
 
 namespace CRTG.Common
 {
+    /// <summary>
+    /// Type of measurement to take about an HTTP operation
+    /// </summary>
+    public enum HttpMeasurement
+    {
+        RequestTime = 0,
+        BytesReceived = 1,
+        JsonValue = 2,
+        XmlPath = 3,
+        RegexValue = 4,
+        RegexMatches = 5,
+    }
+
+    /// <summary>
+    /// Type of HTTP verb action to execute
+    /// </summary>
     public enum HttpVerb
     {
         GET = 0,

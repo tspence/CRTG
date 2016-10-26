@@ -31,7 +31,7 @@ namespace CRTG.Common.Interfaces
         /// <summary>
         /// This function collects data for the sensor
         /// </summary>
-        void OuterCollect();
+        Task OuterCollect();
 
         /// <summary>
         /// This function reads data from the selected data storage system

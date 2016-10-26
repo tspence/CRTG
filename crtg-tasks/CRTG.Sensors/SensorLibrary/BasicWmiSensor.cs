@@ -13,6 +13,7 @@ using System.Management;
 using CRTG.Common;
 using CRTG.Common.Attributes;
 using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -25,7 +26,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Collect
-        public override CollectResult Collect()
+        public override async Task<CollectResult> Collect()
         {
             ObjectQuery wql = null;
             ManagementObjectSearcher searcher = null;

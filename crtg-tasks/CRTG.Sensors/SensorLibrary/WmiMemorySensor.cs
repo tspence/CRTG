@@ -14,6 +14,7 @@ using CRTG.Common;
 using CRTG.Sensors.Toolkit;
 using CRTG.Common.Attributes;
 using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
 {
@@ -24,7 +25,7 @@ namespace CRTG.Sensors.SensorLibrary
         public MemoryMeasurement Measurement { get; set; }
 
         #region Implementation
-        public override CollectResult Collect()
+        public override async Task<CollectResult> Collect()
         {
             var coll = WmiHelper.WmiQuery(Device, "SELECT * FROM Win32_PerfFormattedData_PerfOS_Memory");
 

@@ -106,7 +106,6 @@
     <Compile Include="SensorLibrary\FileSensor.cs" />
     <Compile Include="SensorLibrary\FolderSensor.cs" />
     <Compile Include="SensorLibrary\HttpSensor.cs" />
-    <Compile Include="SensorLibrary\HttpXmlSensor.cs" />
     <Compile Include="SensorLibrary\MySqlReportSensor.cs" />
     <Compile Include="SensorLibrary\MySqlSensor.cs" />
     <Compile Include="SensorProject.cs" />

@@ -1,5 +1,4 @@
-﻿using CRTG.Common;
-using CRTG.Common.Attributes;
+﻿using CRTG.Common.Attributes;
 using CRTG.Common.Data;
 using MySql.Data.MySqlClient;
 /*
@@ -13,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CRTG.Sensors.SensorLibrary
@@ -41,7 +39,7 @@ namespace CRTG.Sensors.SensorLibrary
 
 
         #region Implementation
-        public override CollectResult Collect()
+        public override async Task<CollectResult> Collect()
         {
             // Determine if this report should run as per this day of the month
             string day = DateTime.UtcNow.Day.ToString();

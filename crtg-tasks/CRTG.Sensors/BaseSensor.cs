@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
 using CRTG.Common.Attributes;
 using CRTG.Common.Data;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors
 {
@@ -206,7 +207,7 @@ namespace CRTG.Sensors
         /// <summary>
         /// Collect data for this sensor (with parameter - not used!)
         /// </summary>
-        public void OuterCollect()
+        public async Task OuterCollect()
         {
             DateTime collectStartTime = DateTime.MinValue;
             DateTime collectFinishTime = DateTime.MinValue;
@@ -218,7 +219,7 @@ namespace CRTG.Sensors
             // Collect data and clock how long it took
             try {
                 collectStartTime = DateTime.UtcNow;
-                args.Raw = Collect();
+                args.Raw = await Collect();
                 collectFinishTime = DateTime.UtcNow;
                 ts = collectFinishTime - collectStartTime;
 
@@ -284,7 +285,7 @@ namespace CRTG.Sensors
         /// <summary>
         /// Collect data for this sensor
         /// </summary>
-        public virtual CollectResult Collect()
+        public virtual async Task<CollectResult> Collect()
         {
             throw new NotImplementedException();
         }

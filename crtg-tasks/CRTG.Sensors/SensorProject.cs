@@ -16,6 +16,7 @@ using CRTG.Sensors.Data;
 using Newtonsoft.Json;
 using CRTG.Common.Interfaces;
 using CRTG.Common.Attributes;
+using System.Threading.Tasks;
 
 namespace CRTG.Sensors
 {
@@ -228,9 +229,7 @@ namespace CRTG.Sensors
         {
             if (_keep_running == false) {
                 _keep_running = true;
-                ParameterizedThreadStart ts = new ParameterizedThreadStart(CollectionThread);
-                _collection_thread = new Thread(ts);
-                _collection_thread.Start();
+                Task.Run(() => CollectionThread());
             }
         }
 
@@ -247,11 +246,8 @@ namespace CRTG.Sensors
         /// <summary>
         /// This is the background thread for collecting data
         /// </summary>
-        public void CollectionThread(object o)
+        public async void CollectionThread()
         {
-            // Reset thread pool to run up to 16 concurrent requests - no idea why, I just picked this, so let's go with it
-            ThreadPool.SetMaxThreads(16, 16);
-
             // Okay, let's enter the loop
             while (_keep_running) {
                 int collect_count = 0;
@@ -275,7 +271,7 @@ namespace CRTG.Sensors
                                 // Spawn a work item in the thread pool to do this collection task
                                 if (s.NextCollectTime <= DateTime.UtcNow) {
                                     s.InFlight = true;
-                                    ThreadPool.QueueUserWorkItem(delegate { s.OuterCollect(); });
+                                    Task.Run(() => s.OuterCollect());
                                     collect_count++;
 
                                 // If it's not time yet, use this to factor when next to wake up
@@ -297,7 +293,7 @@ namespace CRTG.Sensors
                 if (!_keep_running) return;
                 TimeSpan time_to_sleep = next_collect_time - DateTime.UtcNow;
                 int clean_sleep_time = Math.Max(1, Math.Min((int)time_to_sleep.TotalMilliseconds, 1000));
-                System.Threading.Thread.Sleep(clean_sleep_time);
+                await Task.Delay(clean_sleep_time);
             }
         }
         #endregion
