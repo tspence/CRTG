@@ -287,7 +287,10 @@ namespace CRTG.Sensors
         /// </summary>
         public virtual async Task<CollectResult> Collect()
         {
-            throw new NotImplementedException();
+            return await (new Task<CollectResult>(() =>
+            {
+                throw new NotImplementedException();
+            }));
         }
         #endregion
 

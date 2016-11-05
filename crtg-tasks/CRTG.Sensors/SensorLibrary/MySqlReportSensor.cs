@@ -54,10 +54,10 @@ namespace CRTG.Sensors.SensorLibrary
             // Connect to the database and retrieve this value
             DataTable dt = null;
             using (MySqlConnection conn = new MySqlConnection(this.Device.ConnectionString)) {
-                conn.Open();
+                await conn.OpenAsync();
                 using (MySqlCommand cmd = new MySqlCommand(Sql, conn)) {
                     cmd.CommandTimeout = TimeoutSeconds;
-                    MySqlDataReader dr = cmd.ExecuteReader();
+                    var dr = await cmd.ExecuteReaderAsync();
                     dt = new DataTable();
                     dt.Load(dr);
                     dr.Close();

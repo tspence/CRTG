@@ -67,10 +67,10 @@ namespace CRTG.Sensors.SensorLibrary
             // Connect to the database and retrieve this value
             DataTable dt = null;
             using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
-                conn.Open();
+                await conn.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
                     cmd.CommandTimeout = TimeoutSeconds;
-                    SqlDataReader dr = cmd.ExecuteReader();
+                    var dr = await cmd.ExecuteReaderAsync();
                     dt = new DataTable();
                     dt.Load(dr);
                     dr.Close();

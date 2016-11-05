@@ -36,18 +36,18 @@ namespace CRTG.Sensors.SensorLibrary
 
             // Connect to the database and retrieve this value
             using (SqlConnection conn = new SqlConnection(this.Device.ConnectionString)) {
-                conn.Open();
+                await conn.OpenAsync();
                 using (SqlCommand cmd = new SqlCommand(Sql, conn)) {
 
                     // Use the appropriate measurement - this is for scalar
                     if (Measurement == SqlCollectionType.ScalarValue) {
-                        object o = cmd.ExecuteScalar();
+                        object o = cmd.ExecuteScalarAsync();
                         d = (decimal)Convert.ChangeType(o, typeof(decimal));
 
                     // This is for a query
                     } else if (Measurement == SqlCollectionType.RecordCount) {
-                        SqlDataReader dr = cmd.ExecuteReader();
-                        while (dr.Read()) {
+                        SqlDataReader dr = await cmd.ExecuteReaderAsync();
+                        while (await dr.ReadAsync()) {
                             d = d + 1;
                         }
                         dr.Close();
